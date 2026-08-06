@@ -1,0 +1,10 @@
+{
+  "line": 49,
+  "text": "Add link to home in logo at AuthLayot",
+  "filePath": "src/features/auth/AuthPage.tsx",
+  "color": "yellow",
+  "offsetX": 32,
+  "type": "sticky",
+  "lineContent": "<Link",
+  "id": "12560f44-473b-423a-8eb4-8eb938d2f761"
+}

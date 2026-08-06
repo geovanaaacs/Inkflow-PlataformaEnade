@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-app-bg text-ink-strong font-sans antialiased;
+    font-family: theme("fontFamily.sans");
+  }
+
+  /* Visible, consistent focus ring for keyboard users across all interactive elements. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-app-bg;
+  }
+}
