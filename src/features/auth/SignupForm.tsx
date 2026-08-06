@@ -42,7 +42,7 @@ export function SignupForm() {
   }
 
   return (
-    <form className="flex w-full max-w-[420px] flex-col gap-5" onSubmit={handleSubmit} noValidate>
+    <form className="flex w-full max-w-[420px] flex-col gap-5" onSubmit={handleSubmit}>
       <Input
         label="Nome completo:"
         name="name"

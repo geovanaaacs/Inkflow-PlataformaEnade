@@ -18,7 +18,7 @@ export function Logo({ className, size="sm", showText=true }: LogoProps) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <img
-        src="/assets/logo.svg"
+        src="/logo.svg"
         alt="Inkflow Logo"
         className={cn(sizeClasses[size])}
       />

@@ -35,7 +35,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
   }
 
   return (
-    <form className="flex w-full max-w-[420px] flex-col gap-5" onSubmit={handleSubmit} noValidate>
+    <form className="flex w-full max-w-[420px] flex-col gap-5" onSubmit={handleSubmit}>
       <Input
         label="E-mail:"
         type="email"

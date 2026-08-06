@@ -48,7 +48,7 @@ export function Hero() {
           </div>
 
           <div aria-hidden="true" className="relative h-56 overflow-hidden rounded-card bg-gradient-to-br sm:h-72 lg:h-80">
-            <img src="/assets/HomeImage.png" alt="Foto ilustrativa" />
+            <img src="/homeImage.png" alt="Foto ilustrativa" />
           </div>
         </div>
 

@@ -114,7 +114,8 @@ Inkflow/
 ├── docs/
 │   └── analise-design-figma.md   # análise do design (arquitetura, tokens, fluxos)
 ├── public/
-│   └── favicon.svg
+│   └── logo.svg
+│   └── homeImage.svg
 ├── src/
 │   ├── main.tsx                  # entrypoint: monta <App /> no #root
 │   ├── App.tsx                   # definição de TODAS as rotas da aplicação

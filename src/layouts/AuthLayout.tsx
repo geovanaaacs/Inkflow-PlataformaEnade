@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Logo } from "@/design-system/components/Logo";
+import { Link } from "react-router-dom";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -20,7 +21,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         className="relative hidden flex-col items-center justify-center gap-8 overflow-hidden bg-gradient-to-br from-brand-900 via-brand-800 to-brand-600 px-12 py-16 text-center text-white lg:flex"
       >
         <span className="flex size-24 items-center justify-center rounded-full">
-          <Logo size="md" showText={false}/>
+          <Link
+              to="/"
+              className="rounded-button focus-visible:outline-none"
+              aria-label="Inkflow — página inicial"
+            >
+              <Logo size="md" showText={false}/>
+          </Link>
         </span>
         <div className="max-w-md">
           <h1 className="text-3xl font-bold">Domine o ENADE com Inkflow</h1>
