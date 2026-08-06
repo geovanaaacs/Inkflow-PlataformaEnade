@@ -58,6 +58,31 @@ const levels: Level[] = [
   },
 ];
 
+const toneStyles: Record<
+  IconBadgeTone,
+  {
+    tagline: string;
+    check: string;
+  }
+> = {
+  brand: {
+    tagline: "text-brand-600 font-semibold",
+    check: "text-brand-600",
+  },
+  success: {
+    tagline: "text-success font-semibold",
+    check: "text-success",
+  },
+  warning: {
+    tagline: "text-warning font-semibold",
+    check: "text-warning",
+  },
+  danger: {
+    tagline: "text-danger font-semibold",
+    check: "text-danger",
+  },
+};
+
 export function LevelPicker() {
   return (
     <Container as="section" aria-labelledby="levels-heading" className="py-16">
@@ -70,10 +95,13 @@ export function LevelPicker() {
         </p>
       </div>
       <ul className="mt-10 grid gap-6 lg:grid-cols-3">
-        {levels.map((level) => (
+        {levels.map((level) => {
+          const styles = toneStyles[level.tone];
+
+          return (
           <li key={level.name} className="relative">
             {level.highlighted && (
-              <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-badge bg-brand-900 px-4 py-1 text-xs font-semibold text-white">
+              <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-badge bg-brand-600 px-4 py-1 text-xs font-medium text-white">
                 Plano Premium
               </span>
             )}
@@ -89,18 +117,18 @@ export function LevelPicker() {
                   <h3 className="text-base font-semibold text-ink-strong">
                     {level.name}
                   </h3>
-                  <p className="text-sm font-medium text-ink-muted">
+                  <p className={cn("text-sm font-medium", styles.tagline)}>
                     {level.tagline}
                   </p>
                 </div>
               </div>
               <p className="text-sm text-ink-muted">{level.description}</p>
-              <ul className="mt-auto flex flex-col gap-2 pt-2">
+              <ul className="mt-auto flex flex-col gap-2 ">
                 {level.items.map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-ink-strong">
                     <CheckCircle2
                       aria-hidden="true"
-                      className="mt-0.5 size-4 shrink-0 text-success"
+                      className={cn("mt-0.5 size-4 shrink-0", styles.check)}
                     />
                     {item}
                   </li>
@@ -108,7 +136,7 @@ export function LevelPicker() {
               </ul>
             </Card>
           </li>
-        ))}
+        )})}
       </ul>
     </Container>
   );

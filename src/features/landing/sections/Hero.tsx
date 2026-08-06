@@ -1,5 +1,7 @@
 import { Button } from "@/design-system/components/Button";
 import { Container } from "@/design-system/components/Container";
+import { MoveRight } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const stats = [
   { value: "10K", label: "Questões corrigidas" },
@@ -11,7 +13,10 @@ export function Hero() {
   return (
       <div className="pt-6">
       <Container as="section">
-        <Button to="/planos" className="w-full rounded-full" size="sm">Clique aqui para escolher seu plano</Button>
+        <Button to="/planos" className="w-full rounded-full" size="sm">
+        <Sparkles className="size-4.5" />
+        Clique aqui para escolher seu plano
+        </Button>
         <div className="grid gap-10 py-16 lg:grid-cols-2 lg:items-center lg:py-12">
           <div>
             <h1 className="text-xl font-bold leading-tight text-ink-strong sm:text-4xl lg:text-[32px]">
@@ -24,11 +29,9 @@ export function Hero() {
               apoio de IA e professores especializados.
             </p>
             <div className="mt-6 flex flex-wrap gap-4">
-              <Button to="/entrar?modo=cadastro" size="md">
-                Começar agora
-              </Button>
-              <Button to="/questoes" variant="outline" size="md">
-                Ver exemplos
+              <Button to="/entrar?modo=cadastro" size="md" className="group flex w-[70%] items-center justify-center gap-2">
+                Quero começar agora
+                <MoveRight className="size-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
             <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4">

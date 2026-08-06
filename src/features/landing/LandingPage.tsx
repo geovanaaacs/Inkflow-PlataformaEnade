@@ -1,4 +1,5 @@
 import { ClosingCta } from "./sections/ClosingCta";
+import { Footer } from "./sections/Footer";
 import { Hero } from "./sections/Hero";
 import { HowItWorks } from "./sections/HowItWorks";
 import { LevelPicker } from "./sections/LevelPicker";
@@ -12,6 +13,7 @@ export function LandingPage() {
       <HowItWorks />
       <LevelPicker />
       <ClosingCta />
+      <Footer />
     </>
   );
 }

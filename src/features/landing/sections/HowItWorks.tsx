@@ -45,11 +45,11 @@ export function HowItWorks() {
             <li key={step.number} className="relative pt-4">
               <span
                 aria-hidden="true"
-                className="absolute -top-1 left-6 z-10 inline-flex h-8 min-w-8 items-center justify-center rounded-badge bg-brand-900 px-2 text-sm font-semibold text-white"
+                className="absolute -top-0 left-5 z-10 inline-flex h-8 min-w-10 items-center justify-center rounded-badge bg-brand-600 px-3 text-sm font-semibold text-white shadow-sm"
               >
                 {step.number}
               </span>
-              <Card className="flex h-full flex-col gap-3 pt-8 bg-background">
+              <Card className="flex h-full flex-col gap-3 pt-8 bg-background-mini_card">
                 <IconBadge icon={step.icon} />
                 <h3 className="text-base font-semibold text-ink-strong">
                   {step.title}

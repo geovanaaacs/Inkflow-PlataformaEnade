@@ -16,8 +16,9 @@ export default {
           "bar-a80": "rgba(154,91,221,0.8)",
         },
         background: {
-          DEFAUT: "#F8F7FF",
-          card: "#FFFFFF"
+          DEFAULT: "#F8F7FF",
+          card: "#FFFFFF",
+          mini_card: "rgba(225, 195, 255, 0.24)"
         },
         app: {
           bg: "#f8f7ff",

@@ -1,5 +1,5 @@
 {
-  "line": 22,
+  "line": 30,
   "text": "Add link to home in logo, exemple in AuthPage",
   "filePath": "src/layouts/AuthLayout.tsx",
   "color": "yellow",
