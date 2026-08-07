@@ -4,6 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/design-system/components/Button";
 import { Logo } from "@/design-system/components/Logo";
 import { LogoutModal } from "@/shared/modals/LogoutModal";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/design-system/components/Tooltip";
+
 
 const navItems = [
   { to: "/questoes", label: "Questões" },
@@ -19,7 +21,7 @@ export function AppNavbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-border-navbar bg-app-bg">
       <div className="mx-auto flex h-[84px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-16">
-        <Link to="/dashboard" aria-label="Inkflow — página inicial">
+        <Link to="/questoes" aria-label="Inkflow — página de questões">
           <Logo />
         </Link>
 
@@ -32,7 +34,6 @@ export function AppNavbar() {
                   <Button
                     to={item.to}
                     variant={isActive ? "primary" : "ghost"}
-                    active={isActive}
                     size="sm"
                     className="sm:h-[45px] sm:px-8 sm:text-base"
                   >
@@ -45,15 +46,23 @@ export function AppNavbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button
-            variant="danger"
-            size="sm"
-            className="aspect-square px-0"
-            aria-label="Sair do Inkflow"
-            onClick={() => setLogoutOpen(true)}
-          >
-            <LogOut className="size-4" aria-hidden="true" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="danger"
+                size="sm"
+                aria-label="Sair do Inkflow"
+                className="aspect-square px-0"
+                onClick={() => setLogoutOpen(true)}
+              >
+                <LogOut className="size-4" aria-hidden="true" />
+              </Button>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              Sair do Inkflow
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
