@@ -21,7 +21,7 @@ export function PublicNavbar() {
           <Button to="/entrar" variant="outline" size="md">
             Entrar
           </Button>
-          <Button to="/entrar?modo=cadastro" size="md">
+          <Button to="/entrar?modo=cadastro" size="md" className="hidden sm:inline-flex">
             Comece grátis
           </Button>
         </div>

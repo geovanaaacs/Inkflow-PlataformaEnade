@@ -14,31 +14,32 @@ export function Hero() {
       <div className="pt-6">
       <Container as="section">
         <Button to="/planos" className="w-full rounded-full" size="sm">
-        <Sparkles className="size-4.5" />
-        Clique aqui para escolher seu plano
+          <Sparkles className="size-4.5" />
+          <span className="inline sm:hidden">Escolha seu plano</span>
+          <span className="hidden sm:inline">Clique aqui para escolher seu plano</span>
         </Button>
-        <div className="grid gap-10 py-16 lg:grid-cols-2 lg:items-center lg:py-12">
+        <div className="grid gap-8 py-6 lg:grid-cols-2 lg:items-center lg:py-12">
           <div>
-            <h1 className="text-xl font-bold leading-tight text-ink-strong sm:text-4xl lg:text-[32px]">
+            <h1 className="text-2xl font-bold leading-tight text-ink-strong sm:text-4xl lg:text-[32px]">
               Prepare-se para o ENADE: pratique e melhore seu{" "}
               <span className="text-brand-800">desempenho</span>.
             </h1>
-            <p className="mt-4 max-w-xl text-base text-ink-muted">
+            <p className="mt-4 max-w-xl text-sm text-ink-muted sm:text-base">
               Plataforma acadêmica completa para praticar questões do ENADE,
               receber feedback profissional e aprimorar suas habilidades com
               apoio de IA e professores especializados.
             </p>
             <div className="mt-6 flex flex-wrap gap-4">
-              <Button to="/entrar?modo=cadastro" size="md" className="group flex w-[70%] items-center justify-center gap-2">
+              <Button to="/entrar?modo=cadastro" size="md" className="group flex w-full max-w-md items-center justify-center gap-2 sm:w-[70%]">
                 Quero começar agora
                 <MoveRight className="size-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
-            <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4">
+            <dl className="mt-10 grid gap-2 sm:grid-cols-3 sm:gap-4">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center">
                   <dt className="sr-only">{stat.label}</dt>
-                  <dd className="text-2xl font-bold text-brand-800 items">
+                  <dd className="text-2xl font-bold text-brand-800">
                     {stat.value}
                   </dd>
                   <dd className="text-sm text-ink-muted">{stat.label}</dd>

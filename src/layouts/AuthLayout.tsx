@@ -26,7 +26,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
               className="rounded-button focus-visible:outline-none"
               aria-label="Inkflow — página inicial"
             >
-              <Logo size="md" showText={false}/>
+            <Logo size="md" showText={false}/>
           </Link>
         </span>
         <div className="max-w-md">
@@ -46,9 +46,14 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </ul>
       </section>
 
-      <section className="flex flex-col items-center justify-center gap-6 bg-app-bg px-4 py-16 sm:px-8">
+      <section className="flex flex-col items-center justify-center gap-6 bg-app-bg px-4 py-10 sm:px-8">
         <div className="lg:hidden">
-          <Logo />
+          <Link
+            to="/"
+            className="rounded-button focus-visible:outline-none"
+            aria-label="Inkflow — página inicial">
+          <Logo size="md"/>
+          </Link>
         </div>
         {children}
       </section>
