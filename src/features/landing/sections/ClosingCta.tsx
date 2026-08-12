@@ -19,10 +19,10 @@ export function ClosingCta() {
       />
       <Container className="relative flex flex-col items-center text-center">
         <Sparkles aria-hidden="true" className="size-10 text-white" />
-        <h2 className="mt-4 max-w-xl text-3xl font-bold text-white">
+        <h2 className="mt-4 max-w-xl text-2xl font-bold text-white sm:text-3xl">
           Sua jornada até o ENADE começa com um clique
         </h2>
-        <p className="mt-3 max-w-md text-base text-white/85">
+        <p className="mt-3 max-w-md text-sm text-white/85 sm:text-base">
           Crie sua conta gratuita agora e comece a praticar hoje mesmo
         </p>
         <Button

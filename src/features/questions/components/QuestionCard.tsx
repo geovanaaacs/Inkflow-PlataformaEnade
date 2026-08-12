@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { cn } from "@/design-system/utils/cn";
-import type { Question } from "../data";
+import type { CommunityComment, Question } from "../data";
 import { NoteModal } from "./NoteModal";
 import { QuestionActionsBar } from "./QuestionActionsBar";
 import { QuestionOptionsList } from "./QuestionOptionsList";
@@ -22,12 +22,20 @@ export function QuestionCard({ question, highlighted = false }: QuestionCardProp
   const [activePanel, setActivePanel] = useState<PanelKey | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
+  const [comments, setComments] = useState<CommunityComment[]>(question.community);
 
   const isCorrect = submitted && selectedOptionId === question.correctOptionId;
   const headingId = `question-heading-${question.id}`;
 
   function togglePanel(panel: PanelKey) {
     setActivePanel((current) => (current === panel ? null : panel));
+  }
+
+  function handleAddComment(comment: string) {
+    setComments((current) => [
+      ...current,
+      { author: "Você", comment },
+    ]);
   }
 
   return (
@@ -40,7 +48,7 @@ export function QuestionCard({ question, highlighted = false }: QuestionCardProp
         highlighted && "ring-2 ring-brand-600"
       )}
     >
-      <header className="bg-brand-500-a24/60 px-6 py-4">
+      <header className="bg-brand-300-a53/60 px-6 py-4">
         <h2 id={headingId} className="text-sm font-semibold text-ink-strong">
           <span className="text-brand-800">[{question.code}]</span>{" "}
           {question.subject} › {question.topic}
@@ -96,7 +104,8 @@ export function QuestionCard({ question, highlighted = false }: QuestionCardProp
         {activePanel === "community" && (
           <CommunityPanel
             id={`community-panel-${question.id}`}
-            comments={question.community}
+            comments={comments}
+            onAddComment={handleAddComment}
           />
         )}
         {activePanel === "teacher" && (

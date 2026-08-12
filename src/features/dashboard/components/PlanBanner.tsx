@@ -16,11 +16,11 @@ export function PlanBanner({ planName, used, total }: PlanBannerProps) {
       <span className="text-sm font-semibold">{planName}</span>
 
       <div
-        className="flex items-center gap-3"
+        className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3"
         role="group"
         aria-label={`${used} de ${total} questões gratuitas usadas hoje`}
       >
-        <ul className="flex items-center gap-1.5" aria-hidden="true">
+        <ul className="flex flex-wrap items-center gap-1.5" aria-hidden="true">
           {dots.map((filled, index) => (
             <li
               key={index}

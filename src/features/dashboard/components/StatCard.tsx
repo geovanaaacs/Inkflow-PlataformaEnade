@@ -30,9 +30,9 @@ export function StatCard({
     <Card as="article" className="flex flex-col gap-3.5">
       <div className="flex items-center gap-4">
         <IconBadge icon={icon} tone={tone} />
-        <p className="text-3xl font-semibold text-ink-strong">{value}</p>
+        <p className="text-2xl font-semibold leading-none text-ink-strong sm:text-3xl">{value}</p>
       </div>
-      <p className="text-base text-ink-strong">{label}</p>
+      <p className="text-sm text-ink-strong sm:text-base">{label}</p>
       <ProgressBar value={progressPercent} label={label} tone={progressTone} />
       <p
         className={`flex items-center gap-1 text-sm font-semibold ${

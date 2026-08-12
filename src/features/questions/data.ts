@@ -36,7 +36,13 @@ export const questions: Question[] = [
     year: 2023,
     type: "Múltipla escolha",
     statement:
-      "Considere as afirmativas: I. O switch em C# permite o uso de expressões com tipos string. II. O foreach é utilizado para percorrer coleções que implementam IEnumerable. III. O while sempre executa pelo menos uma vez o bloco de código. IV. O do...while garante a execução mínima de uma vez.",
+      `Considere as afirmativas:
+
+        I. O switch em C# permite o uso de expressões com tipos string.
+        II. O foreach é utilizado para percorrer coleções que implementam IEnumerable.
+        III. O while sempre executa pelo menos uma vez o bloco de código. IV. O do...while garante a execução mínima de uma vez.
+        
+        Assinale a resposta correta.`,
     options: [
       { id: "a", label: "Apenas I e II estão corretas." },
       { id: "b", label: "Apenas III e IV estão corretas." },
@@ -46,7 +52,14 @@ export const questions: Question[] = [
     ],
     correctOptionId: "d",
     aiExplanation:
-      "Analisando as afirmativas: ✔ I — Verdadeira. O C# permite utilizar string em estruturas switch. ✔ II — Verdadeira. O foreach percorre coleções que implementam IEnumerable. ✘ III — Falsa. O laço while pode não executar nenhuma vez se a condição inicial for falsa. ✔ IV — Verdadeira. O do...while executa o bloco ao menos uma vez antes da verificação da condição. Portanto, o gabarito correto é a alternativa D.",
+      `Analisando as afirmativas:
+      
+        ✔ I — Verdadeira. O C# permite utilizar string em estruturas switch.
+        ✔ II — Verdadeira. O foreach percorre coleções que implementam IEnumerable.
+        ✘ III — Falsa. O laço while pode não executar nenhuma vez se a condição inicial for falsa.
+        ✔ IV — Verdadeira. O do...while executa o bloco ao menos uma vez antes da verificação da condição.
+        
+      Portanto, o gabarito correto é a alternativa D.`,
     teacher: {
       name: "Professora Marcela Guedes",
       credentials: "Eng. de Software · UNICAMP · 12 anos ENADE",
@@ -74,7 +87,13 @@ export const questions: Question[] = [
     year: 2024,
     type: "Múltipla escolha",
     statement:
-      "Considere as afirmativas: I. A herança múltipla de classes é permitida em C#. II. Interfaces podem ser implementadas por múltiplas classes. III. O modificador sealed impede que uma classe seja herdada. IV. O polimorfismo permite que métodos sejam sobrescritos em classes derivadas.",
+      `Considere as afirmativas:
+      I. A herança múltipla de classes é permitida em C#.
+      II. Interfaces podem ser implementadas por múltiplas classes.
+      III. O modificador sealed impede que uma classe seja herdada.
+      IV. O polimorfismo permite que métodos sejam sobrescritos em classes derivadas.
+      
+      Assinale a opção correta.`,
     options: [
       { id: "a", label: "Apenas I e II estão corretas." },
       { id: "b", label: "Apenas II e III estão corretas." },
@@ -84,7 +103,10 @@ export const questions: Question[] = [
     ],
     correctOptionId: "c",
     aiExplanation:
-      "I é falsa: C# não permite herança múltipla de classes. II, III e IV estão corretas: interfaces podem ser implementadas por múltiplas classes, sealed impede herança e o polimorfismo permite sobrescrita de métodos. Gabarito: C.",
+      `I é falsa: C# não permite herança múltipla de classes.
+      II, III e IV estão corretas: interfaces podem ser implementadas por múltiplas classes, sealed impede herança e o polimorfismo permite sobrescrita de métodos.
+      
+      Gabarito: C.`,
     teacher: {
       name: "Professora Marcela Guedes",
       credentials: "Eng. de Software · UNICAMP · 12 anos ENADE",

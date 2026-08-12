@@ -10,7 +10,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/design-system/compone
 const navItems = [
   { to: "/questoes", label: "Questões" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/perfil", label: "Perfil" },
 ];
 
 /** Top navigation for authenticated app screens. */
@@ -35,7 +34,7 @@ export function AppNavbar() {
                     to={item.to}
                     variant={isActive ? "primary" : "ghost"}
                     size="sm"
-                    className="sm:h-[45px] sm:px-8 sm:text-base"
+                    className="sm:h-[40px] sm:px-8 sm:text-base"
                   >
                     {item.label}
                   </Button>
@@ -46,13 +45,21 @@ export function AppNavbar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Button
+            to="/perfil"
+            variant={location.pathname.startsWith("/perfil") ? "primary" : "ghost"}
+            size="sm"
+            className="sm:h-[40px] sm:px-8 sm:text-base"
+          >
+            Perfil
+          </Button>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="danger"
                 size="sm"
                 aria-label="Sair do Inkflow"
-                className="aspect-square px-0"
+                className="aspect-square px-0 sm:h-[40px]"
                 onClick={() => setLogoutOpen(true)}
               >
                 <LogOut className="size-4" aria-hidden="true" />
@@ -67,7 +74,7 @@ export function AppNavbar() {
       </div>
 
       <nav aria-label="Principal" className="border-t border-border-navbar px-4 py-2 md:hidden">
-        <ul className="flex items-center gap-2 overflow-x-auto">
+        <ul className="flex w-full justify-center items-center gap-2 overflow-x-auto">
           {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.to);
             return (

@@ -4,7 +4,7 @@ import { cn } from "@/design-system/utils/cn";
 export type BadgeTone = "brand" | "success" | "warning" | "danger" | "neutral";
 
 const toneClasses: Record<BadgeTone, string> = {
-  brand: "bg-brand-900 text-white",
+  brand: "bg-brand-800 text-white",
   success: "bg-success/15 text-success",
   warning: "bg-warning/15 text-warning",
   danger: "bg-danger-bg text-danger",
