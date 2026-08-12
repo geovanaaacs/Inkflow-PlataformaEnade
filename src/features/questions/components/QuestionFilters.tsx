@@ -42,7 +42,7 @@ export function QuestionFilters({
   }
 
   return (
-    <Card as="section" aria-label="Filtrar questões" bare className="p-5">
+    <Card as="section" aria-label="Filtrar questões" bare className="p-5 shadow-card">
       <form
         onSubmit={handleSubmit}
         className="flex flex-wrap items-end gap-3"
