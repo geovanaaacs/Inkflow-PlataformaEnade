@@ -20,3 +20,6 @@ export type { SegmentedControlOption } from "./SegmentedControl";
 export { Select } from "./Select";
 export type { SelectOption, SelectProps } from "./Select";
 export { Switch } from "./Switch";
+export { Spinner } from "./Spinner";
+export { Calendar } from "./Calendar";
+export type { CalendarProps, CalendarDayMarker } from "./Calendar";

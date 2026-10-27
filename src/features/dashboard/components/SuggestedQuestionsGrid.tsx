@@ -2,13 +2,16 @@ import { Button } from "@/design-system/components/Button";
 import { Card } from "@/design-system/components/Card";
 import { ProgressBar } from "@/design-system/components/ProgressBar";
 import { toneForPercent } from "@/design-system/utils/progress-tone";
-import type { SuggestedTopic } from "../data";
+import { useReturnToState } from "@/shared/navigation/return-to";
+import type { SuggestedTopicWithTotal } from "../api";
 
 interface SuggestedQuestionsGridProps {
-  topics: SuggestedTopic[];
+  topics: SuggestedTopicWithTotal[];
 }
 
 export function SuggestedQuestionsGrid({ topics }: SuggestedQuestionsGridProps) {
+  const returnState = useReturnToState();
+
   return (
     <Card as="section" aria-labelledby="suggested-topics-heading">
       <h2 id="suggested-topics-heading" className="text-lg font-semibold text-ink-strong">
@@ -20,11 +23,12 @@ export function SuggestedQuestionsGrid({ topics }: SuggestedQuestionsGridProps) 
 
       <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {topics.map((topic) => (
-          <li key={topic.id}>
+          <li key={topic.areaSlug}>
             <Card className="flex h-full flex-col gap-3 border border-black/5 p-5">
               <h3 className="text-base font-semibold text-ink-strong">{topic.title}</h3>
               <p className="text-sm text-ink-muted">
-                Nível {topic.level} · {topic.totalQuestions} questões disponíveis
+                Nível {topic.level} · {topic.totalQuestions}{" "}
+                {topic.totalQuestions === 1 ? "questão disponível" : "questões disponíveis"}
               </p>
               <ProgressBar
                 value={topic.percent}
@@ -34,7 +38,14 @@ export function SuggestedQuestionsGrid({ topics }: SuggestedQuestionsGridProps) 
               <p className="text-sm font-medium text-ink-strong">
                 {topic.percent}% de acerto · {topic.message}
               </p>
-              <Button to={`/questoes?area=${topic.id}`} fullWidth size="sm" className="mt-auto">
+              <Button
+                to={`/questoes/tema/${topic.areaSlug}`}
+                state={returnState}
+                fullWidth
+                size="sm"
+                className="mt-auto"
+                aria-label={`Praticar agora: ${topic.title}`}
+              >
                 Praticar agora
               </Button>
             </Card>

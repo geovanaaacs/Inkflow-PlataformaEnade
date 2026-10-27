@@ -1,14 +1,19 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { useSearchParams, Link } from "react-router-dom";
+import { Link, Navigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   SegmentedControl,
   type SegmentedControlOption,
 } from "@/design-system/components/SegmentedControl";
+import { Spinner } from "@/design-system/components/Spinner";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ChangePasswordModal } from "@/shared/modals/ChangePasswordModal";
+import { readReturnTo } from "@/shared/navigation/return-to";
+import { useAuth } from "./auth-context";
 import { LoginForm } from "./LoginForm";
+import { homePathFor } from "./role-home";
 import { SignupForm } from "./SignupForm";
+import { TestAccountsCard } from "./TestAccountsCard";
 
 type Mode = "login" | "cadastro";
 
@@ -18,12 +23,25 @@ const modeOptions: SegmentedControlOption<Mode>[] = [
 ];
 
 export function AuthPage() {
+  const { user, status } = useAuth();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const mode: Mode = searchParams.get("modo") === "cadastro" ? "cadastro" : "login";
 
   function setMode(next: Mode) {
     setSearchParams(next === "login" ? {} : { modo: next }, { replace: true });
+  }
+
+  // Logged-in users (including right after login/sign-up) go to the page they
+  // tried to open, or to their profile's home. RequireAuth bounces them if
+  // that page belongs to the other profile.
+  if (user) {
+    return <Navigate to={readReturnTo(location.state) ?? homePathFor(user.role)} replace />;
+  }
+
+  if (status === "loading") {
+    return <Spinner label="Carregando sua sessão…" className="min-h-screen" />;
   }
 
   return (
@@ -54,6 +72,8 @@ export function AuthPage() {
           <ArrowLeft className="size-4" aria-hidden="true" />
           Voltar para tela inicial
         </Link>
+
+        {import.meta.env.DEV && mode === "login" && <TestAccountsCard />}
       </div>
 
       <ChangePasswordModal

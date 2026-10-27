@@ -8,9 +8,17 @@ import { AuthProvider } from "@/features/auth/AuthProvider";
 import { RequireAuth } from "@/features/auth/RequireAuth";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { QuestionsPage } from "@/features/questions/QuestionsPage";
+import { QuestionDetailPage } from "@/features/questions/QuestionDetailPage";
+import { TopicQuestionsPage } from "@/features/questions/TopicQuestionsPage";
 import { ProfilePage } from "@/features/profile/ProfilePage";
 import { PlansPage } from "@/features/plans/PlansPage";
 import { NotFoundPage } from "@/features/misc/NotFoundPage";
+import { TeacherDashboardPage } from "@/features/teacher/TeacherDashboardPage";
+import { TeacherAgendaPage } from "@/features/teacher/TeacherAgendaPage";
+import { MockExamsPage } from "@/features/mock-exams/MockExamsPage";
+import { MockExamRunnerPage } from "@/features/mock-exams/MockExamRunnerPage";
+import { MockExamResultPage } from "@/features/mock-exams/MockExamResultPage";
+import { MentoringPage } from "@/features/mentoring/MentoringPage";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -37,8 +45,25 @@ export default function App() {
 
           <Route element={<RequireAuth />}>
             <Route element={<AppLayout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/questoes" element={<QuestionsPage />} />
+              {/* Aluno */}
+              <Route element={<RequireAuth roles={["aluno"]} />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/questoes" element={<QuestionsPage />} />
+                <Route path="/questoes/tema/:area" element={<TopicQuestionsPage />} />
+                <Route path="/questoes/:code" element={<QuestionDetailPage />} />
+                <Route path="/simulados" element={<MockExamsPage />} />
+                <Route path="/simulados/resultado/:attemptId" element={<MockExamResultPage />} />
+                <Route path="/simulados/:examId" element={<MockExamRunnerPage />} />
+                <Route path="/mentoria" element={<MentoringPage />} />
+              </Route>
+
+              {/* Professor */}
+              <Route element={<RequireAuth roles={["professor"]} />}>
+                <Route path="/professor" element={<TeacherDashboardPage />} />
+                <Route path="/professor/agenda" element={<TeacherAgendaPage />} />
+              </Route>
+
+              {/* Ambos os perfis */}
               <Route path="/perfil" element={<ProfilePage />} />
             </Route>
           </Route>

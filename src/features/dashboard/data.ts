@@ -1,3 +1,5 @@
+import type { PlanId } from "@/shared/plans/plan-access";
+
 export interface AreaPerformance {
   area: string;
   percent: number;
@@ -13,77 +15,94 @@ export const areaPerformance: AreaPerformance[] = [
   { area: "Sist. Operacionais", percent: 38, questionsCount: 26 },
 ];
 
-export interface RecentAnswer {
-  code: string;
-  topic: string;
-  when: string;
-  correct: boolean;
-}
-
-export const recentAnswers: RecentAnswer[] = [
-  { code: "Q2023-112", topic: "Padrões de Projeto", when: "Hoje", correct: true },
-  { code: "Q2022-047", topic: "Protocolos HTTP", when: "Hoje", correct: false },
-  { code: "Q2024-034", topic: "Normalização BD", when: "Hoje", correct: true },
-  { code: "Q2021-078", topic: "Algoritmos de Busca", when: "Ontem", correct: false },
-  { code: "Q2023-201", topic: "Redes Neurais", when: "2 dias atrás", correct: true },
-];
-
 export interface SuggestedTopic {
-  id: string;
+  /** Area slug — "Praticar agora" opens /questoes/tema/:areaSlug. */
+  areaSlug: string;
   title: string;
   level: "fácil" | "médio" | "difícil";
-  totalQuestions: number;
   percent: number;
   message: string;
 }
 
 export const suggestedTopics: SuggestedTopic[] = [
   {
-    id: "algoritmos",
-    title: "Algorítimos e Complexidade",
+    areaSlug: "algoritmos",
+    title: "Algoritmos e Complexidade",
     level: "difícil",
-    totalQuestions: 89,
     percent: 43,
     message: "Precisa melhorar!",
   },
   {
-    id: "sistemas-operacionais",
+    areaSlug: "sistemas-operacionais",
     title: "Sistemas Operacionais",
     level: "médio",
-    totalQuestions: 67,
     percent: 38,
     message: "Precisa melhorar!",
   },
   {
-    id: "redes",
+    areaSlug: "redes",
     title: "Redes de Computadores",
     level: "médio",
-    totalQuestions: 112,
     percent: 61,
     message: "Quase lá!",
   },
   {
-    id: "ia",
+    areaSlug: "ia",
     title: "Inteligência Artificial",
     level: "difícil",
-    totalQuestions: 45,
     percent: 57,
     message: "Quase lá!",
   },
   {
-    id: "banco-de-dados",
+    areaSlug: "banco-de-dados",
     title: "Banco de Dados",
     level: "médio",
-    totalQuestions: 78,
     percent: 75,
     message: "Bom desempenho!",
   },
   {
-    id: "redes-2",
-    title: "Redes de Computadores",
+    areaSlug: "engenharia-de-software",
+    title: "Engenharia de Software",
     level: "médio",
-    totalQuestions: 112,
     percent: 82,
     message: "Ponto forte!",
   },
 ];
+
+/** Other students on the platform (fictitious) — fill the ranking around the mock users. */
+export interface RankingCompetitor {
+  id: string;
+  name: string;
+  plan: PlanId;
+  points: number;
+}
+
+export const rankingCompetitors: RankingCompetitor[] = [
+  { id: "c-lucas", name: "Lucas Andrade", plan: "premium", points: 1720 },
+  { id: "c-beatriz", name: "Beatriz Rocha", plan: "premium", points: 1650 },
+  { id: "c-joao", name: "João Pedro Lima", plan: "avancado", points: 1580 },
+  { id: "c-camila", name: "Camila Torres", plan: "premium", points: 1540 },
+  { id: "c-gabriel", name: "Gabriel Martins", plan: "avancado", points: 1460 },
+  { id: "c-larissa", name: "Larissa Mendes", plan: "premium", points: 1410 },
+  { id: "c-thiago", name: "Thiago Ribeiro", plan: "basico", points: 1350 },
+  { id: "c-ana", name: "Ana Beatriz Souza", plan: "avancado", points: 1290 },
+  { id: "c-felipe", name: "Felipe Carvalho", plan: "premium", points: 1240 },
+  { id: "c-mariana", name: "Mariana Costa", plan: "basico", points: 1210 },
+  { id: "c-pedro", name: "Pedro Henrique Alves", plan: "avancado", points: 1150 },
+  { id: "c-juliana", name: "Juliana Pereira", plan: "premium", points: 1100 },
+  { id: "c-rodrigo", name: "Rodrigo Fernandes", plan: "basico", points: 990 },
+  { id: "c-isabela", name: "Isabela Gomes", plan: "premium", points: 930 },
+];
+
+/**
+ * Points the mock users had before their seeded answer history. Their live
+ * score is this plus 10 points per correct first attempt.
+ */
+export const baseUserPoints: Record<string, number> = {
+  "u-maria": 1180,
+  "u-paula": 1320,
+  "u-nicole": 1490,
+  "u-rafael": 640,
+};
+
+export const POINTS_PER_CORRECT_ANSWER = 10;

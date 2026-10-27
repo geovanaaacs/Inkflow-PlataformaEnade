@@ -9,7 +9,7 @@ export function ProfilePage() {
   const { user } = useAuth();
 
   const name = user?.name || "Maria Clara Silva";
-  const course = "Análise e Desenvolvimento de Sistemas";
+  const course = user?.course || "Análise e Desenvolvimento de Sistemas";
   const roleLabel =
     user?.role === "professor" ? "Professor(a)" : "Estudante de";
 

@@ -1,38 +1,78 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
-import { AuthContext, type AuthContextValue, type AuthUser } from "./auth-context";
-
-const STORAGE_KEY = "inkflow:auth-user";
-
-function readStoredUser(): AuthUser | null {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as AuthUser) : null;
-  } catch {
-    return null;
-  }
-}
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import * as authApi from "./api";
+import {
+  AuthContext,
+  type AuthContextValue,
+  type AuthStatus,
+  type AuthUser,
+  type SignupInput,
+} from "./auth-context";
 
 /**
- * Mock authentication provider — there is no backend yet. Keeps the app
- * shell realistic (protected routes, logout) without pretending to be a
- * real auth integration.
+ * Holds the logged-in user for the whole app. The session itself lives in
+ * `auth/api.ts` (persisted in localStorage by the mock, an httpOnly cookie
+ * once the backend exists), so the login survives closing the browser.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(readStoredUser);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [status, setStatus] = useState<AuthStatus>("loading");
 
-  const login = useCallback((nextUser: AuthUser) => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
-    setUser(nextUser);
+  const applyUser = useCallback((next: AuthUser | null) => {
+    setUser(next);
+    setStatus(next ? "authenticated" : "anonymous");
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    authApi
+      .getSessionUser()
+      .catch(() => null)
+      .then((sessionUser) => {
+        if (!cancelled) applyUser(sessionUser);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [applyUser]);
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const loggedUser = await authApi.login(email, password);
+      applyUser(loggedUser);
+      return loggedUser;
+    },
+    [applyUser]
+  );
+
+  const signup = useCallback(
+    async (input: SignupInput) => {
+      const createdUser = await authApi.signup(input);
+      applyUser(createdUser);
+      return createdUser;
+    },
+    [applyUser]
+  );
 
   const logout = useCallback(() => {
-    sessionStorage.removeItem(STORAGE_KEY);
-    setUser(null);
-  }, []);
+    void authApi.logout();
+    applyUser(null);
+  }, [applyUser]);
+
+  const refreshUser = useCallback(async () => {
+    applyUser(await authApi.getSessionUser());
+  }, [applyUser]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isAuthenticated: user !== null, login, logout }),
-    [user, login, logout]
+    () => ({
+      user,
+      status,
+      isAuthenticated: user !== null,
+      login,
+      signup,
+      logout,
+      refreshUser,
+    }),
+    [user, status, login, signup, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
+import { errorMessage } from "@/shared/api/api-error";
 import { useAuth } from "./auth-context";
 
 interface LoginFormProps {
@@ -11,14 +11,13 @@ interface LoginFormProps {
 
 export function LoginForm({ onForgotPassword }: LoginFormProps) {
   const { login } = useAuth();
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
@@ -28,10 +27,13 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
     }
 
     setSubmitting(true);
-    window.setTimeout(() => {
-      login({ name: email.split("@")[0] || "Estudante", email, role: "aluno" });
-      navigate("/dashboard", { replace: true });
-    }, 400);
+    try {
+      // On success AuthPage redirects to the page the user came from (or their home).
+      await login(email, password);
+    } catch (loginError) {
+      setError(errorMessage(loginError));
+      setSubmitting(false);
+    }
   }
 
   return (

@@ -3,15 +3,9 @@ import type { FormEvent } from "react";
 import { Button } from "@/design-system/components/Button";
 import { Card } from "@/design-system/components/Card";
 import { Select, type SelectOption } from "@/design-system/components/Select";
+import type { QuestionFilters as QuestionFiltersValue } from "../api";
 
-export const ALL_VALUE = "todas";
-
-export interface QuestionFiltersValue {
-  keyword: string;
-  area: string;
-  year: string;
-  type: string;
-}
+export type { QuestionFiltersValue };
 
 interface QuestionFiltersProps {
   draftKeyword: string;

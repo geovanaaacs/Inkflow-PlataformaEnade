@@ -1,33 +1,34 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import {
   SegmentedControl,
   type SegmentedControlOption,
 } from "@/design-system/components/SegmentedControl";
-import { useAuth } from "./auth-context";
+import { errorMessage } from "@/shared/api/api-error";
+import { useAuth, type UserRole } from "./auth-context";
 
-const profileOptions: SegmentedControlOption<"aluno" | "professor">[] = [
+const profileOptions: SegmentedControlOption<UserRole>[] = [
   { value: "aluno", label: "Aluno" },
   { value: "professor", label: "Professor" },
 ];
 
 export function SignupForm() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { signup } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState<"aluno" | "professor">("aluno");
+  const [role, setRole] = useState<UserRole>("aluno");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setServerError(null);
 
     if (password.length < 6) {
       setError("Sua senha deve ter pelo menos 6 caracteres.");
@@ -35,10 +36,13 @@ export function SignupForm() {
     }
 
     setSubmitting(true);
-    window.setTimeout(() => {
-      login({ name, email, role });
-      navigate("/dashboard", { replace: true });
-    }, 400);
+    try {
+      // On success AuthPage redirects to the new user's home.
+      await signup({ name, email, password, role });
+    } catch (signupError) {
+      setServerError(errorMessage(signupError));
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -102,6 +106,11 @@ export function SignupForm() {
           className="grid-cols-2"
         />
       </div>
+      {serverError && (
+        <p role="alert" className="text-sm text-danger">
+          {serverError}
+        </p>
+      )}
       <Button type="submit" fullWidth disabled={submitting}>
         {submitting ? "Criando conta..." : "Cadastrar"}
       </Button>
