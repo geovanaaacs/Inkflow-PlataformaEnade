@@ -24,3 +24,8 @@ Thumbs.db
 node_modules
 docs
 *.tsbuildinfo
+
+# Secrets (cada pasta tem seu .env.example versionado)
+.env
+.env.*
+!.env.example

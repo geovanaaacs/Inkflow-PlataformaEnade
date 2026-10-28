@@ -9,7 +9,7 @@
 
    Pré-requisito: 01–06 (usa as tabelas da agenda criadas no 06).
    O bloco de questões e simulados foi gerado a partir de
-   src/features/questions/data.ts e src/features/mock-exams/data.ts — o texto
+   frontend/src/features/questions/data.ts e frontend/src/features/mock-exams/data.ts — o texto
    das questões é idêntico ao do front.
 
    Fora deste seed (só existem no front, como dados de vitrine):

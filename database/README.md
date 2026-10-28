@@ -303,7 +303,7 @@ sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v 'ADMIN_E
 
 | O que entra | Detalhe |
 |---|---|
-| 11 questões novas | Com alternativas, gabarito, explicação da IA e comentário da professora Marcela. O bloco foi **gerado a partir de `src/features/questions/data.ts`**, então o texto é idêntico ao do front. Total: 14 questões em 14 tópicos. |
+| 11 questões novas | Com alternativas, gabarito, explicação da IA e comentário da professora Marcela. O bloco foi **gerado a partir de `frontend/src/features/questions/data.ts`**, então o texto é idêntico ao do front. Total: 14 questões em 14 tópicos. |
 | Prof. Ricardo Alves | Segundo professor (`ricardo.alves@email.com`, perfil verificado), dono de parte dos horários. |
 | 4 simulados do front | Programação e Engenharia de Software, Infraestrutura/Redes/Dados, Simulado Geral e Simulado relâmpago (2 min). O simulado antigo do 05 continua. |
 | Várias anotações | 3 da Paula (2 na mesma questão) e 2 da Nicole. |

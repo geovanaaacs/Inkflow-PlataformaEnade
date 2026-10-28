@@ -9,4 +9,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    // /api vai para o backend (npm run dev na raiz sobe os dois). Mesma origem
+    // no navegador, então o cookie de sessão funciona sem configurar CORS.
+    proxy: {
+      "/api": "http://localhost:3333",
+    },
+  },
 });
