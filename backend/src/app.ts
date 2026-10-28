@@ -1,5 +1,8 @@
 import cookieParser from "cookie-parser";
 import express from "express";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { isProduction } from "./config/env.js";
 import { query } from "./db/pool.js";
 import { errorHandler, notFoundHandler } from "./http/errors.js";
 import { adminRouter } from "./modules/admin/admin.routes.js";
@@ -38,6 +41,26 @@ export function createApp() {
   api.use(adminRouter);
 
   app.use("/api", api);
+
+  if (isProduction) {
+    const frontendDist = fileURLToPath(new URL("../../frontend/dist", import.meta.url));
+    app.use(express.static(frontendDist));
+    app.use((req, res, next) => {
+      if (
+        req.method !== "GET" ||
+        !req.accepts("html") ||
+        req.path === "/api" ||
+        req.path.startsWith("/api/")
+      ) {
+        next();
+        return;
+      }
+      res.sendFile(path.join(frontendDist, "index.html"), (error) => {
+        if (error) next(error);
+      });
+    });
+  }
+
   app.use(notFoundHandler);
   app.use(errorHandler);
   return app;

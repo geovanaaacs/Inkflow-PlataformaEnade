@@ -29,6 +29,7 @@ flowchart LR
 ```
 
 - Em desenvolvimento o navegador fala só com o Vite (porta 5173), que repassa `/api` para o Express (porta 3333). É a mesma origem, então o cookie de sessão funciona sem CORS.
+- Em produção o Express serve o frontend compilado e a API pela mesma porta (`API_PORT`, padrão 3333).
 - Cada feature do front fala com a API só pelo seu `api.ts` (via `frontend/src/shared/api/http.ts`). Cada módulo do backend em `backend/src/modules/` devolve o formato JSON que esses `api.ts` esperam.
 
 ## Pré-requisitos
@@ -58,9 +59,12 @@ npm run db:dev-accounts
 | `npm run typecheck` | Checa os tipos dos dois projetos |
 | `npm run lint` | ESLint do frontend |
 | `npm run build` | Build de produção dos dois |
+| `npm start` | Faz o build e inicia o Express em modo produção, servindo frontend e API |
 | `npm run db:dev-accounts` | (dev) senhas de teste nas contas do seed + conta admin pelo `.env` |
 
 Para instalar uma dependência num projeto só: `npm install <pacote> -w frontend` ou `-w backend`.
+
+Para produção local, configure `NODE_ENV=production` e `API_PORT` no `backend/.env`, então execute `npm start`. A aplicação fica disponível em `http://localhost:<API_PORT>`. Em um servidor acessível pela internet, configure HTTPS e use um `JWT_SECRET` seguro e exclusivo.
 
 ## Situação atual
 

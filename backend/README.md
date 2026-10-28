@@ -10,11 +10,15 @@ Na raiz do monorepo (`npm run dev` sobe front e back juntos) ou só a API:
 npm run dev -w backend       # http://localhost:3333/api  (recarrega ao salvar)
 ```
 
+Para executar em produção a partir da raiz do projeto, configure `NODE_ENV=production` em `backend/.env` e rode `npm start`. O comando compila frontend e backend antes de subir o Express, que serve ambos na porta `API_PORT`.
+
 Configuração em `backend/.env` (copie de `.env.example`):
 
 | Variável | Para quê |
 |---|---|
-| `API_PORT` | Porta da API (padrão 3333 — o proxy do Vite aponta para ela). Não é `PORT` de propósito: várias ferramentas definem `PORT` para todos os processos |
+| `NODE_ENV` | `development` (padrão) mantém front e API separados; `production` habilita a entrega do frontend buildado pelo Express |
+| `FRONTEND_PORT` | Porta do Vite em desenvolvimento (padrão 5173) |
+| `API_PORT` | Porta do Express (padrão 3333); o proxy do Vite usa essa porta em desenvolvimento |
 | `DB_CONNECTION_STRING` | Connection string ODBC. O padrão usa o **login do Windows** no SQL Server local |
 | `JWT_SECRET` | Assina o cookie de sessão (mín. 32 caracteres, nunca versionado) |
 | `SESSION_DAYS` | Validade do login (padrão 30 dias) |
