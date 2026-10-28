@@ -63,7 +63,7 @@ export function QuestionsPage() {
     <Container as="div" className="flex flex-col gap-6">
       <h1 className="sr-only">Questões</h1>
 
-      {practice.usage && <PlanBanner planId={practice.plan} usage={practice.usage} />}
+      {practice.banner && <PlanBanner {...practice.banner} />}
 
       <QuestionFilters
         draftKeyword={draftKeyword}

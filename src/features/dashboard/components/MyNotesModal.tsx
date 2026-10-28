@@ -26,7 +26,8 @@ export function MyNotesModal({ open, onClose, unlocked }: MyNotesModalProps) {
       description={
         unlocked ? "Todas as anotações que você fez nas questões, das mais recentes às mais antigas." : undefined
       }
-      className="max-w-2xl"
+      size="xl"
+      className="max-h-[90vh] overflow-y-auto"
     >
       {unlocked ? (
         <NotesList onNavigate={onClose} />

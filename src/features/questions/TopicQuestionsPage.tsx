@@ -22,7 +22,7 @@ export function TopicQuestionsPage() {
     <Container as="div" className="flex flex-col gap-6">
       <BackButton fallback="/dashboard" />
 
-      {practice.usage && <PlanBanner planId={practice.plan} usage={practice.usage} />}
+      {practice.banner && <PlanBanner {...practice.banner} />}
 
       <div>
         <h1 className="text-2xl font-semibold text-ink-strong">

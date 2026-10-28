@@ -20,7 +20,7 @@ export function QuestionDetailPage() {
     <Container as="div" className="flex flex-col gap-6">
       <BackButton fallback="/questoes" />
 
-      {practice.usage && <PlanBanner planId={practice.plan} usage={practice.usage} />}
+      {practice.banner && <PlanBanner {...practice.banner} />}
 
       <h1 className="sr-only">Questão {code}</h1>
 

@@ -4,9 +4,11 @@ import type { DailyUsage, PlanId } from "@/shared/plans/plan-access";
 import { getDailyUsage, getMyNoteCounts, type AnswerResult } from "./api";
 
 export interface PracticeSession {
-  plan: PlanId;
-  /** Today's usage for the plan banner (null while loading). */
-  usage: DailyUsage | null;
+  /**
+   * Props for the plan banner — only students see it (teachers and admins
+   * have no plan or daily limit). Null while loading or for staff.
+   */
+  banner: { planId: PlanId; usage: DailyUsage } | null;
   noteCounts: Record<string, number>;
   onAnswered: (result: AnswerResult) => void;
   onNoteAdded: (questionId: string) => void;
@@ -41,7 +43,7 @@ export function usePracticeSession(): PracticeSession {
     return () => {
       cancelled = true;
     };
-  }, [user?.plan]);
+  }, [user?.plan, user?.role]);
 
   const onAnswered = useCallback((result: AnswerResult) => setUsage(result.usage), []);
 
@@ -55,5 +57,8 @@ export function usePracticeSession(): PracticeSession {
     onNoteAdded,
   });
 
-  return { plan: user?.plan ?? "basico", usage, noteCounts, onAnswered, onNoteAdded, cardProps };
+  const banner =
+    user?.role === "aluno" && user.plan && usage ? { planId: user.plan, usage } : null;
+
+  return { banner, noteCounts, onAnswered, onNoteAdded, cardProps };
 }

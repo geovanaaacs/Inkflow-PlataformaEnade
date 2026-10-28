@@ -34,7 +34,7 @@ export function QuestionNotesModal({
       open={open}
       onClose={onClose}
       title={`Anotações · ${questionCode}`}
-      className="max-w-xl"
+      size="lg"
     >
       {unlocked ? (
         <NotesEditor

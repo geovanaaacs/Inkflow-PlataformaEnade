@@ -7,9 +7,9 @@ import {
   type SegmentedControlOption,
 } from "@/design-system/components/SegmentedControl";
 import { errorMessage } from "@/shared/api/api-error";
-import { useAuth, type UserRole } from "./auth-context";
+import { useAuth, type SignupInput } from "./auth-context";
 
-const profileOptions: SegmentedControlOption<UserRole>[] = [
+const profileOptions: SegmentedControlOption<SignupInput["role"]>[] = [
   { value: "aluno", label: "Aluno" },
   { value: "professor", label: "Professor" },
 ];
@@ -20,7 +20,7 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState<UserRole>("aluno");
+  const [role, setRole] = useState<SignupInput["role"]>("aluno");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);

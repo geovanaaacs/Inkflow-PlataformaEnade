@@ -11,12 +11,24 @@ import { cn } from "@/design-system/utils/cn";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+export type ModalSize = "md" | "lg" | "xl" | "2xl";
+
+const sizeClasses: Record<ModalSize, string> = {
+  md: "max-w-md",
+  lg: "max-w-xl",
+  xl: "max-w-2xl",
+  "2xl": "max-w-3xl",
+};
+
 export interface ModalProps {
   open: boolean;
   onClose: () => void;
   title: string;
   description?: ReactNode;
   children?: ReactNode;
+  /** Dialog width. `cn` does not resolve conflicting classes, so width is a prop. */
+  size?: ModalSize;
+  /** Extra classes (not for width — use `size`). */
   className?: string;
 }
 
@@ -32,6 +44,7 @@ export function Modal({
   title,
   description,
   children,
+  size = "md",
   className,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -106,7 +119,8 @@ export function Modal({
         tabIndex={-1}
         onKeyDown={handleKeyDown}
         className={cn(
-          "relative z-10 w-full max-w-md rounded-card bg-app-surface p-8 shadow-card",
+          "relative z-10 w-full rounded-card bg-app-surface p-8 shadow-card",
+          sizeClasses[size],
           className
         )}
       >

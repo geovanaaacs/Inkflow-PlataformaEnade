@@ -25,7 +25,7 @@ export type FeatureKey =
   | "notes"
   | "fullHistory"
   | "ranking"
-  | "exclusiveRanking"
+  | "mockExamRanking"
   | "mockExams"
   | "mentoring";
 
@@ -34,11 +34,19 @@ export const FEATURE_MIN_PLAN: Record<FeatureKey, PlanId> = {
   unlimitedQuestions: "avancado",
   notes: "avancado",
   fullHistory: "avancado",
-  ranking: "avancado",
-  exclusiveRanking: "premium",
+  /** Ranking Geral — open to every plan. */
+  ranking: "basico",
+  /** Ranking dos Simulados (RANKING_SIMULADOS in the database). */
+  mockExamRanking: "premium",
   mockExams: "premium",
   mentoring: "premium",
 };
+
+/**
+ * Features teachers and admins get without a plan: they answer questions to
+ * contribute, so they have no daily limit and can take notes.
+ */
+const STAFF_FEATURES: FeatureKey[] = ["unlimitedQuestions", "notes", "fullHistory"];
 
 /** Daily question limit of the free plan (first attempts only). */
 export const FREE_DAILY_QUESTION_LIMIT = 10;
@@ -48,6 +56,16 @@ export function hasFeature(plan: PlanId | null | undefined, feature: FeatureKey)
   return PLAN_RANK[plan] >= PLAN_RANK[FEATURE_MIN_PLAN[feature]];
 }
 
+/** Like hasFeature, but aware of the profile: students by plan, staff by role. */
+export function userHasFeature(
+  user: { role: string; plan: PlanId | null } | null | undefined,
+  feature: FeatureKey
+): boolean {
+  if (!user) return false;
+  if (user.role !== "aluno") return STAFF_FEATURES.includes(feature);
+  return hasFeature(user.plan, feature);
+}
+
 export function requiredPlanFor(feature: FeatureKey): PlanId {
   return FEATURE_MIN_PLAN[feature];
 }
@@ -55,6 +73,6 @@ export function requiredPlanFor(feature: FeatureKey): PlanId {
 /** Questions answered today (first attempts) against the plan's daily limit. */
 export interface DailyUsage {
   used: number;
-  /** null = ilimitado (Avançado/Premium). */
+  /** null = ilimitado (Avançado/Premium, professores e administradores). */
   limit: number | null;
 }

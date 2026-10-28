@@ -11,7 +11,7 @@ export { Input, Textarea } from "./Input";
 export type { InputProps, TextareaProps } from "./Input";
 export { Logo } from "./Logo";
 export { Modal } from "./Modal";
-export type { ModalProps } from "./Modal";
+export type { ModalProps, ModalSize } from "./Modal";
 export { ProgressBar } from "./ProgressBar";
 export { toneForPercent } from "@/design-system/utils/progress-tone";
 export type { ProgressTone } from "@/design-system/utils/progress-tone";

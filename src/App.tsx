@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { AppLayout } from "@/layouts/AppLayout";
@@ -19,6 +19,9 @@ import { MockExamsPage } from "@/features/mock-exams/MockExamsPage";
 import { MockExamRunnerPage } from "@/features/mock-exams/MockExamRunnerPage";
 import { MockExamResultPage } from "@/features/mock-exams/MockExamResultPage";
 import { MentoringPage } from "@/features/mentoring/MentoringPage";
+import { AdminUsersPage } from "@/features/admin/AdminUsersPage";
+import { AdminQuestionsPage } from "@/features/admin/AdminQuestionsPage";
+import { AdminMockExamsPage } from "@/features/admin/AdminMockExamsPage";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -45,12 +48,16 @@ export default function App() {
 
           <Route element={<RequireAuth />}>
             <Route element={<AppLayout />}>
-              {/* Aluno */}
-              <Route element={<RequireAuth roles={["aluno"]} />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
+              {/* Aluno e professor: responder questões */}
+              <Route element={<RequireAuth roles={["aluno", "professor"]} />}>
                 <Route path="/questoes" element={<QuestionsPage />} />
                 <Route path="/questoes/tema/:area" element={<TopicQuestionsPage />} />
                 <Route path="/questoes/:code" element={<QuestionDetailPage />} />
+              </Route>
+
+              {/* Aluno */}
+              <Route element={<RequireAuth roles={["aluno"]} />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/simulados" element={<MockExamsPage />} />
                 <Route path="/simulados/resultado/:attemptId" element={<MockExamResultPage />} />
                 <Route path="/simulados/:examId" element={<MockExamRunnerPage />} />
@@ -63,7 +70,15 @@ export default function App() {
                 <Route path="/professor/agenda" element={<TeacherAgendaPage />} />
               </Route>
 
-              {/* Ambos os perfis */}
+              {/* Admin */}
+              <Route element={<RequireAuth roles={["admin"]} />}>
+                <Route path="/admin" element={<Navigate to="/admin/usuarios" replace />} />
+                <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+                <Route path="/admin/questoes" element={<AdminQuestionsPage />} />
+                <Route path="/admin/simulados" element={<AdminMockExamsPage />} />
+              </Route>
+
+              {/* Todos os perfis */}
               <Route path="/perfil" element={<ProfilePage />} />
             </Route>
           </Route>

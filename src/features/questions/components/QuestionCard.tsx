@@ -5,7 +5,7 @@ import { cn } from "@/design-system/utils/cn";
 import { useAuth } from "@/features/auth/auth-context";
 import { ApiError, errorMessage } from "@/shared/api/api-error";
 import { LockedFeature } from "@/shared/components/LockedFeature";
-import { hasFeature } from "@/shared/plans/plan-access";
+import { userHasFeature } from "@/shared/plans/plan-access";
 import { answerQuestion, type AnswerResult } from "../api";
 import type { CommunityComment, Question } from "../data";
 import { QuestionActionsBar } from "./QuestionActionsBar";
@@ -31,7 +31,7 @@ export function QuestionCard({
   onNoteAdded,
 }: QuestionCardProps) {
   const { user } = useAuth();
-  const notesUnlocked = hasFeature(user?.plan, "notes");
+  const notesUnlocked = userHasFeature(user, "notes");
 
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [result, setResult] = useState<AnswerResult | null>(null);

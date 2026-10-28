@@ -65,7 +65,7 @@ export function MockExamCard({ exam, locked }: MockExamCardProps) {
             disabled
             leadingIcon={<Lock aria-hidden="true" className="size-4" />}
           >
-            Exclusivo Premium
+            Incluído no Premium
           </Button>
         ) : (
           <>

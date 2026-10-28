@@ -1,6 +1,7 @@
 import { requireSessionUser } from "@/features/auth/api";
 import type { AuthUser } from "@/features/auth/auth-context";
 import { ApiError } from "@/shared/api/api-error";
+import { COLLECTIONS } from "@/shared/api/collections";
 import { createId, mockDelay, readCollection, updateCollection } from "@/shared/api/mock-store";
 import { hasFeature } from "@/shared/plans/plan-access";
 import {
@@ -19,8 +20,8 @@ import {
  *   POST /api/me/mentoring-requests/{id}/cancel
  */
 
-const SLOTS_KEY = "mentoringSlots";
-const REQUESTS_KEY = "mentoringRequests";
+const SLOTS_KEY = COLLECTIONS.mentoringSlots;
+const REQUESTS_KEY = COLLECTIONS.mentoringRequests;
 const MESSAGE_MAX_LENGTH = 500;
 
 /** Requests that hold a spot in the session. */

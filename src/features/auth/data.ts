@@ -7,6 +7,8 @@ import type { AuthUser } from "./auth-context";
  */
 export interface MockUserRecord extends AuthUser {
   password: string;
+  /** false = deactivated by an admin (cannot log in). Missing = active. */
+  active?: boolean;
 }
 
 export interface TestAccount {
@@ -61,6 +63,15 @@ export const mockUsers: MockUserRecord[] = [
     plan: null,
     course: "Engenharia de Software",
   },
+  {
+    id: "u-admin",
+    name: "Administração Inkflow",
+    email: "admin@inkflow.com",
+    password: "admin123",
+    role: "admin",
+    plan: null,
+    course: null,
+  },
 ];
 
 /** Shown on the login screen in development so each plan/role can be tested quickly. */
@@ -69,4 +80,5 @@ export const testAccounts: TestAccount[] = [
   { email: "paula.cunha@email.com", password: "aluno123", description: "Aluna · Avançado" },
   { email: "nicole.silva@email.com", password: "aluno123", description: "Aluna · Premium" },
   { email: "marcela.guedes@email.com", password: "prof123", description: "Professora" },
+  { email: "admin@inkflow.com", password: "admin123", description: "Administrador" },
 ];

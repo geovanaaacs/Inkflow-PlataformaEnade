@@ -1,16 +1,17 @@
 import { requireSessionUser } from "@/features/auth/api";
 import type { AuthUser } from "@/features/auth/auth-context";
 import { ApiError } from "@/shared/api/api-error";
+import { COLLECTIONS } from "@/shared/api/collections";
 import { createId, mockDelay, readCollection, updateCollection } from "@/shared/api/mock-store";
 import {
   FREE_DAILY_QUESTION_LIMIT,
-  hasFeature,
+  userHasFeature,
   type DailyUsage,
 } from "@/shared/plans/plan-access";
 import { dayKey } from "@/shared/utils/dates";
 import {
   areas,
-  questions,
+  questions as questionSeed,
   seedAnswers,
   seedNotes,
   type AnswerRecord,
@@ -28,8 +29,9 @@ import {
  *   GET/POST /api/questions/{id}/notes
  */
 
-const ANSWERS_KEY = "answers";
-const NOTES_KEY = "notes";
+const QUESTIONS_KEY = COLLECTIONS.questions;
+const ANSWERS_KEY = COLLECTIONS.answers;
+const NOTES_KEY = COLLECTIONS.notes;
 
 export const ALL_VALUE = "todas";
 
@@ -74,8 +76,13 @@ function readNotes(): NoteRecord[] {
   return readCollection(NOTES_KEY, seedNotes);
 }
 
+/** The question bank is a collection so the admin area can create and edit questions. */
+function readQuestions(): Question[] {
+  return readCollection(QUESTIONS_KEY, () => questionSeed);
+}
+
 function findQuestion(questionId: string): Question | undefined {
-  return questions.find((question) => question.id === questionId);
+  return readQuestions().find((question) => question.id === questionId);
 }
 
 /* ------------------------------------------------------------------ Banco de questões */
@@ -87,7 +94,7 @@ export async function listQuestions(filters?: Partial<QuestionFilters>): Promise
   const year = filters?.year ?? ALL_VALUE;
   const type = filters?.type ?? ALL_VALUE;
 
-  return questions.filter((question) => {
+  return readQuestions().filter((question) => {
     const matchesKeyword =
       keyword.length === 0 ||
       [question.code, question.topic, question.area.name, question.statement].some((field) =>
@@ -104,14 +111,14 @@ export async function getQuestionFilterOptions(): Promise<QuestionFilterOptions>
   await mockDelay(100);
   return {
     areas: [...areas].sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
-    years: Array.from(new Set(questions.map((question) => question.year))).sort((a, b) => b - a),
-    types: Array.from(new Set(questions.map((question) => question.type))).sort(),
+    years: Array.from(new Set(readQuestions().map((question) => question.year))).sort((a, b) => b - a),
+    types: Array.from(new Set(readQuestions().map((question) => question.type))).sort(),
   };
 }
 
 export async function getQuestionByCode(code: string): Promise<Question> {
   await mockDelay();
-  const question = questions.find((item) => item.code.toLowerCase() === code.toLowerCase());
+  const question = readQuestions().find((item) => item.code.toLowerCase() === code.toLowerCase());
   if (!question) throw new ApiError(`A questão ${code} não foi encontrada.`, 404);
   return question;
 }
@@ -122,13 +129,16 @@ export async function listQuestionsByArea(
   await mockDelay();
   const area = areas.find((item) => item.slug === areaSlug);
   if (!area) throw new ApiError("Tema não encontrado.", 404);
-  return { area, questions: questions.filter((question) => question.area.slug === areaSlug) };
+  return {
+    area,
+    questions: readQuestions().filter((question) => question.area.slug === areaSlug),
+  };
 }
 
 /** Number of available questions per area slug. */
 export async function countQuestionsByArea(): Promise<Record<string, number>> {
   const counts: Record<string, number> = {};
-  for (const question of questions) {
+  for (const question of readQuestions()) {
     counts[question.area.slug] = (counts[question.area.slug] ?? 0) + 1;
   }
   return counts;
@@ -166,7 +176,7 @@ function computeDailyUsage(user: AuthUser, answers: AnswerRecord[]): DailyUsage 
 
   return {
     used,
-    limit: hasFeature(user.plan, "unlimitedQuestions") ? null : FREE_DAILY_QUESTION_LIMIT,
+    limit: userHasFeature(user, "unlimitedQuestions") ? null : FREE_DAILY_QUESTION_LIMIT,
   };
 }
 
@@ -226,6 +236,7 @@ export async function answerQuestion(
     correct: selectedOptionId === question.correctOptionId,
     attemptNumber,
     answeredAt: new Date().toISOString(),
+    answeredAsRole: user.role,
   };
   const updated = updateCollection(ANSWERS_KEY, seedAnswers, (current) => [...current, record]);
 
@@ -285,6 +296,7 @@ export async function recordMockExamAnswers(
         attemptNumber,
         answeredAt,
         mockExamAttemptId,
+        answeredAsRole: user.role,
       });
     }
     return { questionId, selectedOptionId, correctOptionId, correct };
@@ -294,7 +306,10 @@ export async function recordMockExamAnswers(
   return graded;
 }
 
-/** Every answer from every student — feeds the ranking and the teacher dashboard. */
+/**
+ * Every recorded answer (students and teachers). Rankings and the teacher
+ * dashboard keep only answers given as "aluno" — see isStudentAnswer().
+ */
 export async function listAllAnswers(): Promise<AnswerRecord[]> {
   return readAnswers();
 }
@@ -305,7 +320,7 @@ const NOTE_MAX_LENGTH = 2000;
 
 function requireNotesAccess(): AuthUser {
   const user = requireSessionUser();
-  if (!hasFeature(user.plan, "notes")) {
+  if (!userHasFeature(user, "notes")) {
     throw new ApiError("O bloco de anotações faz parte do plano Avançado.", 403);
   }
   return user;
@@ -315,7 +330,7 @@ function requireNotesAccess(): AuthUser {
 export async function getMyNoteCounts(): Promise<Record<string, number>> {
   await mockDelay(100);
   const user = requireSessionUser();
-  if (!hasFeature(user.plan, "notes")) return {};
+  if (!userHasFeature(user, "notes")) return {};
 
   const counts: Record<string, number> = {};
   for (const note of readNotes()) {
@@ -370,4 +385,9 @@ export async function listMyNotes(): Promise<NoteWithQuestion[]> {
         areaName: question?.area.name ?? "",
       };
     });
+}
+
+/** True for answers given by a student (the ones that count for rankings). */
+export function isStudentAnswer(answer: AnswerRecord): boolean {
+  return (answer.answeredAsRole ?? "aluno") === "aluno";
 }

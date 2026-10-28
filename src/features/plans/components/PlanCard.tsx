@@ -42,7 +42,7 @@ export function PlanCard({ plan, viewerRole, currentPlanId, onSelect }: PlanCard
       );
     }
 
-    if (viewerRole === "professor") {
+    if (viewerRole !== "aluno") {
       return (
         <p className={cn("text-center text-sm", plan.highlighted ? "text-white/85" : "text-ink-muted")}>
           Planos disponíveis para alunos.

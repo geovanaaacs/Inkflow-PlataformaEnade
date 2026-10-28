@@ -10,8 +10,10 @@ export function ProfilePage() {
 
   const name = user?.name || "Maria Clara Silva";
   const course = user?.course || "Análise e Desenvolvimento de Sistemas";
-  const roleLabel =
-    user?.role === "professor" ? "Professor(a)" : "Estudante de";
+  const description =
+    user?.role === "admin"
+      ? "Administrador(a) do Inkflow"
+      : `${user?.role === "professor" ? "Professor(a)" : "Estudante de"} ${course}`;
 
   return (
     <Container as="div" className="flex flex-col gap-6">
@@ -22,7 +24,7 @@ export function ProfilePage() {
         </p>
       </div>
 
-      <ProfileSummaryCard name={name} description={`${roleLabel} ${course}`} />
+      <ProfileSummaryCard name={name} description={description} />
 
       <PersonalInfoForm
         initialValue={{

@@ -1,4 +1,5 @@
 import { ApiError } from "@/shared/api/api-error";
+import { COLLECTIONS } from "@/shared/api/collections";
 import {
   createId,
   mockDelay,
@@ -18,7 +19,7 @@ import { mockUsers, type MockUserRecord } from "./data";
  * "session" value below disappears and getSessionUser() calls GET /api/me.
  */
 
-const USERS_KEY = "users";
+const USERS_KEY = COLLECTIONS.users;
 const SESSION_KEY = "session";
 
 interface MockSession {
@@ -39,11 +40,19 @@ function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+/** Accounts deactivated by an admin can no longer log in or keep a session. */
+export function isActiveAccount(record: { active?: boolean }): boolean {
+  return record.active !== false;
+}
+
 export async function login(email: string, password: string): Promise<AuthUser> {
   await mockDelay(400);
   const record = readUsers().find((user) => user.email === normalizeEmail(email));
   if (!record || record.password !== password) {
     throw new ApiError("E-mail ou senha inválidos.", 401);
+  }
+  if (!isActiveAccount(record)) {
+    throw new ApiError("Esta conta está desativada. Fale com a administração do Inkflow.", 403);
   }
   writeValue<MockSession>(SESSION_KEY, { userId: record.id });
   return toAuthUser(record);
@@ -80,7 +89,7 @@ export async function getSessionUser(): Promise<AuthUser | null> {
   const session = readValue<MockSession>(SESSION_KEY);
   if (!session) return null;
   const record = readUsers().find((user) => user.id === session.userId);
-  return record ? toAuthUser(record) : null;
+  return record && isActiveAccount(record) ? toAuthUser(record) : null;
 }
 
 /**
@@ -90,7 +99,9 @@ export async function getSessionUser(): Promise<AuthUser | null> {
 export function requireSessionUser(): AuthUser {
   const session = readValue<MockSession>(SESSION_KEY);
   const record = readUsers().find((user) => user.id === session?.userId);
-  if (!record) throw new ApiError("Sessão expirada. Entre novamente.", 401);
+  if (!record || !isActiveAccount(record)) {
+    throw new ApiError("Sessão expirada. Entre novamente.", 401);
+  }
   return toAuthUser(record);
 }
 
@@ -109,7 +120,7 @@ export async function updateSessionUserPlan(plan: PlanId): Promise<AuthUser> {
   return toAuthUser(updated);
 }
 
-/** Lightweight user directory (id → name/role/plan), e.g. for rankings and teacher views. */
+/** Directory of active accounts (id → name/role/plan), e.g. for rankings and teacher views. */
 export async function listUsers(): Promise<AuthUser[]> {
-  return readUsers().map(toAuthUser);
+  return readUsers().filter(isActiveAccount).map(toAuthUser);
 }

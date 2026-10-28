@@ -41,9 +41,9 @@ export function Footer() {
           <p>© 2026 Inkflow. Todos os direitos reservados.</p>
 
           <div className="flex gap-6">
-            <a href="#">Privacidade</a>
-            <a href="#">Termos</a>
-            <a href="#">GitHub</a>
+            <span>Privacidade</span>
+            <span>Termos</span>
+            <span>GitHub</span>
           </div>
         </div>
       </Container>

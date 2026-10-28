@@ -1,14 +1,14 @@
 import { createContext, useContext } from "react";
 import type { PlanId } from "@/shared/plans/plan-access";
 
-export type UserRole = "aluno" | "professor";
+export type UserRole = "aluno" | "professor" | "admin";
 
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
   role: UserRole;
-  /** Subscription plan — students only; `null` for teachers. */
+  /** Subscription plan — students only; `null` for teachers and admins. */
   plan: PlanId | null;
   course: string | null;
 }
@@ -17,7 +17,8 @@ export interface SignupInput {
   name: string;
   email: string;
   password: string;
-  role: UserRole;
+  /** Admins are only created by another admin. */
+  role: Exclude<UserRole, "admin">;
 }
 
 export type AuthStatus = "loading" | "authenticated" | "anonymous";

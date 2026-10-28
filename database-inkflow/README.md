@@ -18,6 +18,7 @@ Modelo relacional do Inkflow, a plataforma de prática para o ENADE. Ele foi der
 | 3 | `03_constraints.sql` | PK → UNIQUE → FK → CHECK → DEFAULT |
 | 4 | `04_indexes.sql` | Índices para FKs e consultas frequentes |
 | 5 | `05_seed.sql` | Dados de exemplo baseados nos mocks do projeto |
+| 6 | `06_ajustes_pendentes.sql` | **Pendente — ainda não executado.** Ajustes exigidos pelas features novas do frontend (ver [Ajustes pendentes](#ajustes-pendentes-06_ajustes_pendentessql)) |
 
 Todos os scripts são **idempotentes**: verificam se cada objeto ou registro já existe antes de criar. Rodar tudo de novo não gera erro nem duplica dados.
 
@@ -253,8 +254,43 @@ SELECT CASE WHEN EXISTS (
 
 ---
 
+## Ajustes pendentes (`06_ajustes_pendentes.sql`)
+
+Script pronto, **ainda não executado em nenhum SQL Server**. Roda depois do 01–05 e pode ser repetido sem efeito colateral.
+
+| # | Ajuste | Por quê (frontend) |
+|---|---|---|
+| 1 | `CK_Users_Role` passa a aceitar `admin` | Novo perfil de administração do site |
+| 2 | `Users.IsActive` + `DeactivatedAt` | O admin desativa e reativa contas (diferente de apagar, que usa `DeletedAt`) |
+| 3 | `UserAnswers.AnsweredAsRole` + view `vw_PracticeRanking` + índice filtrado | Professores respondem questões; as respostas são gravadas mas **não entram no ranking**, que usa só `AnsweredAsRole = 'aluno'` |
+| 4 | Feature `RANKING_SIMULADOS` (Premium), `RANKING` liberado no Básico, `RankingSnapshots.Scope` (`GERAL`/`SIMULADOS`) no UNIQUE e no índice, textos dos planos | Ranking Geral aberto a todos; Ranking dos Simulados no Premium |
+| 5 | Remove `UQ_UserNotes_User_Question` e cria índice comum | Várias anotações por questão |
+| 6 | Tabelas `TeacherAvailabilitySlots` e `MentoringRequests` | Horários abertos pelo professor e solicitações de vaga (aceitar/recusar) |
+| 7 | `MockExamAttempts.EndsAt` + tabela `MockExamAttemptAnswers` | Simulado salvo durante a prova (retomar depois de recarregar) |
+| 8 | Conta admin no seed | Primeiro acesso à área de administração |
+
+**Regra do Ranking Geral** (igual à exibida na tela): cada questão respondida na aba Questões soma **10 pts se acertar e 2 pts se errar**; só a 1ª tentativa de cada questão; simulados não entram. **Ranking dos Simulados:** acertos da melhor tentativa de cada simulado × 10.
+
+### Conta admin sem senha fixa
+
+O script não tem senha nenhuma. E-mail e **hash** da senha entram por variáveis SQLCMD:
+
+```bash
+sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v ADMIN_EMAIL="admin@inkflow.com" ADMIN_PASSWORD_HASH="<hash gerado pelo backend>"
+```
+
+- O hash deve ser gerado pelo backend (ex.: bcrypt) — nunca a senha em texto.
+- No SSMS, ative *Query → SQLCMD Mode* e declare as duas variáveis com `:setvar` no topo do arquivo antes de executar.
+- Sem as variáveis, o `sqlcmd` para com erro; fora do modo SQLCMD, o script detecta o texto não substituído e **não** cria a conta.
+- Se já existir uma conta com esse e-mail, nada é alterado.
+
+### Ainda não incluído no 06
+
+- **Seed das questões novas do frontend** (11 questões, alunos fictícios do ranking e o Prof. Ricardo Alves) — opcional, só para os dados de exemplo baterem com o front.
+- **`StudyGroups` / `MentoringSessions`:** continuam no banco; decidir se saem agora que a agenda usa `TeacherAvailabilitySlots`.
+
 ## Observações e próximos passos
 
-- **Anotações:** o card do plano Avançado lista "Bloco de anotações individual", por isso a feature `ANOTACOES` foi liberada só para Avançado e Premium. Hoje o front deixa qualquer usuário anotar. Para manter esse comportamento, basta inserir `ANOTACOES` também para o plano `basico` em `PlanFeatures`.
+- **Anotações:** a feature `ANOTACOES` vale para Avançado e Premium, igual ao front. Professores e admins também anotam (por perfil, não por plano) — regra da aplicação.
 - **Busca por palavra-chave:** `LIKE '%termo%'` sobre `Statement` funciona bem para o volume atual. Se o banco de questões crescer, considere o **Full-Text Search** do SQL Server.
 - **Tipo de questão:** hoje o `CHECK` aceita apenas `Múltipla escolha`, como no front. Para questões discursivas do ENADE, amplie o `CK_Questions_Type` e crie uma tabela para as respostas em texto.

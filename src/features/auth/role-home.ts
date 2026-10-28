@@ -1,6 +1,12 @@
 import type { UserRole } from "./auth-context";
 
-/** Landing route of each profile after login (and when hitting the other profile's routes). */
+const HOME_BY_ROLE: Record<UserRole, string> = {
+  aluno: "/dashboard",
+  professor: "/professor",
+  admin: "/admin/usuarios",
+};
+
+/** Landing route of each profile after login (and when hitting another profile's routes). */
 export function homePathFor(role: UserRole): string {
-  return role === "professor" ? "/professor" : "/dashboard";
+  return HOME_BY_ROLE[role];
 }

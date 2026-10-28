@@ -185,14 +185,19 @@ features/<tela>/
 
       <Route element={<RequireAuth/>}>            # bloqueia acesso sem login
         <Route element={<AppLayout/>}>            # navbar logada
+          <Route element={<RequireAuth roles={["aluno", "professor"]}/>}>
+            /questoes · /questoes/:code · /questoes/tema/:area
+          </Route>
           <Route element={<RequireAuth roles={["aluno"]}/>}>
-            /dashboard · /questoes · /questoes/:code · /questoes/tema/:area
-            /simulados · /simulados/:examId · /simulados/resultado/:attemptId · /mentoria
+            /dashboard · /simulados · /simulados/:examId · /simulados/resultado/:attemptId · /mentoria
           </Route>
           <Route element={<RequireAuth roles={["professor"]}/>}>
             /professor · /professor/agenda
           </Route>
-          /perfil                                  # os dois perfis
+          <Route element={<RequireAuth roles={["admin"]}/>}>
+            /admin/usuarios · /admin/questoes · /admin/simulados   (/admin → /admin/usuarios)
+          </Route>
+          /perfil                                  # todos os perfis
         </Route>
       </Route>
     </Routes>
@@ -241,7 +246,7 @@ Definem a "casca" visual de cada grupo de rotas (navbar + área de conteúdo via
 
 - **`PublicLayout` + `PublicNavbar`** — usado por Landing e Planos. Navbar com logo + botões "Entrar"/"Comece grátis".
 - **`AuthLayout`** — usado só por `/entrar`. Layout split-screen: painel institucional roxo à esquerda (escondido em telas pequenas), formulário à direita.
-- **`AppLayout` + `AppNavbar`** — usado pelas telas logadas. O menu depende do perfil (aluno: Questões, Dashboard, Simulados, Mentoria; professor: Dashboard, Agenda); itens de recursos que o plano não inclui aparecem com cadeado. Tem o botão de logout que abre o `LogoutModal`.
+- **`AppLayout` + `AppNavbar`** — usado pelas telas logadas. O menu depende do perfil (aluno: Questões, Dashboard, Simulados, Mentoria; professor: Dashboard, Questões, Agenda; admin: Usuários, Questões, Simulados); itens de recursos que o plano não inclui aparecem com cadeado. Tem o botão de logout que abre o `LogoutModal`.
 
 Todo layout inclui um **skip link** ("Pular para o conteúdo") como primeiro elemento focável — parte da estratégia de acessibilidade do projeto.
 
@@ -249,7 +254,7 @@ Todo layout inclui um **skip link** ("Pular para o conteúdo") como primeiro ele
 
 Uma pasta por tela/domínio de negócio. Cada uma é dona do seu estado, seus dados mock e seus subcomponentes. Uma feature nunca importa componentes internos de outra (só primitivos de `design-system` e o que está em `shared`); quando precisa de dados de outra feature, importa apenas o `api.ts`, os tipos e os formatadores (`format.ts`) dela.
 
-Features atuais: `landing`, `auth`, `dashboard`, `questions`, `plans`, `profile`, `mock-exams` (simulados), `mentoring` (mentoria e grupos de estudo), `teacher` (área do professor) e `misc`.
+Features atuais: `landing`, `auth`, `dashboard`, `questions`, `plans`, `profile`, `mock-exams` (simulados), `mentoring` (mentoria e grupos de estudo), `teacher` (área do professor), `admin` (gestão de usuários, questões e simulados) e `misc`.
 
 ### `shared/`
 
@@ -270,8 +275,8 @@ Código compartilhado **entre features**, mas que não é genérico o bastante p
 | `/` | `features/landing/LandingPage.tsx` | Hero com estatísticas, grid de 6 ferramentas, "como funciona" (3 passos), seletor de nível (fácil/médio/difícil), CTA final. |
 | `/entrar` | `features/auth/AuthPage.tsx` | `SegmentedControl` Entrar/Cadastrar sincronizado com `?modo=`. Login (e-mail/senha + "esqueci a senha") e Cadastro (nome/e-mail/senha/perfil aluno-professor), ambos com validação e loading state. |
 | `/planos` | `features/plans/PlansPage.tsx` | 3 `PlanCard` (Básico → Avançado → Premium) com preço; Premium destacado. Logado: "Voltar" para a tela de origem, "Seu plano atual" e troca de plano simulada. |
-| `/dashboard` | `features/dashboard/DashboardPage.tsx` | Banner do plano (uso do dia no gratuito), 3 `StatCard`, desempenho por área, últimos acertos/erros ("Revisar" → `/questoes/:code`), "Minhas anotações" (Avançado+), **Ranking** com abas Geral (Avançado+) e Exclusivo Premium, questões sugeridas ("Praticar agora" → `/questoes/tema/:area`) e upsells. |
-| `/questoes` | `features/questions/QuestionsPage.tsx` | Filtros + lista de `QuestionCard`. "Responder" grava a tentativa (limite de 10 questões novas/dia no gratuito; refazer não conta). Painéis **Gabarito IA**, **Comunidade**, **Professor** e **Anotação** (várias anotações por questão, Avançado+). |
+| `/dashboard` | `features/dashboard/DashboardPage.tsx` | Banner do plano (uso do dia no gratuito), 3 `StatCard`, desempenho por área, últimos acertos/erros ("Revisar" → `/questoes/:code`), "Minhas anotações" (Avançado+), **Ranking** com abas **Geral** (todos os planos; acerto = 10 pts, erro = 2 pts, 1ª tentativa da aba Questões) e **Simulados** (Premium; acertos da melhor tentativa de cada simulado), com "Como funciona" em tooltip, questões sugeridas ("Praticar agora" → `/questoes/tema/:area`) e upsells. |
+| `/questoes` | `features/questions/QuestionsPage.tsx` | Filtros + lista de `QuestionCard`. "Responder" grava a tentativa (limite de 10 questões novas/dia no gratuito; refazer não conta). Painéis **Gabarito IA**, **Comunidade**, **Professor** e **Anotação** (várias anotações por questão, Avançado+). Professores também respondem (sem limite); as respostas deles são gravadas mas não entram no ranking. |
 | `/questoes/:code` | `features/questions/QuestionDetailPage.tsx` | Uma questão específica (usada pelo "Revisar"). |
 | `/questoes/tema/:area` | `features/questions/TopicQuestionsPage.tsx` | Só as questões de uma área ("Praticar agora"). |
 | `/simulados` | `features/mock-exams/MockExamsPage.tsx` | Catálogo de simulados com última nota (Premium; bloqueado com upsell para os demais). |
@@ -280,6 +285,9 @@ Código compartilhado **entre features**, mas que não é genérico o bastante p
 | `/mentoria` | `features/mentoring/MentoringPage.tsx` | Mentoria coletiva / grupo de estudo: calendário com os horários abertos pelos professores, solicitação de vaga e "Minhas solicitações" (Premium). |
 | `/professor` | `features/teacher/TeacherDashboardPage.tsx` | Respostas dos alunos (filtros por área, aluno e resultado), estatísticas e questões com mais erros. |
 | `/professor/agenda` | `features/teacher/TeacherAgendaPage.tsx` | Calendário com os horários do professor, cadastro/remoção de horários e solicitações dos alunos (aceitar/recusar). |
+| `/admin/usuarios` | `features/admin/AdminUsersPage.tsx` | Busca de contas, troca de perfil (aluno/professor/admin) e de plano, desativar/reativar. |
+| `/admin/questoes` | `features/admin/AdminQuestionsPage.tsx` | Banco de questões: listar, criar, editar e remover (alternativas, área/tópico, ano, dificuldade). |
+| `/admin/simulados` | `features/admin/AdminMockExamsPage.tsx` | Simulados: listar, criar e editar (título, área, tempo e questões em ordem). |
 | `/perfil` | `features/profile/ProfilePage.tsx` | Resumo do usuário, formulário de informações pessoais, notificações (switches), segurança (alterar senha / apagar conta). |
 | `*` | `features/misc/NotFoundPage.tsx` | 404 com link de volta para a home. |
 
@@ -288,7 +296,7 @@ Código compartilhado **entre features**, mas que não é genérico o bastante p
 Não existe backend, então `src/features/auth/`:
 
 - `auth-context.ts` — define `AuthUser` (id, nome, e-mail, perfil `aluno`/`professor`, plano), o `AuthContext` e o hook `useAuth()`.
-- `data.ts` — contas mock (uma por perfil/plano) e a lista exibida no card "Contas de teste".
+- `data.ts` — contas mock (aluna gratuita, Avançado e Premium, professora e admin) e a lista exibida no card "Contas de teste". Contas desativadas pelo admin não entram.
 - `api.ts` — login, cadastro, logout e sessão. A sessão fica no `localStorage` (sobrevive a fechar o navegador).
 - `AuthProvider.tsx` — restaura a sessão ao abrir o app e expõe `login`, `signup`, `logout` e `refreshUser`.
 - `RequireAuth.tsx` — guarda de rota: sem login, redireciona para `/entrar`; com `roles`, manda quem é do outro perfil para a própria área (`/dashboard` ou `/professor`).

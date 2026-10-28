@@ -51,6 +51,11 @@ export interface AnswerRecord {
   answeredAt: string;
   /** Set when the answer was given inside a mock exam (simulado). */
   mockExamAttemptId?: string;
+  /**
+   * Profile of who answered, frozen at answer time. Only "aluno" answers feed
+   * the rankings; teachers answer to contribute. Missing = "aluno" (old seeds).
+   */
+  answeredAsRole?: "aluno" | "professor" | "admin";
 }
 
 /** Anotação individual — uma questão pode ter várias. */

@@ -26,20 +26,21 @@ export const plans: Plan[] = [
       "Resolva até 10 questões por dia no seu ritmo",
       "Gabaritos comentados por professores e colegas",
       "Feedback instantâneo com IA para corrigir erros na hora",
+      "Ranking Geral em tempo real com as questões que você responde",
     ],
   },
   {
     id: "avancado",
     name: "Avançado",
     description:
-      "Para quem quer praticar mais e acompanhar sua evolução frente à concorrência.",
+      "Para quem quer praticar sem limites e organizar os estudos com anotações.",
     price: 14.9,
     billingPeriod: "mensal",
     items: [
       "Tudo do plano Básico",
       "Questões ilimitadas para praticar sempre que quiser",
-      "Ranking em tempo real: veja sua posição frente aos concorrentes",
       "Bloco de anotações individual para organizar seus estudos",
+      "Histórico completo de acertos e erros",
     ],
   },
   {
@@ -52,9 +53,9 @@ export const plans: Plan[] = [
     items: [
       "Tudo do plano Avançado",
       "Mentoria coletiva e grupo de estudo com especialista",
-      "Simulado com timer para treinar em condições reais de prova",
+      "Simulados com timer para treinar em condições reais de prova",
       "Grupo exclusivo no WhatsApp: especialista define o que e a ordem para estudar",
-      "Ranking exclusivo para acompanhar sua posição entre os mais preparados",
+      "Acesso ao Ranking dos Simulados: acompanhe sua evolução e sua posição nos simulados",
     ],
     highlighted: true,
   },

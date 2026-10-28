@@ -1,6 +1,6 @@
 import { listUsers, requireSessionUser } from "@/features/auth/api";
 import { listTeacherRequests } from "@/features/mentoring/api";
-import { listAllAnswers, listQuestions } from "@/features/questions/api";
+import { isStudentAnswer, listAllAnswers, listQuestions } from "@/features/questions/api";
 import type { Area } from "@/features/questions/data";
 import { ApiError } from "@/shared/api/api-error";
 import { mockDelay } from "@/shared/api/mock-store";
@@ -77,7 +77,7 @@ export async function getTeacherOverview(): Promise<TeacherOverview> {
     .flatMap((answer) => {
       const question = questionById.get(answer.questionId);
       const student = studentById.get(answer.userId);
-      if (!question || !student) return [];
+      if (!question || !student || !isStudentAnswer(answer)) return [];
       return [
         {
           id: answer.id,

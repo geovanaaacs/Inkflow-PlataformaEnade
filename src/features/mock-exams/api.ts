@@ -3,10 +3,11 @@ import type { AuthUser } from "@/features/auth/auth-context";
 import { getQuestionsByIds, recordMockExamAnswers } from "@/features/questions/api";
 import type { Question } from "@/features/questions/data";
 import { ApiError } from "@/shared/api/api-error";
+import { COLLECTIONS } from "@/shared/api/collections";
 import { createId, mockDelay, readCollection, updateCollection } from "@/shared/api/mock-store";
 import { hasFeature } from "@/shared/plans/plan-access";
 import {
-  mockExams,
+  mockExams as mockExamSeed,
   seedAttempts,
   type AttemptStatus,
   type MockExam,
@@ -20,7 +21,8 @@ import {
  *   POST /api/mock-exam-attempts/{id}/finish      GET  /api/mock-exam-attempts/{id}
  */
 
-const ATTEMPTS_KEY = "mockExamAttempts";
+const EXAMS_KEY = COLLECTIONS.mockExams;
+const ATTEMPTS_KEY = COLLECTIONS.mockExamAttempts;
 /** Tolerance for the client's timeout request arriving slightly after endsAt. */
 const DEADLINE_GRACE_MS = 5_000;
 
@@ -46,6 +48,11 @@ export interface AttemptDetails extends MockExamWithQuestions {
   attempt: MockExamAttempt;
 }
 
+/** Mock exams are a collection so the admin area can create and edit them. */
+function readExams(): MockExam[] {
+  return readCollection(EXAMS_KEY, () => mockExamSeed);
+}
+
 function readAttempts(): MockExamAttempt[] {
   return readCollection(ATTEMPTS_KEY, seedAttempts);
 }
@@ -59,7 +66,7 @@ function saveAttempt(attempt: MockExamAttempt): void {
 }
 
 function findExam(examId: string): MockExam {
-  const exam = mockExams.find((item) => item.id === examId);
+  const exam = readExams().find((item) => item.id === examId);
   if (!exam) throw new ApiError("Simulado não encontrado.", 404);
   return exam;
 }
@@ -122,7 +129,7 @@ export async function listMockExams(): Promise<MockExamSummary[]> {
   if (hasFeature(user.plan, "mockExams")) await expireOverdueAttempts(user);
   const attempts = readAttempts().filter((attempt) => attempt.userId === user.id);
 
-  return mockExams.map((exam) => {
+  return readExams().map((exam) => {
     const own = attempts.filter((attempt) => attempt.examId === exam.id);
     const active = own.find((attempt) => attempt.status === "em_andamento") ?? null;
     const last = own
@@ -223,4 +230,23 @@ export async function getAttemptDetails(attemptId: string): Promise<AttemptDetai
   const attempt = findOwnAttempt(attemptId, user);
   const exam = findExam(attempt.examId);
   return { attempt, exam, questions: await getQuestionsByIds(exam.questionIds) };
+}
+
+export interface FinishedAttemptResult {
+  userId: string;
+  examId: string;
+  correct: number;
+  total: number;
+}
+
+/** Every finished attempt of every student — feeds the Ranking dos Simulados. */
+export async function listAllFinishedAttempts(): Promise<FinishedAttemptResult[]> {
+  return readAttempts()
+    .filter((attempt) => attempt.status !== "em_andamento" && attempt.results)
+    .map((attempt) => ({
+      userId: attempt.userId,
+      examId: attempt.examId,
+      correct: attempt.results?.filter((result) => result.correct).length ?? 0,
+      total: attempt.results?.length ?? 0,
+    }));
 }

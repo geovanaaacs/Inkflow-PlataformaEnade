@@ -23,7 +23,7 @@ export function AiExplanationPanel({ id, question }: AiExplanationPanelProps) {
         <Badge tone="brand">Resposta: {correctLetter}</Badge>
       </div>
       <p className="mt-4 whitespace-pre-line text-sm text-ink-strong">
-        {question.aiExplanation}
+        {question.aiExplanation || "A explicação da IA para esta questão ainda está sendo preparada."}
       </p>
     </div>
   );

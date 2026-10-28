@@ -1,36 +1,52 @@
 import { useState } from "react";
-import { Crown, Trophy } from "lucide-react";
+import { Crown, Info, Trophy } from "lucide-react";
+import { Badge } from "@/design-system/components/Badge";
 import { Card } from "@/design-system/components/Card";
 import {
   SegmentedControl,
   type SegmentedControlOption,
 } from "@/design-system/components/SegmentedControl";
 import { Spinner } from "@/design-system/components/Spinner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/design-system/components/Tooltip";
 import { cn } from "@/design-system/utils/cn";
 import { errorMessage } from "@/shared/api/api-error";
 import { LockedFeature } from "@/shared/components/LockedFeature";
 import { useAsync } from "@/shared/hooks/useAsync";
 import { hasFeature, type PlanId } from "@/shared/plans/plan-access";
 import { getRanking, type RankingEntry, type RankingScope } from "../api";
+import { MOCK_EXAM_POINTS_PER_CORRECT, PRACTICE_POINTS } from "../data";
 
 const scopeOptions: SegmentedControlOption<RankingScope>[] = [
   { value: "geral", label: "Geral · tempo real" },
-  { value: "premium", label: "Exclusivo Premium" },
+  { value: "simulados", label: "Simulados" },
 ];
+
+/** Rule of each ranking, shown on screen (summary) and in the "Como funciona" tooltip (details). */
+const RULES: Record<RankingScope, { title: string; summary: string; details: string }> = {
+  geral: {
+    title: "Ranking Geral",
+    summary: `Questões da aba Questões: acerto vale ${PRACTICE_POINTS.correct} pts e erro vale ${PRACTICE_POINTS.wrong} pts.`,
+    details: `Cada questão que você responde na aba Questões soma pontos — acertar vale mais (${PRACTICE_POINTS.correct} pts) do que errar (${PRACTICE_POINTS.wrong} pts). Conta só a 1ª tentativa de cada questão, então refazer não soma de novo. Simulados ficam no Ranking dos Simulados. Aberto a todos os planos.`,
+  },
+  simulados: {
+    title: "Ranking dos Simulados",
+    summary: `Acertos da sua melhor tentativa em cada simulado (${MOCK_EXAM_POINTS_PER_CORRECT} pts por acerto).`,
+    details: `Para cada simulado que você finaliza, vale a sua melhor tentativa: cada acerto soma ${MOCK_EXAM_POINTS_PER_CORRECT} pts. Refazer um simulado só muda a pontuação se você superar a sua melhor nota. Incluído no plano Premium.`,
+  },
+};
 
 interface RankingCardProps {
   plan: PlanId | null;
 }
 
 /**
- * Ranking section: "Geral" (Avançado+) ranks every student live; "Exclusivo
- * Premium" ranks only Premium subscribers. Locked tabs invite to upgrade.
+ * Ranking section with two boards: Geral (every plan, practice questions) and
+ * Simulados (Premium, mock exam results). The rule of each one is always visible.
  */
 export function RankingCard({ plan }: RankingCardProps) {
-  const [scope, setScope] = useState<RankingScope>(
-    hasFeature(plan, "exclusiveRanking") ? "premium" : "geral"
-  );
-  const canSeeRanking = hasFeature(plan, "ranking");
+  const [scope, setScope] = useState<RankingScope>("geral");
+  const rule = RULES[scope];
+  const locked = scope === "simulados" && !hasFeature(plan, "mockExamRanking");
 
   return (
     <Card as="section" aria-labelledby="ranking-heading">
@@ -44,33 +60,49 @@ export function RankingCard({ plan }: RankingCardProps) {
             Ranking
           </h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Sua posição entre os estudantes mais preparados para o ENADE
+            Acompanhe sua posição e sua evolução nas questões e nos simulados
           </p>
         </div>
-        {canSeeRanking && (
-          <SegmentedControl
-            aria-label="Tipo de ranking"
-            options={scopeOptions}
-            value={scope}
-            onChange={setScope}
-            className="w-full sm:w-auto [&_button]:h-9 [&_button]:px-4 [&_button]:text-sm"
-          />
-        )}
+        <SegmentedControl
+          aria-label="Tipo de ranking"
+          options={scopeOptions}
+          value={scope}
+          onChange={setScope}
+          className="w-full sm:w-auto [&_button]:h-9 [&_button]:px-4 [&_button]:text-sm"
+        />
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-ink-strong">
+        <span className="font-semibold">{rule.title}:</span>
+        <span className="text-ink-muted">{rule.summary}</span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 rounded-badge px-2 py-0.5 text-xs font-semibold text-brand-800 hover:bg-brand-500-a24"
+              aria-label={`Como funciona o ${rule.title}`}
+            >
+              <Info aria-hidden="true" className="size-3.5" />
+              Como funciona
+            </button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs text-sm leading-relaxed">{rule.details}</TooltipContent>
+        </Tooltip>
       </div>
 
       <div className="mt-6">
-        {!canSeeRanking ? (
-          <LockedFeature
-            feature="ranking"
-            label="Ranking em tempo real"
-            description="Acompanhe sua posição entre todos os estudantes do Inkflow, atualizada a cada questão respondida."
-          />
-        ) : scope === "premium" && !hasFeature(plan, "exclusiveRanking") ? (
-          <LockedFeature
-            feature="exclusiveRanking"
-            label="Ranking exclusivo"
-            description="Compare-se apenas com os assinantes Premium — os estudantes mais comprometidos da plataforma."
-          />
+        {locked ? (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-base font-semibold text-ink-strong">Ranking dos Simulados</h3>
+              <Badge tone="brand">Incluído no Premium</Badge>
+            </div>
+            <LockedFeature
+              feature="mockExamRanking"
+              label="Ranking dos Simulados"
+              description="Acompanhe sua evolução nos simulados e veja sua posição no ranking. Esse recurso faz parte do plano Premium."
+            />
+          </div>
         ) : (
           <RankingBoard key={scope} scope={scope} />
         )}
@@ -104,14 +136,19 @@ function RankingBoard({ scope }: { scope: RankingScope }) {
             <p className="text-sm text-ink-strong">
               de {ranking.totalParticipants} estudantes · {me.points} pts
             </p>
+            <p className="text-xs text-ink-muted">{me.detail}</p>
           </>
         ) : (
-          <p className="text-sm text-ink-muted">Responda questões para entrar no ranking.</p>
+          <p className="text-sm text-ink-muted">
+            {scope === "simulados"
+              ? "Finalize um simulado para entrar neste ranking."
+              : "Responda questões para entrar no ranking."}
+          </p>
         )}
         <p className="mt-2 text-xs text-ink-muted">
           {scope === "geral"
             ? "Atualizado a cada questão respondida"
-            : "Somente assinantes Premium"}
+            : "Atualizado ao finalizar cada simulado"}
         </p>
       </div>
 
@@ -155,9 +192,12 @@ function RankingRow({ entry }: { entry: RankingEntry }) {
           entry.position
         )}
       </span>
-      <span className="flex-1 truncate text-sm text-ink-strong">
-        {entry.name}
-        {entry.isCurrentUser && " (você)"}
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm text-ink-strong">
+          {entry.name}
+          {entry.isCurrentUser && " (você)"}
+        </span>
+        <span className="block text-xs font-normal text-ink-muted">{entry.detail}</span>
       </span>
       <span className="text-sm text-ink-muted">{entry.points} pts</span>
     </li>

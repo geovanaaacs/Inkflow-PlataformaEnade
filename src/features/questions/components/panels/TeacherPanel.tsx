@@ -7,6 +7,14 @@ interface TeacherPanelProps {
 }
 
 export function TeacherPanel({ id, teacher }: TeacherPanelProps) {
+  if (!teacher.comment) {
+    return (
+      <div id={id} className="rounded-card bg-black/[0.02] p-6 text-sm text-ink-muted">
+        Esta questão ainda não tem comentário de professor.
+      </div>
+    );
+  }
+
   return (
     <div id={id} className="rounded-card bg-black/[0.02] p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
