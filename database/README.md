@@ -20,6 +20,7 @@ Modelo relacional do Inkflow, a plataforma de prática para o ENADE. Ele foi der
 | 5 | `05_seed.sql` | Dados de exemplo baseados nos mocks do projeto |
 | 6 | `06_ajustes_pendentes.sql` | Ajustes de modelo exigidos pelas features novas do frontend (ver [Ajustes do frontend](#ajustes-do-frontend-06-e-07)). Exige as variáveis `ADMIN_EMAIL` e `ADMIN_PASSWORD_HASH` (podem ser vazias) |
 | 7 | `07_seed_frontend.sql` | Dados de exemplo alinhados aos mocks do front (questões, simulados, anotações, agenda) |
+| 8 | `08_alinhar_planos.sql` | Ordem e benefícios dos planos iguais aos da página de Planos; equipe (professor/admin) sem assinatura ativa |
 
 Todos os scripts são **idempotentes**: verificam se cada objeto ou registro já existe antes de criar. Rodar tudo de novo não gera erro nem duplica dados.
 
@@ -33,11 +34,12 @@ Abra e execute cada arquivo na ordem acima. Os arquivos estão em UTF-8. Se os a
 sqlcmd -S localhost -E -I -f 65001 -b -i 01_create_database.sql -i 02_create_tables.sql -i 03_constraints.sql -i 04_indexes.sql -i 05_seed.sql
 ```
 
-Depois rode o `06` e o `07` — o `06` precisa das variáveis da conta admin (ver [Ajustes do frontend](#ajustes-do-frontend-06-e-07)):
+Depois rode o `06`, o `07` e o `08` — o `06` precisa das variáveis da conta admin (ver [Ajustes do frontend](#ajustes-do-frontend-06-e-07)):
 
 ```powershell
 sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v 'ADMIN_EMAIL=""' 'ADMIN_PASSWORD_HASH=""'
 sqlcmd -S localhost -E -C -I -f 65001 -b -i 07_seed_frontend.sql
+sqlcmd -S localhost -E -C -I -f 65001 -b -i 08_alinhar_planos.sql
 ```
 
 - `-I` liga `QUOTED_IDENTIFIER`. É **obrigatório**, porque há índices filtrados e o `sqlcmd` desliga essa opção por padrão. SSMS, ADO.NET, JDBC e os drivers Node já ligam sozinhos.

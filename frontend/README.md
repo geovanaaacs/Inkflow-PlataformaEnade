@@ -4,7 +4,7 @@ Plataforma acadêmica para prática de questões do ENADE: banco de questões, c
 
 Esta pasta (`frontend/`) é a implementação em código do design feito no Figma — veja o [README da raiz](../README.md) para o monorepo completo (frontend, backend e banco). Todo o levantamento de arquitetura de design, tokens, variantes de componente e fluxos de navegação que embasou esta implementação está documentado em [`docs/analise-design-figma.md`](../docs/analise-design-figma.md) — vale ler antes de mexer em UI.
 
-> Projeto **frontend-only**: não há backend. Autenticação e dados (questões, dashboard, planos) são simulados por uma camada `api.ts` com mocks persistidos no `localStorage`, pronta para ser trocada por chamadas a uma API real. Veja [Dados mockados e backend](#dados-mockados-e-backend).
+> Os dados vêm da **API do Inkflow** (`../backend`, Express + SQL Server). Cada feature chama a API só pelo seu `api.ts`; em desenvolvimento o Vite repassa `/api` para `http://localhost:3333`. Rode o front junto com o backend (`npm run dev` na raiz). Veja [Dados e API](#dados-e-api).
 
 ---
 
@@ -23,8 +23,8 @@ Esta pasta (`frontend/`) é a implementação em código do design feito no Figm
   - [`features/`](#features)
   - [`shared/`](#shared)
 - [Telas, uma a uma](#telas-uma-a-uma)
-- [Autenticação (mock)](#autenticação-mock)
-- [Dados mockados e backend](#dados-mockados-e-backend)
+- [Autenticação](#autenticação)
+- [Dados e API](#dados-e-api)
 - [Design tokens](#design-tokens)
 - [Acessibilidade](#acessibilidade)
 - [Responsividade](#responsividade)
@@ -162,8 +162,8 @@ Dentro de cada `features/<tela>/`, o padrão é:
 ```
 features/<tela>/
 ├── <Tela>Page.tsx        # componente de página, montado direto na rota
-├── data.ts                # dados mock daquela tela (tipados)
-├── api.ts                 # funções assíncronas que as telas chamam (hoje mock, amanhã HTTP)
+├── data.ts                # tipos e constantes daquela tela
+├── api.ts                 # funções assíncronas que as telas chamam (requisições à API)
 └── components/             # subcomponentes específicos daquela tela
 ```
 
@@ -172,7 +172,7 @@ features/<tela>/
 `src/App.tsx` é o único lugar onde as rotas são declaradas. Estrutura atual:
 
 ```
-<AuthProvider>                          # contexto de autenticação mock (ver abaixo)
+<AuthProvider>                          # contexto de autenticação (ver abaixo)
   <BrowserRouter>
     <Routes>
       <Route element={<PublicLayout/>}>          # navbar pública
@@ -252,7 +252,7 @@ Todo layout inclui um **skip link** ("Pular para o conteúdo") como primeiro ele
 
 ### `features/`
 
-Uma pasta por tela/domínio de negócio. Cada uma é dona do seu estado, seus dados mock e seus subcomponentes. Uma feature nunca importa componentes internos de outra (só primitivos de `design-system` e o que está em `shared`); quando precisa de dados de outra feature, importa apenas o `api.ts`, os tipos e os formatadores (`format.ts`) dela.
+Uma pasta por tela/domínio de negócio. Cada uma é dona do seu estado, das suas chamadas à API e dos seus subcomponentes. Uma feature nunca importa componentes internos de outra (só primitivos de `design-system` e o que está em `shared`); quando precisa de dados de outra feature, importa apenas o `api.ts`, os tipos e os formatadores (`format.ts`) dela.
 
 Features atuais: `landing`, `auth`, `dashboard`, `questions`, `plans`, `profile`, `mock-exams` (simulados), `mentoring` (mentoria e grupos de estudo), `teacher` (área do professor), `admin` (gestão de usuários, questões e simulados) e `misc`.
 
@@ -260,7 +260,7 @@ Features atuais: `landing`, `auth`, `dashboard`, `questions`, `plans`, `profile`
 
 Código compartilhado **entre features**, mas que não é genérico o bastante para virar `design-system` (porque já conhece conceitos do produto):
 
-- `api/` — `mock-store.ts` (persistência dos mocks no `localStorage`) e `api-error.ts` (`ApiError`, espelho de um erro HTTP).
+- `api/` — `http.ts` (cliente da API: `fetch` em `/api`, cookie de sessão, erros viram `ApiError`) e `api-error.ts` (`ApiError`, com a mensagem e o status HTTP que o servidor devolveu).
 - `components/` — `UpsellBar`, `LockedFeature`, `PlanBanner`, `BackButton`.
 - `hooks/` — `useAsync` (carregamento/erro das chamadas de API) e `useCountdown` (timer dos simulados).
 - `plans/plan-access.ts` — hierarquia dos planos e `hasFeature`.
@@ -291,32 +291,28 @@ Código compartilhado **entre features**, mas que não é genérico o bastante p
 | `/perfil` | `features/profile/ProfilePage.tsx` | Resumo do usuário, formulário de informações pessoais, notificações (switches), segurança (alterar senha / apagar conta). |
 | `*` | `features/misc/NotFoundPage.tsx` | 404 com link de volta para a home. |
 
-## Autenticação (mock)
+## Autenticação
 
-Não existe backend, então `src/features/auth/`:
+`src/features/auth/`:
 
-- `auth-context.ts` — define `AuthUser` (id, nome, e-mail, perfil `aluno`/`professor`, plano), o `AuthContext` e o hook `useAuth()`.
-- `data.ts` — contas mock (aluna gratuita, Avançado e Premium, professora e admin) e a lista exibida no card "Contas de teste". Contas desativadas pelo admin não entram.
-- `api.ts` — login, cadastro, logout e sessão. A sessão fica no `localStorage` (sobrevive a fechar o navegador).
-- `AuthProvider.tsx` — restaura a sessão ao abrir o app e expõe `login`, `signup`, `logout` e `refreshUser`.
+- `auth-context.ts` — define `AuthUser` (id, nome, e-mail, perfil `aluno`/`professor`/`admin`, plano), o `AuthContext` e o hook `useAuth()`.
+- `api.ts` — login, cadastro, logout e sessão (`POST /api/auth/*`, `GET /api/me`). A sessão é um **cookie httpOnly** criado pelo servidor: o front não guarda token nenhum, e o login sobrevive a fechar o navegador.
+- `AuthProvider.tsx` — restaura a sessão ao abrir o app e expõe `login`, `signup`, `logout` e `refreshUser`. Se qualquer chamada responder 401 (sessão expirada), volta para o estado deslogado.
 - `RequireAuth.tsx` — guarda de rota: sem login, redireciona para `/entrar`; com `roles`, manda quem é do outro perfil para a própria área (`/dashboard` ou `/professor`).
+- `data.ts` — a lista exibida no card **Contas de teste** (só em `npm run dev`), com login em um clique. As senhas dessas contas são gravadas no banco local por `npm run db:dev-accounts`; a do admin vem de `ADMIN_EMAIL`/`ADMIN_PASSWORD` no `backend/.env`.
 
-Em desenvolvimento (`npm run dev`), a tela de login mostra o card **Contas de teste**, com login em um clique e um botão para resetar os dados mock.
-
-**Para conectar a um backend real**, só o `auth/api.ts` muda: `login`/`signup` passam a chamar a API, e a sessão vira um cookie httpOnly lido por `GET /api/me`.
-
-## Dados mockados e backend
+## Dados e API
 
 Cada feature com conteúdo dinâmico tem:
 
-- `data.ts` — dados mock tipados (o "seed").
-- `api.ts` — funções assíncronas que as telas chamam (`listPlans()`, `login()`…). Hoje leem o `data.ts` e o `shared/api/mock-store.ts`; com o backend, passam a fazer as requisições HTTP. **Componentes nunca importam `data.ts` direto.**
+- `api.ts` — funções assíncronas que as telas chamam (`listPlans()`, `login()`…), cada uma uma requisição à API via `shared/api/http.ts`. **Componentes nunca chamam `fetch` direto.** A tabela de endpoints está no [README do backend](../backend/README.md#endpoints).
+- `data.ts` — tipos e constantes da tela (ex.: rótulos dos tipos de mentoria, pontos do ranking). Os dados de exemplo ficam no banco (`database/05`–`08`).
 
-O `shared/api/mock-store.ts` guarda no `localStorage` o que é criado durante o uso (contas, plano assinado, etc.), para os dados sobreviverem ao recarregar a página. O `shared/hooks/useAsync.ts` controla carregamento e erro dessas chamadas.
+Erros da API chegam como `ApiError` (mensagem do servidor + status), e `errorMessage()` mostra o texto na tela. O `shared/hooks/useAsync.ts` controla carregamento e erro dessas chamadas.
 
-Uma feature pode importar o `api.ts` e os tipos de outra (ex.: `plans/api.ts` usa `auth/api.ts`), nunca os componentes internos.
+Uma feature pode importar o `api.ts` e os tipos de outra, nunca os componentes internos.
 
-As regras de plano (Básico < Avançado < Premium) ficam em `shared/plans/plan-access.ts` (`hasFeature(plan, "notes")`).
+As regras de plano (Básico < Avançado < Premium) ficam em `shared/plans/plan-access.ts` (`hasFeature(plan, "notes")`), só para decidir o que a tela mostra com cadeado; quem libera ou bloqueia de verdade é o backend.
 
 ## Design tokens
 

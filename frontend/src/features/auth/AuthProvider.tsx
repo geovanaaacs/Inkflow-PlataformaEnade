@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { SESSION_EXPIRED_EVENT } from "@/shared/api/http";
 import * as authApi from "./api";
 import {
   AuthContext,
@@ -9,9 +10,9 @@ import {
 } from "./auth-context";
 
 /**
- * Holds the logged-in user for the whole app. The session itself lives in
- * `auth/api.ts` (persisted in localStorage by the mock, an httpOnly cookie
- * once the backend exists), so the login survives closing the browser.
+ * Holds the logged-in user for the whole app. The session itself is an
+ * httpOnly cookie set by the API, so the login survives closing the browser;
+ * when any request answers 401 the user is sent back to the logged-out state.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -33,6 +34,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
+  }, [applyUser]);
+
+  useEffect(() => {
+    const handleExpired = () => applyUser(null);
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleExpired);
   }, [applyUser]);
 
   const login = useCallback(

@@ -102,9 +102,7 @@ Erros sempre como `{ "message": "..." }` com o status HTTP (400 validação, 401
 
 Datas e horas saem em ISO UTC (`2026-10-28T20:20:29.751Z`); os horários de mentoria são digitados no horário de Brasília (`date` + `time`) e convertidos no banco.
 
-## Próximo passo
-
-Trocar os mocks dos `api.ts` do front por chamadas a esta API (os nomes da coluna "Front" acima são as funções a substituir).
+O front chama essas rotas pelos seus `api.ts` (coluna "Front" acima).
 
 ## Observação de segurança
 

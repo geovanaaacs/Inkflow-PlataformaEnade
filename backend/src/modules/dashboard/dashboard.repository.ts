@@ -20,6 +20,10 @@ export interface SuggestedTopicWithTotal {
 export interface StudentStats {
   /** Distinct questions answered (first attempts). */
   answered: number;
+  /** First attempts in the last 7 days (today included). */
+  answeredThisWeek: number;
+  /** Active questions in the bank. */
+  totalQuestions: number;
   accuracyPercent: number;
   /** Consecutive days with at least one answer, ending today or yesterday. */
   streak: number;
@@ -99,8 +103,10 @@ export async function getAreaStats(user: SessionUser): Promise<{
 }
 
 export async function getStudentStats(user: SessionUser): Promise<StudentStats> {
-  const [totals] = await query<{ Answered: number; Correct: number | null }>(
-    `SELECT COUNT(*) AS Answered, SUM(CAST(IsCorrect AS INT)) AS Correct
+  const [totals] = await query<{ Answered: number; Correct: number | null; ThisWeek: number | null; TotalQuestions: number }>(
+    `SELECT COUNT(*) AS Answered, SUM(CAST(IsCorrect AS INT)) AS Correct,
+            SUM(CASE WHEN AnsweredOn >= DATEADD(DAY, -6, ${TODAY_SQL}) THEN 1 ELSE 0 END) AS ThisWeek,
+            (SELECT COUNT(*) FROM dbo.Questions WHERE IsActive = 1) AS TotalQuestions
      FROM dbo.UserAnswers WHERE UserId = @userId AND AttemptNumber = 1`,
     { userId: user.id }
   );
@@ -119,6 +125,8 @@ export async function getStudentStats(user: SessionUser): Promise<StudentStats> 
   const answered = totals?.Answered ?? 0;
   return {
     answered,
+    answeredThisWeek: totals?.ThisWeek ?? 0,
+    totalQuestions: totals?.TotalQuestions ?? 0,
     accuracyPercent: answered ? Math.round(((totals?.Correct ?? 0) / answered) * 100) : 0,
     streak: islands.find((island) => island.IsCurrent)?.Days ?? 0,
     bestStreak: islands.reduce((best, island) => Math.max(best, island.Days), 0),

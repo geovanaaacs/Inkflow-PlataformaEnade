@@ -6,14 +6,6 @@ export function dayKey(date: Date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
-/** ISO timestamp `days` days ago at the given local time — handy for mock seeds. */
-export function daysAgoIso(days: number, hours = 10, minutes = 0): string {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  date.setHours(hours, minutes, 0, 0);
-  return date.toISOString();
-}
-
 /** "Hoje", "Ontem", "3 dias atrás" or "12/09/2026" for older dates. */
 export function formatRelativeDay(iso: string): string {
   const today = new Date();
@@ -34,9 +26,4 @@ export function formatDateTime(iso: string): string {
   const day = date.toLocaleDateString("pt-BR");
   const time = date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
   return `${day} às ${time}`;
-}
-
-/** ISO timestamp `days` days from now at the given local time. */
-export function daysFromNowIso(days: number, hours = 10, minutes = 0): string {
-  return daysAgoIso(-days, hours, minutes);
 }

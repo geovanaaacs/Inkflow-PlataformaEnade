@@ -8,14 +8,14 @@ O repositório é um **monorepo** com uma pasta por camada:
 Inkflow/
 ├── frontend/   React 18 + Vite + TypeScript + Tailwind  → o que o navegador exibe
 ├── backend/    Node.js 22 + Express 5 + TypeScript      → lógica e API REST (/api)
-├── database/   SQL Server: scripts 01–07                → modelo, constraints e seed
+├── database/   SQL Server: scripts 01–08                → modelo, constraints e seed
 ├── docs/       análise do design no Figma (fora do git)
 └── package.json   npm workspaces (frontend + backend)
 ```
 
 | Pasta | Documentação |
 |---|---|
-| `frontend/` | [frontend/README.md](frontend/README.md) — telas, rotas, design system, mocks |
+| `frontend/` | [frontend/README.md](frontend/README.md) — telas, rotas, design system, camada `api.ts` |
 | `backend/` | [backend/README.md](backend/README.md) — endpoints, sessão, conexão com o banco |
 | `database/` | [database/README.md](database/README.md) — modelo, diagrama, ordem dos scripts |
 
@@ -29,7 +29,7 @@ flowchart LR
 ```
 
 - Em desenvolvimento o navegador fala só com o Vite (porta 5173), que repassa `/api` para o Express (porta 3333). É a mesma origem, então o cookie de sessão funciona sem CORS.
-- Cada feature do front tem um `api.ts` (hoje com mocks no `localStorage`). Cada módulo do backend em `backend/src/modules/` devolve **o mesmo formato JSON** desses `api.ts`, para a troca mock → API mexer só nesses arquivos.
+- Cada feature do front fala com a API só pelo seu `api.ts` (via `frontend/src/shared/api/http.ts`). Cada módulo do backend em `backend/src/modules/` devolve o formato JSON que esses `api.ts` esperam.
 
 ## Pré-requisitos
 
@@ -43,7 +43,7 @@ npm install                                   # instala frontend e backend (work
 Copy-Item backend/.env.example backend/.env   # depois gere um JWT_SECRET (instruções no arquivo)
 ```
 
-Banco: rode os scripts `database/01` a `07` na ordem (comandos no [README do banco](database/README.md#ordem-de-execução)). Depois, para as contas de teste conseguirem entrar pela API:
+Banco: rode os scripts `database/01` a `08` na ordem (comandos no [README do banco](database/README.md#ordem-de-execução)). Depois, para as contas de teste conseguirem entrar pela API (a conta admin só é criada se `ADMIN_EMAIL` e `ADMIN_PASSWORD` estiverem no `backend/.env`):
 
 ```powershell
 npm run db:dev-accounts
@@ -64,6 +64,6 @@ Para instalar uma dependência num projeto só: `npm install <pacote> -w fronten
 
 ## Situação atual
 
-- **frontend:** completo com dados mockados (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking).
-- **database:** scripts 01–07 aplicados no SQL Server local.
-- **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin). O front ainda usa os mocks até a troca dos `api.ts`.
+- **frontend:** completo (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking), com os dados vindos da API.
+- **database:** scripts 01–08 aplicados no SQL Server local.
+- **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas.

@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { FlaskConical, RotateCcw } from "lucide-react";
+import { FlaskConical } from "lucide-react";
 import { Button } from "@/design-system/components/Button";
 import { Card } from "@/design-system/components/Card";
 import { errorMessage } from "@/shared/api/api-error";
-import { resetMockData } from "@/shared/api/mock-store";
 import { useAuth } from "./auth-context";
 import { testAccounts } from "./data";
 
 /**
- * Development-only helper: one-click login for each mock profile/plan and a
- * reset of everything the mock API saved in this browser.
+ * Development-only helper: one-click login for each seeded profile/plan
+ * (accounts prepared by `npm run db:dev-accounts`).
  */
 export function TestAccountsCard() {
   const { login } = useAuth();
@@ -25,11 +24,6 @@ export function TestAccountsCard() {
       setError(errorMessage(loginError));
       setPendingEmail(null);
     }
-  }
-
-  function handleReset() {
-    resetMockData();
-    window.location.reload();
   }
 
   return (
@@ -73,20 +67,6 @@ export function TestAccountsCard() {
           {error}
         </p>
       )}
-
-      <div className="mt-4 border-t border-black/5 pt-4">
-        <Button
-          size="sm"
-          variant="ghost"
-          leadingIcon={<RotateCcw aria-hidden="true" className="size-4" />}
-          onClick={handleReset}
-        >
-          Resetar dados de teste
-        </Button>
-        <p className="mt-1 text-xs text-ink-muted">
-          Apaga contas criadas, anotações, respostas e agendamentos salvos neste navegador.
-        </p>
-      </div>
     </Card>
   );
 }

@@ -23,6 +23,20 @@ const upsellFeatures: { feature: FeatureKey; label: string }[] = [
   { feature: "mentoring", label: "Mentoria com professores" },
 ];
 
+function percentOf(value: number, total: number): number {
+  return total > 0 ? Math.min(100, Math.round((value / total) * 100)) : 0;
+}
+
+function days(count: number): string {
+  return `${count} ${count === 1 ? "dia" : "dias"}`;
+}
+
+function streakMessage(streak: number, best: number): string {
+  if (best === 0) return "Responda uma questão hoje para começar";
+  if (streak === best) return `Melhor: ${days(best)} · Recorde pessoal!`;
+  return `Melhor: ${days(best)}`;
+}
+
 export function DashboardPage() {
   const { user } = useAuth();
   const plan = user?.plan ?? "basico";
@@ -47,6 +61,8 @@ export function DashboardPage() {
     );
   }
 
+  const { stats } = overview;
+
   return (
     <Container as="div" className="flex flex-col gap-6">
       <h1 className="sr-only">Dashboard</h1>
@@ -56,26 +72,32 @@ export function DashboardPage() {
       <div className="grid gap-6 sm:grid-cols-3">
         <StatCard
           icon={<ListChecks className="size-[18px]" aria-hidden="true" />}
-          value="247"
+          value={String(stats.answered)}
           label="Questões respondidas"
-          progressPercent={30}
-          delta="+12 esta semana"
+          progressPercent={percentOf(stats.answered, stats.totalQuestions)}
+          delta={
+            stats.answeredThisWeek > 0
+              ? `+${stats.answeredThisWeek} esta semana`
+              : "Nenhuma nova esta semana"
+          }
+          deltaPositive={stats.answeredThisWeek > 0}
         />
         <StatCard
           icon={<Target className="size-[18px]" aria-hidden="true" />}
-          value="68%"
+          value={`${stats.accuracyPercent}%`}
           label="Taxa de acerto geral"
-          progressPercent={68}
-          delta="+4% vs semana passada"
+          progressPercent={stats.accuracyPercent}
+          delta="Na primeira tentativa de cada questão"
+          deltaPositive={false}
         />
         <StatCard
           icon={<Flame className="size-[18px]" aria-hidden="true" />}
           tone="danger"
-          value="7"
+          value={String(stats.streak)}
           label="Streak de dias seguidos"
-          progressPercent={33}
+          progressPercent={percentOf(stats.streak, stats.bestStreak)}
           progressTone="danger"
-          delta="Melhor: 21 dias · Record pessoal!"
+          delta={streakMessage(stats.streak, stats.bestStreak)}
           deltaPositive={false}
         />
       </div>
