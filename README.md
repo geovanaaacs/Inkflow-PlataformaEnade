@@ -66,4 +66,4 @@ Para instalar uma dependência num projeto só: `npm install <pacote> -w fronten
 
 - **frontend:** completo com dados mockados (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking).
 - **database:** scripts 01–07 aplicados no SQL Server local.
-- **backend:** em construção — auth, planos e questões prontos; dashboard/ranking, simulados, mentoria, área do professor e admin são os próximos módulos. O front ainda usa os mocks até a troca dos `api.ts`.
+- **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin). O front ainda usa os mocks até a troca dos `api.ts`.

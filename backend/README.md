@@ -71,12 +71,40 @@ Cada módulo tem **rotas** (HTTP: valida entrada com zod, chama o repositório, 
 | `questions.getMyNoteCounts` | `GET /api/me/note-counts` | aluno, professor |
 | `questions.listQuestionNotes` / `addNote` | `GET` / `POST /api/questions/:id/notes` | Avançado+, professor |
 | `questions.listMyNotes` | `GET /api/me/notes` | Avançado+, professor |
+| `dashboard.getDashboardOverview` | `GET /api/dashboard` | aluno |
+| `dashboard.getRanking` | `GET /api/ranking?scope=geral\|simulados` | logado (Simulados: Premium ou equipe) |
+| `mock-exams.listMockExams` | `GET /api/mock-exams` | aluno (catálogo para todos) |
+| `mock-exams.getMockExam` | `GET /api/mock-exams/:id` | Premium |
+| `mock-exams.getActiveAttempt` | `GET /api/mock-exams/:id/active-attempt` | Premium |
+| `mock-exams.startAttempt` | `POST /api/mock-exams/:id/attempts` (reaproveita a tentativa ativa) | Premium |
+| `mock-exams.saveAttemptAnswer` | `PUT /api/mock-exam-attempts/:id/answers/:questionId` `{ selectedOptionId }` | Premium |
+| `mock-exams.finishAttempt` | `POST /api/mock-exam-attempts/:id/finish` | Premium |
+| `mock-exams.getAttemptDetails` | `GET /api/mock-exam-attempts/:id` | Premium |
+| `mentoring.listOpenSlots` | `GET /api/mentoring/slots?type=mentoria\|grupo` | Premium |
+| `mentoring.requestSlot` | `POST /api/mentoring/slots/:id/requests` `{ message }` | Premium |
+| `mentoring.listMyRequests` | `GET /api/me/mentoring-requests` | Premium |
+| `mentoring.cancelMyRequest` | `POST /api/me/mentoring-requests/:id/cancel` | Premium |
+| `mentoring.listTeacherSlots` / `createSlot` | `GET` / `POST /api/teacher/slots` `{ type, date, time, durationMinutes, capacity, topic }` | professor |
+| `mentoring.deleteSlot` | `DELETE /api/teacher/slots/:id` (cancelamento lógico; recusa os pedidos ativos) | professor |
+| `mentoring.listTeacherRequests` | `GET /api/teacher/mentoring-requests` | professor |
+| `mentoring.respondToRequest` | `POST /api/teacher/mentoring-requests/:id/accept\|decline` | professor |
+| `teacher.getTeacherOverview` | `GET /api/teacher/overview` | professor |
+| `admin.listAdminUsers` | `GET /api/admin/users?search=&role=` | admin |
+| `admin.updateAdminUser` | `PATCH /api/admin/users/:id` `{ role?, plan?, active? }` | admin |
+| `admin.listAdminQuestions` | `GET /api/admin/questions?search=&areaSlug=` | admin |
+| `admin.getQuestionCatalog` | `GET /api/admin/questions/catalog` | admin |
+| `admin.createQuestion` / `updateQuestion` | `POST /api/admin/questions` / `PUT /api/admin/questions/:id` | admin |
+| `admin.deleteQuestion` | `DELETE /api/admin/questions/:id` (desativa e tira dos simulados) | admin |
+| `admin.listAdminMockExams` | `GET /api/admin/mock-exams` | admin |
+| `admin.createMockExam` / `updateMockExam` | `POST /api/admin/mock-exams` / `PUT /api/admin/mock-exams/:id` | admin |
 
 Erros sempre como `{ "message": "..." }` com o status HTTP (400 validação, 401 sem sessão, 403 sem permissão/plano, 404, 409 conflito).
 
-## Próximos módulos
+Datas e horas saem em ISO UTC (`2026-10-28T20:20:29.751Z`); os horários de mentoria são digitados no horário de Brasília (`date` + `time`) e convertidos no banco.
 
-`dashboard` (visão geral e rankings Geral/Simulados), `mock-exams`, `mentoring`, `teacher`, `admin` — e então trocar os mocks dos `api.ts` do front por chamadas a esta API.
+## Próximo passo
+
+Trocar os mocks dos `api.ts` do front por chamadas a esta API (os nomes da coluna "Front" acima são as funções a substituir).
 
 ## Observação de segurança
 

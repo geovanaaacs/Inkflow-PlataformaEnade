@@ -176,3 +176,14 @@ export async function countQuestionsByArea(): Promise<Record<string, number>> {
   );
   return Object.fromEntries(rows.map((row) => [row.Slug, row.Total]));
 }
+
+/** Active questions by id, in the given order (mock exam order). */
+export async function listQuestionsByIds(ids: number[]): Promise<Question[]> {
+  if (ids.length === 0) return [];
+  const rows = await query<QuestionRow>(
+    `${SELECT_QUESTIONS} AND q.Id IN (SELECT CAST(value AS INT) FROM STRING_SPLIT(@ids, ','))`,
+    { ids: ids.join(",") }
+  );
+  const byId = new Map((await hydrate(rows)).map((question) => [question.id, question]));
+  return ids.flatMap((id) => byId.get(String(id)) ?? []);
+}

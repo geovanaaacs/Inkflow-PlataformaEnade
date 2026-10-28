@@ -117,19 +117,9 @@ export async function listRecentAnswers(user: SessionUser, limit: number): Promi
 }
 
 /**
- * DATETIME2 columns hold UTC (SYSUTCDATETIME). The driver reads them as local
- * wall-clock values, so re-read the parts as UTC before sending ISO strings.
+ * DATETIME2 columns hold UTC (SYSUTCDATETIME) and the driver already returns
+ * them as the right instant (verified in the smoke test), so ISO is enough.
  */
 export function toUtcIso(value: Date): string {
-  return new Date(
-    Date.UTC(
-      value.getFullYear(),
-      value.getMonth(),
-      value.getDate(),
-      value.getHours(),
-      value.getMinutes(),
-      value.getSeconds(),
-      value.getMilliseconds()
-    )
-  ).toISOString();
+  return value.toISOString();
 }

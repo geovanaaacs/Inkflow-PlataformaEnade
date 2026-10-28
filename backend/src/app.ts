@@ -2,9 +2,14 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import { query } from "./db/pool.js";
 import { errorHandler, notFoundHandler } from "./http/errors.js";
+import { adminRouter } from "./modules/admin/admin.routes.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
+import { dashboardRouter } from "./modules/dashboard/dashboard.routes.js";
+import { mentoringRouter } from "./modules/mentoring/mentoring.routes.js";
+import { mockExamsRouter } from "./modules/mock-exams/mock-exams.routes.js";
 import { plansRouter } from "./modules/plans/plans.routes.js";
 import { questionsRouter } from "./modules/questions/questions.routes.js";
+import { teacherRouter } from "./modules/teacher/teacher.routes.js";
 
 /**
  * Express app. Every route lives under /api; in development the front reaches
@@ -26,6 +31,11 @@ export function createApp() {
   api.use(authRouter);
   api.use(plansRouter);
   api.use(questionsRouter);
+  api.use(dashboardRouter);
+  api.use(mockExamsRouter);
+  api.use(mentoringRouter);
+  api.use(teacherRouter);
+  api.use(adminRouter);
 
   app.use("/api", api);
   app.use(notFoundHandler);
