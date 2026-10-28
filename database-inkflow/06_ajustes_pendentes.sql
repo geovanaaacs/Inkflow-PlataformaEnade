@@ -3,15 +3,11 @@
    Ajustes no modelo exigidos pelas features novas do frontend.
    Roda DEPOIS dos scripts 01–05.
 
-   STATUS: script preparado, AINDA NÃO EXECUTADO em nenhum SQL Server.
-
    Variáveis obrigatórias (modo SQLCMD) — nada de senha fixa no script:
      ADMIN_EMAIL          e-mail da conta administradora
      ADMIN_PASSWORD_HASH  hash da senha (gerado pelo backend, ex.: bcrypt)
-
-   Exemplo:
-     sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql ^
-       -v ADMIN_EMAIL="admin@inkflow.com" ADMIN_PASSWORD_HASH="$2b$12$..."
+   Passe as duas VAZIAS para pular a conta admin (ex.: antes do backend).
+   Exemplos de chamada (PowerShell) no README, seção "Ajustes do frontend".
 
    No SSMS: menu Query → SQLCMD Mode e, numa linha antes do USE abaixo, o
    comando setvar do SQLCMD para cada variável (ver README, seção 06).
@@ -322,6 +318,9 @@ DECLARE @notSubstituted NVARCHAR(2) = N'$' + N'(';
 
 IF LEFT(@adminEmail, 2) = @notSubstituted OR LEFT(@adminHash, 2) = @notSubstituted
     PRINT N'Conta admin NÃO criada: defina ADMIN_EMAIL e ADMIN_PASSWORD_HASH (modo SQLCMD).';
+ELSE IF LTRIM(@adminEmail) = N'' OR LTRIM(@adminHash) = N''
+    -- Variáveis vazias = "pular": útil antes de o backend existir para gerar o hash.
+    PRINT N'Conta admin NÃO criada (variáveis vazias). Rode de novo com e-mail e hash quando o backend existir.';
 ELSE IF LEN(@adminHash) < 20
     PRINT N'Conta admin NÃO criada: ADMIN_PASSWORD_HASH não parece um hash de senha.';
 ELSE IF EXISTS (SELECT 1 FROM dbo.Users WHERE Email = LOWER(@adminEmail) AND DeletedAt IS NULL)

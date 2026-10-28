@@ -18,7 +18,8 @@ Modelo relacional do Inkflow, a plataforma de prática para o ENADE. Ele foi der
 | 3 | `03_constraints.sql` | PK → UNIQUE → FK → CHECK → DEFAULT |
 | 4 | `04_indexes.sql` | Índices para FKs e consultas frequentes |
 | 5 | `05_seed.sql` | Dados de exemplo baseados nos mocks do projeto |
-| 6 | `06_ajustes_pendentes.sql` | **Pendente — ainda não executado.** Ajustes exigidos pelas features novas do frontend (ver [Ajustes pendentes](#ajustes-pendentes-06_ajustes_pendentessql)) |
+| 6 | `06_ajustes_pendentes.sql` | Ajustes de modelo exigidos pelas features novas do frontend (ver [Ajustes do frontend](#ajustes-do-frontend-06-e-07)). Exige as variáveis `ADMIN_EMAIL` e `ADMIN_PASSWORD_HASH` (podem ser vazias) |
+| 7 | `07_seed_frontend.sql` | Dados de exemplo alinhados aos mocks do front (questões, simulados, anotações, agenda) |
 
 Todos os scripts são **idempotentes**: verificam se cada objeto ou registro já existe antes de criar. Rodar tudo de novo não gera erro nem duplica dados.
 
@@ -30,6 +31,13 @@ Abra e execute cada arquivo na ordem acima. Os arquivos estão em UTF-8. Se os a
 
 ```bash
 sqlcmd -S localhost -E -I -f 65001 -b -i 01_create_database.sql -i 02_create_tables.sql -i 03_constraints.sql -i 04_indexes.sql -i 05_seed.sql
+```
+
+Depois rode o `06` e o `07` — o `06` precisa das variáveis da conta admin (ver [Ajustes do frontend](#ajustes-do-frontend-06-e-07)):
+
+```powershell
+sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v 'ADMIN_EMAIL=""' 'ADMIN_PASSWORD_HASH=""'
+sqlcmd -S localhost -E -C -I -f 65001 -b -i 07_seed_frontend.sql
 ```
 
 - `-I` liga `QUOTED_IDENTIFIER`. É **obrigatório**, porque há índices filtrados e o `sqlcmd` desliga essa opção por padrão. SSMS, ADO.NET, JDBC e os drivers Node já ligam sozinhos.
@@ -254,9 +262,11 @@ SELECT CASE WHEN EXISTS (
 
 ---
 
-## Ajustes pendentes (`06_ajustes_pendentes.sql`)
+## Ajustes do frontend (`06` e `07`)
 
-Script pronto, **ainda não executado em nenhum SQL Server**. Roda depois do 01–05 e pode ser repetido sem efeito colateral.
+Os dois scripts rodam depois do 01–05 e podem ser repetidos sem efeito colateral. Foram validados duas vezes seguidas numa instância LocalDB temporária e **aplicados no SQL Server local em 28/10/2026**, depois de um backup (`Inkflow_antes_06_20261028-1642.bak`, na pasta padrão de backup da instância).
+
+### `06_ajustes_pendentes.sql` — modelo
 
 | # | Ajuste | Por quê (frontend) |
 |---|---|---|
@@ -273,21 +283,37 @@ Script pronto, **ainda não executado em nenhum SQL Server**. Roda depois do 01�
 
 ### Conta admin sem senha fixa
 
-O script não tem senha nenhuma. E-mail e **hash** da senha entram por variáveis SQLCMD:
+O script não tem senha nenhuma. E-mail e **hash** da senha entram por variáveis SQLCMD. No PowerShell, use **aspas simples por fora** (senão o PowerShell descarta valores vazios e interpreta o `$` do hash):
 
-```bash
-sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v ADMIN_EMAIL="admin@inkflow.com" ADMIN_PASSWORD_HASH="<hash gerado pelo backend>"
+```powershell
+# Ainda sem backend: pula a conta admin (foi assim que o banco local foi atualizado)
+sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v 'ADMIN_EMAIL=""' 'ADMIN_PASSWORD_HASH=""'
+
+# Com o backend: cria a conta admin com o hash gerado por ele
+sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v 'ADMIN_EMAIL="admin@inkflow.com"' 'ADMIN_PASSWORD_HASH="<hash gerado pelo backend>"'
 ```
 
 - O hash deve ser gerado pelo backend (ex.: bcrypt) — nunca a senha em texto.
 - No SSMS, ative *Query → SQLCMD Mode* e declare as duas variáveis com `:setvar` no topo do arquivo antes de executar.
-- Sem as variáveis, o `sqlcmd` para com erro; fora do modo SQLCMD, o script detecta o texto não substituído e **não** cria a conta.
-- Se já existir uma conta com esse e-mail, nada é alterado.
+- Sem as variáveis, o `sqlcmd` para com erro; com elas vazias, a conta é pulada; fora do modo SQLCMD, o script detecta o texto não substituído e **não** cria a conta.
+- Se já existir uma conta com esse e-mail, nada é alterado (a senha nunca é sobrescrita).
+- **Status:** a conta admin ainda **não existe** no banco local — será criada quando o backend gerar o hash.
 
-### Ainda não incluído no 06
+### `07_seed_frontend.sql` — dados de exemplo iguais aos do front
 
-- **Seed das questões novas do frontend** (11 questões, alunos fictícios do ranking e o Prof. Ricardo Alves) — opcional, só para os dados de exemplo baterem com o front.
-- **`StudyGroups` / `MentoringSessions`:** continuam no banco; decidir se saem agora que a agenda usa `TeacherAvailabilitySlots`.
+| O que entra | Detalhe |
+|---|---|
+| 11 questões novas | Com alternativas, gabarito, explicação da IA e comentário da professora Marcela. O bloco foi **gerado a partir de `src/features/questions/data.ts`**, então o texto é idêntico ao do front. Total: 14 questões em 14 tópicos. |
+| Prof. Ricardo Alves | Segundo professor (`ricardo.alves@email.com`, perfil verificado), dono de parte dos horários. |
+| 4 simulados do front | Programação e Engenharia de Software, Infraestrutura/Redes/Dados, Simulado Geral e Simulado relâmpago (2 min). O simulado antigo do 05 continua. |
+| Várias anotações | 3 da Paula (2 na mesma questão) e 2 da Nicole. |
+| Agenda de mentoria | 11 horários (Marcela e Ricardo, mentoria coletiva e grupo de estudo) com datas **relativas ao dia da execução**, e 2 solicitações da Nicole (1 confirmada, 1 pendente). |
+
+Ficam **só no front** (dados de vitrine): os 14 estudantes fictícios do ranking e o histórico de respostas do front — o banco mantém o histórico do 05.
+
+### Ainda em aberto
+
+- **`StudyGroups` / `StudyGroupMembers` / `StudyGroupPlanItems` / `MentoringSessions`:** não são usados pelo front (a agenda usa `TeacherAvailabilitySlots`/`MentoringRequests`). Decidir se saem ou se viram a "trilha de estudo" do grupo no futuro.
 
 ## Observações e próximos passos
 
