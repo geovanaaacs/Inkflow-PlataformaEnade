@@ -12,6 +12,7 @@
     "dev:front": "npm run dev -w frontend",
     "dev:api": "npm run dev -w backend",
     "build": "npm run build --workspaces",
+    "start": "npm run build && npm start -w backend",
     "typecheck": "npm run typecheck --workspaces",
     "lint": "npm run lint -w frontend",
     "db:dev-accounts": "npm run db:dev-accounts -w backend"
