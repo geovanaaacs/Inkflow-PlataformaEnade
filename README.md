@@ -9,6 +9,7 @@ Inkflow/
 ├── frontend/   React 18 + Vite + TypeScript + Tailwind  → o que o navegador exibe
 ├── backend/    Node.js 22 + Express 5 + TypeScript      → lógica e API REST (/api)
 ├── database/   SQL Server: scripts 01–08                → modelo, constraints e seed
+├── mobile/     React Native + Expo (fora dos workspaces) → app para celular
 ├── docs/       análise do design no Figma (fora do git)
 └── package.json   npm workspaces (frontend + backend)
 ```
@@ -18,6 +19,7 @@ Inkflow/
 | `frontend/` | [frontend/README.md](frontend/README.md) — telas, rotas, design system, camada `api.ts` |
 | `backend/` | [backend/README.md](backend/README.md) — endpoints, sessão, conexão com o banco |
 | `database/` | [database/README.md](database/README.md) — modelo, diagrama, ordem dos scripts |
+| `mobile/` | [mobile/README.md](mobile/README.md) — app Expo, login por token, como rodar no celular |
 
 ## Como as camadas conversam
 
@@ -25,12 +27,14 @@ Inkflow/
 flowchart LR
   browser["Navegador<br/>React (frontend/)"] -- "/api/* (JSON)<br/>cookie de sessão" --> vite["Vite dev server<br/>:5173 (proxy)"]
   vite --> api["Express (backend/)<br/>:3333"]
+  phone["Celular<br/>Expo (mobile/)"] -- "/api/* (JSON)<br/>token Bearer" --> api
   api -- "ODBC · login do Windows" --> db[("SQL Server<br/>Inkflow (database/)")]
 ```
 
 - Em desenvolvimento o navegador fala só com o Vite (porta 5173), que repassa `/api` para o Express (porta 3333). É a mesma origem, então o cookie de sessão funciona sem CORS.
 - Em produção o Express serve o frontend compilado e a API pela mesma porta (`API_PORT`, padrão 3333).
 - Cada feature do front fala com a API só pelo seu `api.ts` (via `frontend/src/shared/api/http.ts`). Cada módulo do backend em `backend/src/modules/` devolve o formato JSON que esses `api.ts` esperam.
+- A documentação interativa da API (Swagger/OpenAPI) fica em `/api/docs`, por exemplo http://localhost:5173/api/docs com `npm run dev`.
 
 ## Pré-requisitos
 
@@ -70,4 +74,5 @@ Para produção local, configure `NODE_ENV=production` e `API_PORT` no `backend/
 
 - **frontend:** completo (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking), com os dados vindos da API.
 - **database:** scripts 01–08 aplicados no SQL Server local.
-- **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas.
+- **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas. Documentação Swagger em `/api/docs`.
+- **mobile:** completo para os três perfis (aluno, incluindo simulados e mentoria do Premium; professor; admin), usando a mesma API com login por token ([mobile/README.md](mobile/README.md)).

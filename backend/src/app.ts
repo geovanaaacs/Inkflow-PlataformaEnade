@@ -2,8 +2,10 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import swaggerUi from "swagger-ui-express";
 import { isProduction } from "./config/env.js";
 import { query } from "./db/pool.js";
+import { openApiDocument } from "./docs/openapi.js";
 import { errorHandler, notFoundHandler } from "./http/errors.js";
 import { adminRouter } from "./modules/admin/admin.routes.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
@@ -30,6 +32,19 @@ export function createApp() {
     const [row] = await query<{ Db: string }>("SELECT DB_NAME() AS Db");
     res.json({ status: "ok", database: row?.Db ?? null });
   });
+
+  // API documentation: Swagger UI at /api/docs, raw OpenAPI document next to it.
+  api.get("/docs/openapi.json", (_req, res) => {
+    res.json(openApiDocument);
+  });
+  api.use(
+    "/docs",
+    swaggerUi.serve,
+    swaggerUi.setup(openApiDocument, {
+      customSiteTitle: "Inkflow API — documentação",
+      swaggerOptions: { withCredentials: true, persistAuthorization: true },
+    })
+  );
 
   api.use(authRouter);
   api.use(plansRouter);

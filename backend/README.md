@@ -31,6 +31,7 @@ src/
 ├── server.ts            sobe o servidor e fecha a conexão no Ctrl+C
 ├── app.ts               Express: JSON, cookies, rotas em /api, erros
 ├── config/env.ts        variáveis do .env validadas com zod
+├── docs/openapi.ts      documentação OpenAPI (Swagger UI em /api/docs)
 ├── db/pool.ts           conexão (mssql + msnodesqlv8), query(), withTransaction()
 ├── http/
 │   ├── errors.ts        HttpError → { message } com o status certo
@@ -49,9 +50,18 @@ Cada módulo tem **rotas** (HTTP: valida entrada com zod, chama o repositório, 
 
 - **Driver `msnodesqlv8` (ODBC)** em vez do `tedious`: o SQL Server local aceita só login do Windows e não tem TCP habilitado. O ODBC conecta assim, sem mudar a configuração de segurança do servidor.
 - **Sessão em cookie httpOnly** (JWT assinado): o JavaScript da página não lê o token; o login sobrevive a fechar o navegador. O usuário é relido do banco a cada requisição, então desativar uma conta ou trocar o perfil vale na hora.
+- **App mobile usa o mesmo JWT por cabeçalho:** `/api/auth/mobile/login` e `/api/auth/mobile/register` devolvem o token no corpo, e o app o envia como `Authorization: Bearer <token>`. Quando esse cabeçalho vem, ele vale no lugar do cookie. A web continua só com o cookie, então o token nunca fica exposto ao JavaScript da página. Sair no app é só descartar o token.
 - **Regras de plano vêm do banco** (`Plans.DailyQuestionLimit`, `PlanFeatures`/`Features`). Professores e admins: sem limite diário e com anotações, por perfil.
 - **Respostas guardam o perfil** (`UserAnswers.AnsweredAsRole`): as do professor são gravadas, mas não entram no ranking.
 - **Mesmo JSON do front:** `question.id` é o `Id` do banco em texto e `option.id` é a letra (`a`–`e`), como nos mocks.
+
+## Documentação da API (Swagger)
+
+Com a API rodando, a documentação interativa fica em **`/api/docs`**: http://localhost:5173/api/docs pelo Vite em desenvolvimento, ou http://localhost:3333/api/docs direto na API. O documento OpenAPI 3.0 bruto fica em `/api/docs/openapi.json`, que pode ser importado no Postman ou no Insomnia.
+
+Para testar rotas protegidas pelo Swagger, primeiro chame `POST /auth/login` em "Try it out". O cookie de sessão fica gravado no navegador e vale para as chamadas seguintes.
+
+A descrição das rotas está em [`src/docs/openapi.ts`](src/docs/openapi.ts). Ao criar ou mudar uma rota, atualize esse arquivo também.
 
 ## Endpoints
 
@@ -61,6 +71,7 @@ Cada módulo tem **rotas** (HTTP: valida entrada com zod, chama o repositório, 
 | `auth.login` | `POST /api/auth/login` `{ email, password }` | público |
 | `auth.signup` | `POST /api/auth/register` `{ name, email, password, role }` | público |
 | `auth.logout` | `POST /api/auth/logout` | público |
+| app mobile | `POST /api/auth/mobile/login` / `POST /api/auth/mobile/register` → `{ token, expiresAt, user }` | público |
 | `auth.getSessionUser` | `GET /api/me` | logado |
 | `plans.listPlans` | `GET /api/plans` | público |
 | `plans.subscribeToPlan` | `POST /api/me/subscription` `{ planId }` (simulado, sem pagamento) | aluno |

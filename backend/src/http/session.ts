@@ -6,19 +6,33 @@ import type { UserRole } from "../shared/plan-access.js";
 import { HttpError } from "./errors.js";
 
 /*
- * Session = signed JWT in an httpOnly cookie (JavaScript in the page can't
- * read it). The user is re-read from the database on every request, so a
- * deactivated account or a changed role takes effect immediately.
+ * Session = signed JWT. The web front gets it in an httpOnly cookie (JavaScript
+ * in the page can't read it); the mobile app gets it in the response body and
+ * sends it back as `Authorization: Bearer <token>`. Same token either way.
+ * The user is re-read from the database on every request, so a deactivated
+ * account or a changed role takes effect immediately.
  */
 
 const COOKIE_NAME = "inkflow_session";
 const MAX_AGE_MS = env.SESSION_DAYS * 24 * 60 * 60 * 1000;
 
-export function startSession(res: Response, userId: string): void {
-  const token = jwt.sign({}, env.JWT_SECRET, {
+function signToken(userId: string): string {
+  return jwt.sign({}, env.JWT_SECRET, {
     subject: userId,
     expiresIn: `${env.SESSION_DAYS}d`,
   });
+}
+
+/** Token for clients without cookies (mobile app). Logging out = discarding it. */
+export function issueToken(userId: string): { token: string; expiresAt: string } {
+  return {
+    token: signToken(userId),
+    expiresAt: new Date(Date.now() + MAX_AGE_MS).toISOString(),
+  };
+}
+
+export function startSession(res: Response, userId: string): void {
+  const token = signToken(userId);
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
@@ -32,9 +46,20 @@ export function endSession(res: Response): void {
   res.clearCookie(COOKIE_NAME, { path: "/" });
 }
 
+/** Bearer token (mobile) when the header is sent, otherwise the session cookie (web). */
+function readToken(req: Request): string | null {
+  const header = req.get("authorization");
+  if (header !== undefined) {
+    const [scheme, value] = header.split(" ");
+    return scheme?.toLowerCase() === "bearer" && value ? value : null;
+  }
+  const cookie: unknown = req.cookies?.[COOKIE_NAME];
+  return typeof cookie === "string" ? cookie : null;
+}
+
 function readUserId(req: Request): string | null {
-  const token: unknown = req.cookies?.[COOKIE_NAME];
-  if (typeof token !== "string") return null;
+  const token = readToken(req);
+  if (!token) return null;
   try {
     const payload = jwt.verify(token, env.JWT_SECRET);
     return typeof payload === "object" && typeof payload.sub === "string" ? payload.sub : null;
