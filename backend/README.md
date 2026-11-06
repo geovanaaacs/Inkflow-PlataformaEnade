@@ -18,7 +18,7 @@ Configuração em `backend/.env` (copie de `.env.example`):
 |---|---|
 | `NODE_ENV` | `development` (padrão) mantém front e API separados; `production` habilita a entrega do frontend buildado pelo Express |
 | `FRONTEND_PORT` | Porta do Vite em desenvolvimento (padrão 5173) |
-| `API_PORT` | Porta do Express (padrão 3333); o proxy do Vite usa essa porta em desenvolvimento |
+| `API_PORT` | Porta do Express (padrão 3333); o proxy do Vite usa essa porta em desenvolvimento, então ela precisa ser diferente de `FRONTEND_PORT` (a API e o Vite recusam subir se forem iguais). Não é `PORT` de propósito: várias ferramentas definem `PORT` para todos os processos |
 | `DB_CONNECTION_STRING` | Connection string ODBC. O padrão usa o **login do Windows** no SQL Server local |
 | `JWT_SECRET` | Assina o cookie de sessão (mín. 32 caracteres, nunca versionado) |
 | `SESSION_DAYS` | Validade do login (padrão 30 dias) |
