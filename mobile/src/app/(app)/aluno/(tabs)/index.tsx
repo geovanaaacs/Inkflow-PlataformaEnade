@@ -12,10 +12,10 @@ import { hasFeature, PLAN_LABEL, FEATURE_MIN_PLAN, type FeatureKey } from "../..
 import { useAsync } from "../../../../lib/useAsync";
 import { colors, radius, spacing } from "../../../../theme";
 
-/** Premium features teased at the bottom while the student doesn't have them. */
-const UPSELLS: { feature: FeatureKey; label: string }[] = [
-  { feature: "mockExams", label: "Simulados com timer" },
-  { feature: "mentoring", label: "Mentoria com professores" },
+/** Premium features at the bottom: shortcuts when unlocked, teasers otherwise. */
+const UPSELLS: { feature: FeatureKey; label: string; route: "/aluno/simulados" | "/aluno/mentoria" }[] = [
+  { feature: "mockExams", label: "Simulados com timer", route: "/aluno/simulados" },
+  { feature: "mentoring", label: "Mentoria com professores", route: "/aluno/mentoria" },
 ];
 
 function percentOf(value: number, total: number): number {
@@ -135,12 +135,17 @@ export default function DashboardScreen() {
             </Card>
           ))}
 
-          {UPSELLS.filter(({ feature }) => !hasFeature(plan, feature)).map(({ feature, label }) => (
-            <View key={feature} style={styles.upsell}>
-              <Text style={styles.upsellText}>🔒 {label}</Text>
-              <Badge>Plano {PLAN_LABEL[FEATURE_MIN_PLAN[feature]]}</Badge>
-            </View>
-          ))}
+          {/* Premium shortcuts: open when unlocked, a teaser with the plan otherwise. */}
+          {UPSELLS.map(({ feature, label, route }) =>
+            hasFeature(plan, feature) ? (
+              <Button key={feature} label={label} variant="secondary" onPress={() => router.push(route)} />
+            ) : (
+              <View key={feature} style={styles.upsell}>
+                <Text style={styles.upsellText}>🔒 {label}</Text>
+                <Badge>Plano {PLAN_LABEL[FEATURE_MIN_PLAN[feature]]}</Badge>
+              </View>
+            )
+          )}
         </>
       )}
     </Screen>

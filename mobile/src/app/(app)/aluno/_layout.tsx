@@ -24,6 +24,9 @@ export default function StudentLayout() {
         <Stack.Screen name="tema/[slug]" options={{ title: "Praticar por tema" }} />
         <Stack.Screen name="planos" options={{ title: "Planos" }} />
         <Stack.Screen name="anotacoes" options={{ title: "Minhas anotações" }} />
+        <Stack.Screen name="simulado/[id]" options={{ title: "Simulado" }} />
+        <Stack.Screen name="simulado/resultado/[attemptId]" options={{ title: "Resultado do simulado" }} />
+        <Stack.Screen name="mentoria" options={{ title: "Mentoria" }} />
       </Stack>
     </PracticeProvider>
   );

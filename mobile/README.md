@@ -40,13 +40,15 @@ src/
 │   ├── index.tsx          manda para o login ou para a tela do perfil
 │   ├── (auth)/            login e cadastro (só para quem não está logado)
 │   └── (app)/             área logada
-│       ├── aluno/         abas (Início, Questões, Ranking, Conta) + questão, tema, planos, anotações
+│       ├── aluno/         abas (Início, Questões, Simulados, Ranking, Conta) + questão, tema, simulado, resultado, mentoria, planos, anotações
 │       ├── professor.tsx  (fase 5)
 │       └── admin.tsx      (fase 6)
 ├── features/              uma pasta por assunto, como no site: api.ts + componentes
 │   ├── auth/              login, AuthProvider, tela inicial provisória
 │   ├── questions/         QuestionCard, lista, filtros, anotações, estado de prática
 │   ├── dashboard/         API do dashboard e do ranking
+│   ├── mock-exams/        API dos simulados e o cronômetro (useCountdown)
+│   ├── mentoring/         API da mentoria (lado do aluno)
 │   └── plans/             API dos planos
 ├── components/            ui.tsx (Screen, Button, Card...) e feedback.tsx (barra de progresso, faixa do plano, recurso bloqueado)
 ├── lib/                   config (URL da API), http, token-storage, plan-access, format, useAsync
@@ -72,6 +74,7 @@ Esta pasta **não** é um workspace do monorepo: o Expo usa React 19 e o site us
 
 - **Fase 2 (feita):** projeto, cliente da API, login, cadastro, sessão salva e navegação por perfil.
 - **Fase 3 (feita):** aluno com abas Início (dashboard), Questões (busca e filtros por área e ano), Ranking (Geral e Simulados) e Conta; questão com resposta, gabarito da IA, comentário do professor, comunidade e anotações; Minhas anotações; troca de plano (simulada). Limite diário do plano Básico e recursos bloqueados seguem as regras do site.
-- **Próximas fases:** aluno Premium (simulados e mentoria), professor e admin.
+- **Fase 4 (feita):** aluno Premium. Simulados: catálogo (visível para todos), apresentação, prova com cronômetro, navegação entre questões, respostas salvas a cada toque, finalização manual ou automática quando o tempo acaba e resultado com correção questão a questão. Mentoria: horários por tipo (mentoria coletiva ou grupo de estudo) agrupados por dia, pedido de vaga com mensagem, minhas solicitações e cancelamento.
+- **Próximas fases:** professor e admin.
 
 Diferença em relação ao site: na Comunidade o app só **mostra** os comentários. No site dá para escrever um, mas ele não é salvo na API (some ao recarregar), então o app não oferece isso.

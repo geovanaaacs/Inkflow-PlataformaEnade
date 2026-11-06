@@ -24,7 +24,8 @@ export default function StudentTabs() {
     >
       <Tabs.Screen name="index" options={{ title: "Início", tabBarIcon: icon("home-outline") }} />
       <Tabs.Screen name="questoes" options={{ title: "Questões", tabBarIcon: icon("list-outline") }} />
-      <Tabs.Screen name="ranking" options={{ title: "Ranking", tabBarIcon: icon("trophy-outline") }} />
+      <Tabs.Screen name="simulados" options={{ title: "Simulados", tabBarIcon: icon("timer-outline") }} />
+      <Tabs.Screen name="ranking"options={{ title: "Ranking", tabBarIcon: icon("trophy-outline") }} />
       <Tabs.Screen name="conta" options={{ title: "Conta", tabBarIcon: icon("person-circle-outline") }} />
     </Tabs>
   );

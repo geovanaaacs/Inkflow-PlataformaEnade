@@ -25,6 +25,7 @@ export default function AccountScreen() {
       </Card>
       <Button label="Planos" onPress={() => router.push("/aluno/planos")} />
       <Button label="Minhas anotações" variant="secondary" onPress={() => router.push("/aluno/anotacoes")} />
+      <Button label="Mentoria e grupos de estudo" variant="secondary" onPress={() => router.push("/aluno/mentoria")} />
       <Button label="Sair" variant="secondary" onPress={() => void logout()} />
     </Screen>
   );
