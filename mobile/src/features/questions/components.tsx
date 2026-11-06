@@ -17,15 +17,23 @@ const DIFFICULTY_TONE: Record<Difficulty, Tone> = { fácil: "success", médio: "
 
 /* ------------------------------------------------------------------ List */
 
+/** Route of a question inside the logged-in profile's stack (/aluno/... or /professor/...). */
+export function useQuestionHref(): (code: string) => `/aluno/questao/${string}` | `/professor/questao/${string}` {
+  const { user } = useAuth();
+  const base = user?.role === "professor" ? "/professor" : "/aluno";
+  return (code) => `${base}/questao/${encodeURIComponent(code)}`;
+}
+
 /** Compact row of the question lists; opens the question screen. */
 export function QuestionListItem({ question }: { question: Question }) {
   const { noteCounts } = usePractice();
+  const questionHref = useQuestionHref();
   const notes = noteCounts[question.id] ?? 0;
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`Questão ${question.code}: ${question.area.name}, ${question.topic}`}
-      onPress={() => router.push(`/aluno/questao/${question.code}`)}
+      onPress={() => router.push(questionHref(question.code))}
       style={({ pressed }) => [styles.listItem, pressed && styles.pressed]}
     >
       <View style={styles.listHeader}>

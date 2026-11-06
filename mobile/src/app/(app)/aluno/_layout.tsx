@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
+import { stackScreenOptions } from "../../../components/navigation";
 import { PracticeProvider } from "../../../features/questions/practice";
-import { colors } from "../../../theme";
 
 /**
  * Student area: the tabs, plus the screens opened on top of them (question,
@@ -9,16 +9,7 @@ import { colors } from "../../../theme";
 export default function StudentLayout() {
   return (
     <PracticeProvider>
-      <Stack
-        screenOptions={{
-          headerTintColor: colors.brand800,
-          headerTitleStyle: { color: colors.ink },
-          headerStyle: { backgroundColor: colors.background },
-          headerShadowVisible: false,
-          headerBackTitle: "Voltar",
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      >
+      <Stack screenOptions={stackScreenOptions}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="questao/[code]" options={{ title: "Questão" }} />
         <Stack.Screen name="tema/[slug]" options={{ title: "Praticar por tema" }} />
