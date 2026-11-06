@@ -9,6 +9,7 @@ Inkflow/
 ├── frontend/   React 18 + Vite + TypeScript + Tailwind  → o que o navegador exibe
 ├── backend/    Node.js 22 + Express 5 + TypeScript      → lógica e API REST (/api)
 ├── database/   SQL Server: scripts 01–08                → modelo, constraints e seed
+├── mobile/     React Native + Expo (fora dos workspaces) → app para celular
 ├── docs/       análise do design no Figma (fora do git)
 └── package.json   npm workspaces (frontend + backend)
 ```
@@ -18,6 +19,7 @@ Inkflow/
 | `frontend/` | [frontend/README.md](frontend/README.md) — telas, rotas, design system, camada `api.ts` |
 | `backend/` | [backend/README.md](backend/README.md) — endpoints, sessão, conexão com o banco |
 | `database/` | [database/README.md](database/README.md) — modelo, diagrama, ordem dos scripts |
+| `mobile/` | [mobile/README.md](mobile/README.md) — app Expo, login por token, como rodar no celular |
 
 ## Como as camadas conversam
 
@@ -25,6 +27,7 @@ Inkflow/
 flowchart LR
   browser["Navegador<br/>React (frontend/)"] -- "/api/* (JSON)<br/>cookie de sessão" --> vite["Vite dev server<br/>:5173 (proxy)"]
   vite --> api["Express (backend/)<br/>:3333"]
+  phone["Celular<br/>Expo (mobile/)"] -- "/api/* (JSON)<br/>token Bearer" --> api
   api -- "ODBC · login do Windows" --> db[("SQL Server<br/>Inkflow (database/)")]
 ```
 
@@ -71,4 +74,5 @@ Para produção local, configure `NODE_ENV=production` e `API_PORT` no `backend/
 
 - **frontend:** completo (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking), com os dados vindos da API.
 - **database:** scripts 01–08 aplicados no SQL Server local.
-- **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas.
+- **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas. Documentação Swagger em `/api/docs`.
+- **mobile:** app Expo com login, cadastro, sessão salva e navegação por perfil (fase 2). As telas de cada perfil vêm nas próximas fases ([mobile/README.md](mobile/README.md)).
