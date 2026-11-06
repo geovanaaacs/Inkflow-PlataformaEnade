@@ -118,11 +118,9 @@ export function PlanBanner({ planId, usage }: { planId: PlanId; usage: DailyUsag
           </Text>
         </View>
       )}
-      {planId !== "premium" && (
-        <Text style={styles.bannerLink} accessibilityRole="link" onPress={() => router.push("/aluno/planos")}>
-          {planId === "basico" ? "Faça upgrade para ilimitado →" : "Conheça o Premium →"}
-        </Text>
-      )}
+      <Text style={styles.bannerLink} accessibilityRole="link" onPress={() => router.push("/aluno/planos")}>
+        {planId === "basico" ? "Faça upgrade para ilimitado →" : planId === "avancado" ? "Conheça o Premium →" : "Acesso completo · Ver planos →"}
+      </Text>
     </View>
   );
 }

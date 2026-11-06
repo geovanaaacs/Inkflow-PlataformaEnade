@@ -15,10 +15,15 @@ interface QuestionActionsBarProps {
   onOpenNote: () => void;
 }
 
-const panelButtons: { key: PanelKey; label: string }[] = [
-  { key: "ai", label: "Gabarito IA" },
-  { key: "community", label: "Comunidade" },
-  { key: "teacher", label: "Professor" },
+/**
+ * `revealsAnswer`: the panel gives the answer away (the AI explanation states
+ * the correct option, the teacher's comment explains it), so it only opens
+ * after the question is answered.
+ */
+const panelButtons: { key: PanelKey; label: string; revealsAnswer: boolean }[] = [
+  { key: "ai", label: "Gabarito IA", revealsAnswer: true },
+  { key: "community", label: "Comunidade", revealsAnswer: false },
+  { key: "teacher", label: "Professor", revealsAnswer: true },
 ];
 
 export function QuestionActionsBar({
@@ -43,6 +48,7 @@ export function QuestionActionsBar({
 
       {panelButtons.map((panel) => {
         const isActive = activePanel === panel.key;
+        const lockedUntilAnswered = panel.revealsAnswer && !submitted;
         return (
           <Button
             key={panel.key}
@@ -50,6 +56,12 @@ export function QuestionActionsBar({
             variant={isActive ? "soft" : "outline"}
             aria-expanded={isActive}
             aria-controls={`${panel.key}-panel-${questionId}`}
+            disabled={lockedUntilAnswered}
+            title={lockedUntilAnswered ? "Responda a questão para liberar" : undefined}
+            aria-label={lockedUntilAnswered ? `${panel.label} (responda a questão para liberar)` : undefined}
+            trailingIcon={
+              lockedUntilAnswered ? <Lock aria-hidden="true" className="size-3.5 opacity-70" /> : undefined
+            }
             onClick={() => onTogglePanel(panel.key)}
           >
             {panel.label}

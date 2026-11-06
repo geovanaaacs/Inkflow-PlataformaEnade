@@ -58,7 +58,15 @@ export function PlanBanner({ planId, usage }: PlanBannerProps) {
         </div>
       )}
 
-      {upgradeLink ?? <span className="text-sm font-semibold">Acesso completo</span>}
+      {upgradeLink ?? (
+        <Link
+          to="/planos"
+          state={returnState}
+          className="text-sm font-semibold underline-offset-2 hover:underline"
+        >
+          Acesso completo · Ver planos →
+        </Link>
+      )}
     </div>
   );
 }

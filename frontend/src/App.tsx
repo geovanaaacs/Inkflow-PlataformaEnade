@@ -13,6 +13,9 @@ import { TopicQuestionsPage } from "@/features/questions/TopicQuestionsPage";
 import { ProfilePage } from "@/features/profile/ProfilePage";
 import { PlansPage } from "@/features/plans/PlansPage";
 import { NotFoundPage } from "@/features/misc/NotFoundPage";
+import { ContactPage } from "@/features/institutional/ContactPage";
+import { PrivacyPage } from "@/features/institutional/PrivacyPage";
+import { TermsPage } from "@/features/institutional/TermsPage";
 import { TeacherDashboardPage } from "@/features/teacher/TeacherDashboardPage";
 import { TeacherAgendaPage } from "@/features/teacher/TeacherAgendaPage";
 import { MockExamsPage } from "@/features/mock-exams/MockExamsPage";
@@ -42,6 +45,9 @@ export default function App() {
           <Route element={<PublicLayout />}>
             <Route index element={<LandingPage />} />
             <Route path="/planos" element={<PlansPage />} />
+            <Route path="/privacidade" element={<PrivacyPage />} />
+            <Route path="/termos" element={<TermsPage />} />
+            <Route path="/contato" element={<ContactPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route path="/entrar" element={<AuthPage />} />

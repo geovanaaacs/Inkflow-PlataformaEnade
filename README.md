@@ -8,7 +8,7 @@ O repositório é um **monorepo** com uma pasta por camada:
 Inkflow/
 ├── frontend/   React 18 + Vite + TypeScript + Tailwind  → o que o navegador exibe
 ├── backend/    Node.js 22 + Express 5 + TypeScript      → lógica e API REST (/api)
-├── database/   SQL Server: scripts 01–08                → modelo, constraints e seed
+├── database/   SQL Server: scripts 01–09                → modelo, constraints e seed
 ├── mobile/     React Native + Expo (fora dos workspaces) → app para celular
 ├── docs/       análise do design no Figma (fora do git)
 └── package.json   npm workspaces (frontend + backend)
@@ -73,6 +73,6 @@ Para produção local, configure `NODE_ENV=production` e `API_PORT` no `backend/
 ## Situação atual
 
 - **frontend:** completo (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking), com os dados vindos da API.
-- **database:** scripts 01–08 aplicados no SQL Server local.
+- **database:** scripts 01–09 aplicados no SQL Server local.
 - **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas. Documentação Swagger em `/api/docs`.
 - **mobile:** completo para os três perfis (aluno, incluindo simulados e mentoria do Premium; professor; admin), usando a mesma API com login por token ([mobile/README.md](mobile/README.md)).

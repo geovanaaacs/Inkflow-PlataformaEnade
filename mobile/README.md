@@ -82,4 +82,6 @@ Esta pasta **não** é um workspace do monorepo: o Expo usa React 19 e o site us
 
 Com isso o app cobre os três perfis do site.
 
+Ajustes do teste de usabilidade (iguais aos do site): o "Gabarito IA" e o comentário do professor só abrem depois de responder a questão; todos os perfis veem os planos (professor e admin pela Conta, só para consulta); a troca de plano passa por um checkout simulado (cartão ou Pix, sem cobrança e sem enviar os dados do cartão) que termina com boas-vindas e o aviso do e-mail de confirmação.
+
 Diferença em relação ao site: na Comunidade o app só **mostra** os comentários. No site dá para escrever um, mas ele não é salvo na API (some ao recarregar), então o app não oferece isso.

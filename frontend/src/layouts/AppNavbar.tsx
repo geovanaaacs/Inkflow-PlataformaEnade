@@ -4,7 +4,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/design-system/components/Button";
 import { Logo } from "@/design-system/components/Logo";
 import { useAuth, type UserRole } from "@/features/auth/auth-context";
-import { homePathFor } from "@/features/auth/role-home";
 import { LogoutModal } from "@/shared/modals/LogoutModal";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/design-system/components/Tooltip";
 import {
@@ -23,22 +22,28 @@ interface NavItem {
   feature?: FeatureKey;
 }
 
+/** Every profile can see the plans (students to change theirs, staff to know the offer). */
+const plansItem: NavItem = { to: "/planos", label: "Planos" };
+
 const navItemsByRole: Record<UserRole, NavItem[]> = {
   aluno: [
     { to: "/questoes", label: "Questões" },
     { to: "/dashboard", label: "Dashboard" },
     { to: "/simulados", label: "Simulados", feature: "mockExams" },
     { to: "/mentoria", label: "Mentoria", feature: "mentoring" },
+    plansItem,
   ],
   professor: [
     { to: "/professor", label: "Dashboard", exact: true },
     { to: "/questoes", label: "Questões" },
     { to: "/professor/agenda", label: "Agenda" },
+    plansItem,
   ],
   admin: [
     { to: "/admin/usuarios", label: "Usuários" },
     { to: "/admin/questoes", label: "Questões" },
     { to: "/admin/simulados", label: "Simulados" },
+    plansItem,
   ],
 };
 
@@ -54,7 +59,6 @@ export function AppNavbar() {
 
   const role = user?.role ?? "aluno";
   const navItems = navItemsByRole[role];
-  const homePath = homePathFor(role);
 
   function renderItem(item: NavItem, mobile: boolean) {
     const isActive = isActivePath(location.pathname, item);
@@ -83,7 +87,8 @@ export function AppNavbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-border-navbar bg-app-bg">
       <div className="mx-auto flex h-[84px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-16">
-        <Link to={homePath} aria-label="Inkflow — página inicial da sua área">
+        {/* The logo always opens the public home page; "Ir para minha área" there leads back. */}
+        <Link to="/" aria-label="Inkflow — página inicial">
           <Logo />
         </Link>
 

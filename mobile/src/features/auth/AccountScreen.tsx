@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { Badge } from "../../components/feedback";
 import { Button, Card, Screen, Title } from "../../components/ui";
@@ -20,6 +21,9 @@ export function AccountScreen({ roleLabel, note }: { roleLabel: string; note?: s
         </View>
         {note ? <Text style={styles.muted}>{note}</Text> : null}
       </Card>
+      {(user.role === "professor" || user.role === "admin") && (
+        <Button label="Ver planos" variant="secondary" onPress={() => router.push(`/${user.role}/planos`)} />
+      )}
       <Button label="Sair" variant="secondary" onPress={() => void logout()} />
     </Screen>
   );

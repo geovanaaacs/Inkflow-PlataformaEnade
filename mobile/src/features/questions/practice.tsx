@@ -50,6 +50,11 @@ export function PracticeProvider({ children }: { children: ReactNode }) {
   return <PracticeContext.Provider value={value}>{children}</PracticeContext.Provider>;
 }
 
+/** Same context, or null outside a practice area (e.g. the admin screens). */
+export function useOptionalPractice(): PracticeContextValue | null {
+  return useContext(PracticeContext);
+}
+
 export function usePractice(): PracticeContextValue {
   const context = useContext(PracticeContext);
   if (!context) throw new Error("usePractice must be used within a PracticeProvider");
