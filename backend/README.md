@@ -50,6 +50,7 @@ Cada módulo tem **rotas** (HTTP: valida entrada com zod, chama o repositório, 
 
 - **Driver `msnodesqlv8` (ODBC)** em vez do `tedious`: o SQL Server local aceita só login do Windows e não tem TCP habilitado. O ODBC conecta assim, sem mudar a configuração de segurança do servidor.
 - **Sessão em cookie httpOnly** (JWT assinado): o JavaScript da página não lê o token; o login sobrevive a fechar o navegador. O usuário é relido do banco a cada requisição, então desativar uma conta ou trocar o perfil vale na hora.
+- **App mobile usa o mesmo JWT por cabeçalho:** `/api/auth/mobile/login` e `/api/auth/mobile/register` devolvem o token no corpo, e o app o envia como `Authorization: Bearer <token>`. Quando esse cabeçalho vem, ele vale no lugar do cookie. A web continua só com o cookie, então o token nunca fica exposto ao JavaScript da página. Sair no app é só descartar o token.
 - **Regras de plano vêm do banco** (`Plans.DailyQuestionLimit`, `PlanFeatures`/`Features`). Professores e admins: sem limite diário e com anotações, por perfil.
 - **Respostas guardam o perfil** (`UserAnswers.AnsweredAsRole`): as do professor são gravadas, mas não entram no ranking.
 - **Mesmo JSON do front:** `question.id` é o `Id` do banco em texto e `option.id` é a letra (`a`–`e`), como nos mocks.
@@ -70,6 +71,7 @@ A descrição das rotas está em [`src/docs/openapi.ts`](src/docs/openapi.ts). A
 | `auth.login` | `POST /api/auth/login` `{ email, password }` | público |
 | `auth.signup` | `POST /api/auth/register` `{ name, email, password, role }` | público |
 | `auth.logout` | `POST /api/auth/logout` | público |
+| app mobile | `POST /api/auth/mobile/login` / `POST /api/auth/mobile/register` → `{ token, expiresAt, user }` | público |
 | `auth.getSessionUser` | `GET /api/me` | logado |
 | `plans.listPlans` | `GET /api/plans` | público |
 | `plans.subscribeToPlan` | `POST /api/me/subscription` `{ planId }` (simulado, sem pagamento) | aluno |

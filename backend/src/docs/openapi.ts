@@ -151,6 +151,11 @@ const schemas: Record<string, Schema> = {
     password: str("6 a 128 caracteres"),
     role: { type: "string", enum: ["aluno", "professor"] },
   }),
+  TokenResponse: object({
+    token: str("JWT para enviar como `Authorization: Bearer <token>`"),
+    expiresAt: dateTime("Quando o token expira (SESSION_DAYS após o login)"),
+    user: ref("AuthUser"),
+  }),
 
   Plan: object(
     {
@@ -424,6 +429,26 @@ const paths = {
       description: "Cria a conta e já inicia a sessão. Contas admin só são criadas por outro admin.",
       requestBody: body(ref("RegisterInput")),
       responses: { 201: created(ref("AuthUser")), 400: E400, 409: error("E-mail já cadastrado") },
+    }),
+  },
+  "/auth/mobile/login": {
+    post: op({
+      tag: "Autenticação",
+      summary: "Entrar pelo app mobile (devolve um token)",
+      description:
+        "Mesmas regras do `/auth/login`, mas sem cookie: o token vem no corpo e o app o envia nas próximas " +
+        "chamadas como `Authorization: Bearer <token>`. Para sair, o app só descarta o token.",
+      requestBody: body(ref("LoginInput")),
+      responses: { 200: ok(ref("TokenResponse")), 400: E400, 401: error("E-mail ou senha inválidos"), 403: error("Conta desativada") },
+    }),
+  },
+  "/auth/mobile/register": {
+    post: op({
+      tag: "Autenticação",
+      summary: "Criar conta pelo app mobile (devolve um token)",
+      description: "Mesmas regras do `/auth/register`, devolvendo o token no lugar do cookie.",
+      requestBody: body(ref("RegisterInput")),
+      responses: { 201: created(ref("TokenResponse")), 400: E400, 409: error("E-mail já cadastrado") },
     }),
   },
   "/auth/logout": {
@@ -842,8 +867,10 @@ export const openApiDocument = {
     version: "0.1.0",
     description:
       "API REST do Inkflow (Node.js + Express + SQL Server), a plataforma de preparação para o ENADE.\n\n" +
-      "**Sessão:** `POST /auth/login` grava o cookie httpOnly `inkflow_session`; o navegador o envia nas " +
+      "**Sessão (web):** `POST /auth/login` grava o cookie httpOnly `inkflow_session`; o navegador o envia nas " +
       "próximas chamadas. Para testar aqui, faça o login pelo próprio Swagger (Try it out) e depois chame as rotas protegidas.\n\n" +
+      "**Sessão (app mobile):** `POST /auth/mobile/login` devolve um token; envie-o como `Authorization: Bearer <token>` " +
+      "(botão Authorize). Quando esse cabeçalho é enviado, ele vale no lugar do cookie.\n\n" +
       "**Erros:** sempre `{ \"message\": \"...\" }` com o status HTTP (400 validação, 401 sem sessão, " +
       "403 sem permissão/plano, 404, 409 conflito).\n\n" +
       "**Datas:** ISO 8601 em UTC.",
@@ -861,9 +888,15 @@ export const openApiDocument = {
     { name: "Professor" },
     { name: "Admin" },
   ],
-  security: [{ sessionCookie: [] }],
+  security: [{ sessionCookie: [] }, { bearerToken: [] }],
   components: {
     securitySchemes: {
+      bearerToken: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        description: "Token devolvido por /auth/mobile/login ou /auth/mobile/register (app mobile)",
+      },
       sessionCookie: {
         type: "apiKey",
         in: "cookie",
