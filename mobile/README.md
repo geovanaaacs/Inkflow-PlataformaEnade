@@ -39,12 +39,21 @@ src/
 │   ├── _layout.tsx        AuthProvider + navegação
 │   ├── index.tsx          manda para o login ou para a tela do perfil
 │   ├── (auth)/            login e cadastro (só para quem não está logado)
-│   └── (app)/             área logada: aluno.tsx, professor.tsx, admin.tsx
-├── features/auth/         API de login, AuthProvider, telas iniciais por perfil
-├── components/ui.tsx      Screen, Button, TextField, Card...
-├── lib/                   config (URL da API), http (cliente), token-storage
+│   └── (app)/             área logada
+│       ├── aluno/         abas (Início, Questões, Ranking, Conta) + questão, tema, planos, anotações
+│       ├── professor.tsx  (fase 5)
+│       └── admin.tsx      (fase 6)
+├── features/              uma pasta por assunto, como no site: api.ts + componentes
+│   ├── auth/              login, AuthProvider, tela inicial provisória
+│   ├── questions/         QuestionCard, lista, filtros, anotações, estado de prática
+│   ├── dashboard/         API do dashboard e do ranking
+│   └── plans/             API dos planos
+├── components/            ui.tsx (Screen, Button, Card...) e feedback.tsx (barra de progresso, faixa do plano, recurso bloqueado)
+├── lib/                   config (URL da API), http, token-storage, plan-access, format, useAsync
 └── theme.ts               cores e raios iguais aos do site
 ```
+
+As regras de plano (`lib/plan-access.ts`) são as mesmas do site e decidem o que aparecer; a API confere de novo em cada chamada.
 
 Cada perfil só abre as próprias rotas; a API confere o perfil de novo em cada chamada.
 
@@ -62,4 +71,7 @@ Esta pasta **não** é um workspace do monorepo: o Expo usa React 19 e o site us
 ## Situação
 
 - **Fase 2 (feita):** projeto, cliente da API, login, cadastro, sessão salva e navegação por perfil.
-- **Próximas fases:** telas do aluno (dashboard, questões, planos, ranking), do aluno Premium (simulados e mentoria), do professor e do admin.
+- **Fase 3 (feita):** aluno com abas Início (dashboard), Questões (busca e filtros por área e ano), Ranking (Geral e Simulados) e Conta; questão com resposta, gabarito da IA, comentário do professor, comunidade e anotações; Minhas anotações; troca de plano (simulada). Limite diário do plano Básico e recursos bloqueados seguem as regras do site.
+- **Próximas fases:** aluno Premium (simulados e mentoria), professor e admin.
+
+Diferença em relação ao site: na Comunidade o app só **mostra** os comentários. No site dá para escrever um, mas ele não é salvo na API (some ao recarregar), então o app não oferece isso.

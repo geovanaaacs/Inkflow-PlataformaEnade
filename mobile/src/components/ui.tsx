@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,15 +12,35 @@ import {
   View,
   type TextInputProps,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, type Edge } from "react-native-safe-area-context";
 import { colors, radius, spacing } from "../theme";
 
-/** Page container: safe area, scroll and keyboard avoidance. */
-export function Screen({ children }: { children: ReactNode }) {
+interface ScreenProps {
+  children: ReactNode;
+  /**
+   * Sides that need safe-area padding. Screens under a tab bar or a stack
+   * header leave those sides to the navigator.
+   */
+  edges?: Edge[];
+  /** Enables pull-to-refresh. */
+  onRefresh?: () => void;
+  refreshing?: boolean;
+}
+
+/** Page container: safe area, scroll, keyboard avoidance and pull-to-refresh. */
+export function Screen({ children, edges = ["top", "bottom", "left", "right"], onRefresh, refreshing = false }: ScreenProps) {
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={edges}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          refreshControl={
+            onRefresh ? (
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand600} colors={[colors.brand600]} />
+            ) : undefined
+          }
+        >
           {children}
         </ScrollView>
       </KeyboardAvoidingView>
