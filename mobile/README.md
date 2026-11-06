@@ -42,14 +42,15 @@ src/
 │   └── (app)/             área logada
 │       ├── aluno/         abas (Início, Questões, Simulados, Ranking, Conta) + questão, tema, simulado, resultado, mentoria, planos, anotações
 │       ├── professor/     abas (Painel, Questões, Agenda, Conta) + questão e abrir horário
-│       └── admin.tsx      (fase 6)
+│       └── admin/         abas (Usuários, Questões, Simulados, Conta) + formulários de questão e de simulado
 ├── features/              uma pasta por assunto, como no site: api.ts + componentes
-│   ├── auth/              login, AuthProvider, tela inicial provisória
+│   ├── auth/              login, AuthProvider, tela Conta do professor e do admin
 │   ├── questions/         QuestionCard, lista, filtros, anotações, estado de prática e as telas de questões usadas pelo aluno e pelo professor
 │   ├── dashboard/         API do dashboard e do ranking
 │   ├── mock-exams/        API dos simulados e o cronômetro (useCountdown)
 │   ├── mentoring/         API da mentoria (lado do aluno)
 │   ├── teacher/           API do painel e da agenda do professor
+│   ├── admin/             API de usuários, questões e simulados do admin
 │   └── plans/             API dos planos
 ├── components/            ui.tsx (Screen, Button, Card...), feedback.tsx (barra de progresso, faixa do plano, recurso bloqueado) e navigation.tsx (abas e cabeçalhos)
 ├── lib/                   config (URL da API), http, token-storage, plan-access, format, useAsync
@@ -77,6 +78,8 @@ Esta pasta **não** é um workspace do monorepo: o Expo usa React 19 e o site us
 - **Fase 3 (feita):** aluno com abas Início (dashboard), Questões (busca e filtros por área e ano), Ranking (Geral e Simulados) e Conta; questão com resposta, gabarito da IA, comentário do professor, comunidade e anotações; Minhas anotações; troca de plano (simulada). Limite diário do plano Básico e recursos bloqueados seguem as regras do site.
 - **Fase 4 (feita):** aluno Premium. Simulados: catálogo (visível para todos), apresentação, prova com cronômetro, navegação entre questões, respostas salvas a cada toque, finalização manual ou automática quando o tempo acaba e resultado com correção questão a questão. Mentoria: horários por tipo (mentoria coletiva ou grupo de estudo) agrupados por dia, pedido de vaga com mensagem, minhas solicitações e cancelamento.
 - **Fase 5 (feita):** professor. Painel com respostas registradas, alunos ativos, taxa de acerto, respostas de hoje, questões com mais erros e a lista de respostas dos alunos com filtros por área, aluno e resultado. Questões para praticar (sem limite diário, com anotações). Agenda com os horários futuros por dia (e os encerrados), pedidos de cada horário com aceitar/recusar, remover horário e a lista de solicitações filtrada; formulário para abrir horário.
-- **Próxima fase:** admin.
+- **Fase 6 (feita):** admin. Usuários com busca e filtro por perfil, troca de perfil e de plano e desativar/reativar conta (tudo com confirmação; o admin não muda o próprio perfil). Questões com busca, filtro por área, criar, editar e remover. Simulados com criar e editar, escolhendo as questões na ordem da prova.
+
+Com isso o app cobre os três perfis do site.
 
 Diferença em relação ao site: na Comunidade o app só **mostra** os comentários. No site dá para escrever um, mas ele não é salvo na API (some ao recarregar), então o app não oferece isso.

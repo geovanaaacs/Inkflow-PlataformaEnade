@@ -75,4 +75,4 @@ Para produção local, configure `NODE_ENV=production` e `API_PORT` no `backend/
 - **frontend:** completo (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking), com os dados vindos da API.
 - **database:** scripts 01–08 aplicados no SQL Server local.
 - **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas. Documentação Swagger em `/api/docs`.
-- **mobile:** app Expo com login, cadastro e todas as telas do aluno, incluindo simulados e mentoria do Premium, e as do professor (painel, questões e agenda). O admin vem na próxima fase ([mobile/README.md](mobile/README.md)).
+- **mobile:** completo para os três perfis (aluno, incluindo simulados e mentoria do Premium; professor; admin), usando a mesma API com login por token ([mobile/README.md](mobile/README.md)).
