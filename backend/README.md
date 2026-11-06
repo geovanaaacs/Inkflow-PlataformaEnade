@@ -31,6 +31,7 @@ src/
 ├── server.ts            sobe o servidor e fecha a conexão no Ctrl+C
 ├── app.ts               Express: JSON, cookies, rotas em /api, erros
 ├── config/env.ts        variáveis do .env validadas com zod
+├── docs/openapi.ts      documentação OpenAPI (Swagger UI em /api/docs)
 ├── db/pool.ts           conexão (mssql + msnodesqlv8), query(), withTransaction()
 ├── http/
 │   ├── errors.ts        HttpError → { message } com o status certo
@@ -52,6 +53,14 @@ Cada módulo tem **rotas** (HTTP: valida entrada com zod, chama o repositório, 
 - **Regras de plano vêm do banco** (`Plans.DailyQuestionLimit`, `PlanFeatures`/`Features`). Professores e admins: sem limite diário e com anotações, por perfil.
 - **Respostas guardam o perfil** (`UserAnswers.AnsweredAsRole`): as do professor são gravadas, mas não entram no ranking.
 - **Mesmo JSON do front:** `question.id` é o `Id` do banco em texto e `option.id` é a letra (`a`–`e`), como nos mocks.
+
+## Documentação da API (Swagger)
+
+Com a API rodando, a documentação interativa fica em **`/api/docs`**: http://localhost:5173/api/docs pelo Vite em desenvolvimento, ou http://localhost:3333/api/docs direto na API. O documento OpenAPI 3.0 bruto fica em `/api/docs/openapi.json`, que pode ser importado no Postman ou no Insomnia.
+
+Para testar rotas protegidas pelo Swagger, primeiro chame `POST /auth/login` em "Try it out". O cookie de sessão fica gravado no navegador e vale para as chamadas seguintes.
+
+A descrição das rotas está em [`src/docs/openapi.ts`](src/docs/openapi.ts). Ao criar ou mudar uma rota, atualize esse arquivo também.
 
 ## Endpoints
 

@@ -22,7 +22,7 @@ Thumbs.db
 
 .claude
 node_modules
-docs
+/docs/
 *.tsbuildinfo
 
 # Secrets (cada pasta tem seu .env.example versionado)

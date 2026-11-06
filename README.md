@@ -31,6 +31,7 @@ flowchart LR
 - Em desenvolvimento o navegador fala só com o Vite (porta 5173), que repassa `/api` para o Express (porta 3333). É a mesma origem, então o cookie de sessão funciona sem CORS.
 - Em produção o Express serve o frontend compilado e a API pela mesma porta (`API_PORT`, padrão 3333).
 - Cada feature do front fala com a API só pelo seu `api.ts` (via `frontend/src/shared/api/http.ts`). Cada módulo do backend em `backend/src/modules/` devolve o formato JSON que esses `api.ts` esperam.
+- A documentação interativa da API (Swagger/OpenAPI) fica em `/api/docs`, por exemplo http://localhost:5173/api/docs com `npm run dev`.
 
 ## Pré-requisitos
 
