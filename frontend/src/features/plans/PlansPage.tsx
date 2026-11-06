@@ -9,7 +9,7 @@ import { homePathFor } from "@/features/auth/role-home";
 import { BackButton } from "@/shared/components/BackButton";
 import { useAsync } from "@/shared/hooks/useAsync";
 import { listPlans, subscribeToPlan } from "./api";
-import { ConfirmPlanModal } from "./components/ConfirmPlanModal";
+import { CheckoutModal } from "./components/CheckoutModal";
 import { PlanCard } from "./components/PlanCard";
 import type { Plan } from "./data";
 
@@ -19,10 +19,10 @@ export function PlansPage() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  /** Called by the checkout once the (simulated) payment is approved; the modal shows the welcome message. */
   async function handleConfirmPlan(plan: Plan) {
     await subscribeToPlan(plan.id);
     await refreshUser();
-    setSelectedPlan(null);
     setSuccessMessage(`Pronto! Agora você está no plano ${plan.name}.`);
   }
 
@@ -87,7 +87,7 @@ export function PlansPage() {
         </Link>
       )}
 
-      <ConfirmPlanModal
+      <CheckoutModal
         plan={selectedPlan}
         onClose={() => setSelectedPlan(null)}
         onConfirm={handleConfirmPlan}

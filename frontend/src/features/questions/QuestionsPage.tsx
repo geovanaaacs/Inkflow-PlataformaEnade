@@ -46,13 +46,6 @@ export function QuestionsPage() {
     ],
     [filterOptions]
   );
-  const typeOptions = useMemo(
-    () => [
-      { value: ALL_VALUE, label: "Tipo" },
-      ...(filterOptions?.types ?? []).map((type) => ({ value: type, label: type })),
-    ],
-    [filterOptions]
-  );
 
   function handleClear() {
     setDraftKeyword("");
@@ -74,7 +67,6 @@ export function QuestionsPage() {
         onClear={handleClear}
         areaOptions={areaOptions}
         yearOptions={yearOptions}
-        typeOptions={typeOptions}
       />
 
       {loading && !questions ? (

@@ -13,6 +13,7 @@ export default function TeacherLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="questao/[code]" options={{ title: "Questão" }} />
         <Stack.Screen name="novo-horario" options={{ title: "Abrir horário" }} />
+        <Stack.Screen name="planos" options={{ title: "Planos" }} />
       </Stack>
     </PracticeProvider>
   );

@@ -16,7 +16,6 @@ interface QuestionFiltersProps {
   onClear: () => void;
   areaOptions: SelectOption[];
   yearOptions: SelectOption[];
-  typeOptions: SelectOption[];
 }
 
 export function QuestionFilters({
@@ -28,7 +27,6 @@ export function QuestionFilters({
   onClear,
   areaOptions,
   yearOptions,
-  typeOptions,
 }: QuestionFiltersProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -61,6 +59,7 @@ export function QuestionFilters({
           </div>
         </div>
 
+        {/* No "Tipo" filter: every question is multiple choice (usability test). */}
         <Select
           label="Sua área de TI"
           labelHidden
@@ -76,14 +75,6 @@ export function QuestionFilters({
           onChange={(event) => onChange({ ...value, year: event.target.value })}
           options={yearOptions}
           className="w-28"
-        />
-        <Select
-          label="Tipo"
-          labelHidden
-          value={value.type}
-          onChange={(event) => onChange({ ...value, type: event.target.value })}
-          options={typeOptions}
-          className="w-40"
         />
 
         <Button type="button" variant="outline" size="sm" onClick={onClear}>

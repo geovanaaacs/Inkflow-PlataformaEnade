@@ -1,5 +1,9 @@
 import { Github, Mail, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Container } from "@/design-system/components/Container";
+import { GITHUB_URL } from "@/features/institutional/links";
+
+const linkClass = "rounded-sm underline-offset-4 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-white";
 
 export function Footer() {
   return (
@@ -19,19 +23,24 @@ export function Footer() {
             <h4 className="font-semibold text-white">Contato</h4>
 
             <ul className="mt-3 space-y-3 text-sm text-neutral-400">
-              <li className="flex items-center gap-2">
-                <Mail className="size-4" />
-                contato@inkflow.com
+              <li>
+                <Link to="/contato" className={`flex items-center gap-2 ${linkClass}`}>
+                  <Mail aria-hidden="true" className="size-4" />
+                  contato@inkflow.com
+                </Link>
               </li>
 
               <li className="flex items-center gap-2">
-                <MapPin className="size-4" />
+                <MapPin aria-hidden="true" className="size-4" />
                 São José dos Campos - SP
               </li>
 
-              <li className="flex items-center gap-2">
-                <Github className="size-4" />
-                github.com/inkflow
+              <li>
+                <a href={GITHUB_URL} target="_blank" rel="noreferrer" className={`flex items-center gap-2 ${linkClass}`}>
+                  <Github aria-hidden="true" className="size-4" />
+                  GitHub do projeto
+                  <span className="sr-only">(abre em nova aba)</span>
+                </a>
               </li>
             </ul>
           </div>
@@ -40,11 +49,21 @@ export function Footer() {
         <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-neutral-700 pt-4 text-sm text-neutral-500 md:flex-row">
           <p>© 2026 Inkflow. Todos os direitos reservados.</p>
 
-          <div className="flex gap-6">
-            <span>Privacidade</span>
-            <span>Termos</span>
-            <span>GitHub</span>
-          </div>
+          <nav aria-label="Rodapé" className="flex gap-6">
+            <Link to="/privacidade" className={linkClass}>
+              Privacidade
+            </Link>
+            <Link to="/termos" className={linkClass}>
+              Termos
+            </Link>
+            <Link to="/contato" className={linkClass}>
+              Contato
+            </Link>
+            <a href={GITHUB_URL} target="_blank" rel="noreferrer" className={linkClass}>
+              GitHub
+              <span className="sr-only"> (abre em nova aba)</span>
+            </a>
+          </nav>
         </div>
       </Container>
     </footer>

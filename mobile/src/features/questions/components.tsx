@@ -101,10 +101,15 @@ export function ChipRow<T extends string | number>({
 
 type Panel = "ai" | "teacher" | "community";
 
-const PANELS: { key: Panel; label: string }[] = [
-  { key: "ai", label: "Gabarito IA" },
-  { key: "teacher", label: "Professor" },
-  { key: "community", label: "Comunidade" },
+/**
+ * `revealsAnswer`: the panel gives the answer away (the AI explanation states
+ * the correct option, the teacher's comment explains it), so it only opens
+ * after the question is answered — same rule as the web.
+ */
+const PANELS: { key: Panel; label: string; revealsAnswer: boolean }[] = [
+  { key: "ai", label: "Gabarito IA", revealsAnswer: true },
+  { key: "teacher", label: "Professor", revealsAnswer: true },
+  { key: "community", label: "Comunidade", revealsAnswer: false },
 ];
 
 /**
@@ -219,15 +224,21 @@ export function QuestionCard({ question }: { question: Question }) {
         <View style={styles.actions}>
           {PANELS.map((item) => {
             const active = panel === item.key;
+            const locked = item.revealsAnswer && !submitted;
             return (
               <Pressable
                 key={item.key}
                 accessibilityRole="button"
-                accessibilityState={{ expanded: active }}
+                accessibilityState={{ expanded: active, disabled: locked }}
+                accessibilityLabel={locked ? `${item.label} (responda a questão para liberar)` : item.label}
+                disabled={locked}
                 onPress={() => setPanel(active ? null : item.key)}
-                style={[styles.action, active && styles.actionActive]}
+                style={[styles.action, active && styles.actionActive, locked && styles.actionLocked]}
               >
-                <Text style={[styles.actionText, active && styles.actionTextActive]}>{item.label}</Text>
+                <Text style={[styles.actionText, active && styles.actionTextActive, locked && styles.actionTextLocked]}>
+                  {item.label}
+                  {locked ? " 🔒" : ""}
+                </Text>
               </Pressable>
             );
           })}
@@ -392,6 +403,8 @@ const styles = StyleSheet.create({
   actionActive: { backgroundColor: colors.brandSoft },
   actionText: { fontSize: 14, color: colors.brand600, fontWeight: "600" },
   actionTextActive: { color: colors.brand800 },
+  actionLocked: { borderColor: colors.border },
+  actionTextLocked: { color: colors.muted },
   panelHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: spacing(2), flexWrap: "wrap" },
   panelTitle: { fontSize: 16, fontWeight: "700", color: colors.ink },
   comment: { flexDirection: "row", gap: spacing(3) },
