@@ -1,0 +1,72 @@
+<Window x:Class="InkflowAdmin.Views.QuestionEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Width="760" Height="780" MinHeight="500" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <DockPanel Margin="24">
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+            <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorText}" Visibility="Collapsed" Margin="0,0,0,10" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" IsCancel="True" />
+                <Button x:Name="SaveButton" Margin="10,0,0,0" Click="OnSave" />
+            </StackPanel>
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock x:Name="Heading" Style="{StaticResource Title}" />
+
+                <Grid Margin="0,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="110" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Código (ex.: Q2024-15)" />
+                        <TextBox x:Name="CodeBox" CharacterCasing="Upper" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Ano" />
+                        <TextBox x:Name="YearBox" MaxLength="4" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Dificuldade" />
+                        <ComboBox x:Name="DifficultyBox" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Área de TI" />
+                        <ComboBox x:Name="AreaBox" SelectionChanged="OnAreaChanged" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Tópico (escolha ou digite um novo)" />
+                        <ComboBox x:Name="TopicBox" IsEditable="True" />
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Enunciado" />
+                <TextBox x:Name="StatementBox" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" VerticalContentAlignment="Top"
+                         VerticalScrollBarVisibility="Auto" />
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Alternativas (marque a correta)" />
+                <StackPanel x:Name="OptionsPanel" />
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Explicação da IA (opcional)" />
+                <TextBox x:Name="ExplanationBox" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" VerticalContentAlignment="Top"
+                         VerticalScrollBarVisibility="Auto" />
+                <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
+                           Text="Aparece no painel “Gabarito IA” do site e do app, liberado depois que o aluno responde." />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

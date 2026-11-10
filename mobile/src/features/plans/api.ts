@@ -1,5 +1,6 @@
 import { http } from "../../lib/http";
 import type { PlanId } from "../auth/api";
+import type { PaymentPayload } from "./payment";
 
 /*
  * Plans API:
@@ -21,6 +22,7 @@ export function listPlans(): Promise<Plan[]> {
   return http.get<Plan[]>("/plans");
 }
 
-export function subscribeToPlan(planId: PlanId): Promise<void> {
-  return http.post("/me/subscription", { planId });
+/** Paid plans need the payment from the simulated checkout, which the API records. */
+export function subscribeToPlan(planId: PlanId, payment?: PaymentPayload): Promise<void> {
+  return http.post("/me/subscription", { planId, payment });
 }

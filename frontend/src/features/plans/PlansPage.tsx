@@ -12,6 +12,7 @@ import { listPlans, subscribeToPlan } from "./api";
 import { CheckoutModal } from "./components/CheckoutModal";
 import { PlanCard } from "./components/PlanCard";
 import type { Plan } from "./data";
+import type { PaymentPayload } from "./payment";
 
 export function PlansPage() {
   const { user, refreshUser } = useAuth();
@@ -20,8 +21,8 @@ export function PlansPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   /** Called by the checkout once the (simulated) payment is approved; the modal shows the welcome message. */
-  async function handleConfirmPlan(plan: Plan) {
-    await subscribeToPlan(plan.id);
+  async function handleConfirmPlan(plan: Plan, payment?: PaymentPayload) {
+    await subscribeToPlan(plan.id, payment);
     await refreshUser();
     setSuccessMessage(`Pronto! Agora você está no plano ${plan.name}.`);
   }

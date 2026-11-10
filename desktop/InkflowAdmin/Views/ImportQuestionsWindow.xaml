@@ -1,0 +1,163 @@
+<Window x:Class="InkflowAdmin.Views.ImportQuestionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:InkflowAdmin.Views"
+        Style="{StaticResource AppWindow}"
+        Title="Importar questões" Width="1280" Height="820" MinWidth="1000" MinHeight="620"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" Closing="OnClosing">
+    <Window.Resources>
+        <views:AreaNameConverter x:Key="AreaName" />
+    </Window.Resources>
+    <DockPanel Margin="20">
+        <!-- 1. Source and defaults -->
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Importar questões" Style="{StaticResource Title}" />
+            <TextBlock Style="{StaticResource Muted}" Margin="0,2,0,12"
+                       Text="Abra um PDF de prova ou uma planilha. O programa separa as questões, você revisa e corrige cada uma aqui (ou exporta para o Excel) e só as questões aprovadas são gravadas." />
+
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12" Padding="14">
+                <StackPanel>
+                    <!-- Row 1: where the questions come from -->
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="📄  Abrir PDF…" Click="OnOpenPdf" />
+                        <Button Content="📊  Abrir planilha…" Margin="8,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnOpenSheet" />
+                        <Button Content="Baixar modelo" Margin="8,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnTemplate"
+                                ToolTip="Planilha modelo (Excel) para digitar várias questões" />
+                        <TextBlock Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="14,0,0,0" MaxWidth="560"
+                                   Text="Ao abrir, área e tópico são sugeridos pelas questões do banco; os valores abaixo valem para o que não tiver sugestão." />
+                    </StackPanel>
+                    <!-- Row 2: defaults -->
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Bottom">
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock Text="Área padrão" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <ComboBox x:Name="DefaultArea" MinWidth="190" DisplayMemberPath="Label" SelectedValuePath="Value" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock Text="Tópico padrão (opcional)" Style="{StaticResource FieldLabel}" Margin="0,0,0,4"
+                                       ToolTip="Usado só nas questões em que o programa não conseguir sugerir um tópico" />
+                            <TextBox x:Name="DefaultTopic" Width="170" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock Text="Ano" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <TextBox x:Name="DefaultYear" Width="64" MaxLength="4" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock Text="Dificuldade" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <ComboBox x:Name="DefaultDifficulty" MinWidth="100" />
+                        </StackPanel>
+                        <Button Content="✨  Sugerir tópicos" Margin="0,0,8,0" VerticalAlignment="Bottom" Style="{StaticResource SecondaryButton}" Click="OnSuggestTopics"
+                                ToolTip="Sugere a área e o tópico de cada questão comparando com as questões do banco e com palavras-chave de cada área" />
+                        <Button Content="Aplicar a todas" Style="{StaticResource SecondaryButton}" Click="OnApplyDefaults" VerticalAlignment="Bottom"
+                                ToolTip="Usa estes valores em todas as questões ainda não importadas (o código passa a usar o ano escolhido)" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- 3. Actions -->
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Content="Fechar" Style="{StaticResource SecondaryButton}" IsCancel="True" />
+                <Button x:Name="ImportButton" Margin="10,0,0,0" Click="OnImport" IsEnabled="False" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="ExportButton" Content="Exportar para Excel/CSV…" Style="{StaticResource SecondaryButton}" Click="OnExport" IsEnabled="False"
+                        ToolTip="Salva o que foi extraído numa planilha para revisar fora do programa; depois use “Abrir planilha”" />
+                <Button x:Name="ApproveAllButton" Content="Aprovar todas as prontas" Margin="10,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnApproveAll" IsEnabled="False" />
+                <TextBlock x:Name="Summary" VerticalAlignment="Center" Margin="14,0,0,0" FontWeight="SemiBold" />
+            </StackPanel>
+        </DockPanel>
+
+        <!-- 2. Review: list + editor -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="4*" MinWidth="380" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Margin="0,0,16,0">
+                <DataGrid x:Name="DraftsGrid" IsReadOnly="False" SelectionChanged="OnSelect">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Aprovar" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Approved, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"
+                                              ToolTip="Marque para gravar esta questão" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Situação" Binding="{Binding StatusLabel}" IsReadOnly="True" Width="110" />
+                        <DataGridTextColumn Header="Código" Binding="{Binding Code}" IsReadOnly="True" Width="100" />
+                        <DataGridTextColumn Header="Área" Binding="{Binding AreaSlug, Converter={StaticResource AreaName}}" IsReadOnly="True" Width="135" />
+                        <DataGridTextColumn Header="Tópico" Binding="{Binding TopicLabel}" IsReadOnly="True" Width="210" />
+                        <DataGridTextColumn Header="Gab." Binding="{Binding Correct}" IsReadOnly="True" Width="50" />
+                        <DataGridTextColumn Header="Enunciado" Binding="{Binding Preview}" IsReadOnly="True" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock x:Name="EmptyHint" Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" MaxWidth="420"
+                           Text="Abra um PDF de prova ou uma planilha para começar. As questões encontradas aparecem aqui para revisão." />
+            </Grid>
+
+            <Border Grid.Column="1" Style="{StaticResource Card}" Margin="0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="Editor" IsEnabled="False" Margin="0,0,8,0">
+                        <DockPanel>
+                            <CheckBox DockPanel.Dock="Right" Content="Aprovar" FontWeight="SemiBold" VerticalAlignment="Center"
+                                      IsChecked="{Binding Approved, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Text="{Binding Source}" Style="{StaticResource Muted}" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding Problems}" Style="{StaticResource ErrorText}" />
+                        <TextBlock Text="{Binding Result}" Foreground="{StaticResource Success}" FontWeight="SemiBold" TextWrapping="Wrap" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Código" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}" CharacterCasing="Upper" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Ano" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}" MaxLength="4" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="4">
+                                <TextBlock Text="Dificuldade" Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="EditorDifficulty" SelectedItem="{Binding Difficulty}" MinWidth="0" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Área" Style="{StaticResource FieldLabel}" />
+                        <ComboBox x:Name="EditorArea" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding AreaSlug}" />
+                        <TextBlock Text="Tópico" Style="{StaticResource FieldLabel}" />
+                        <ComboBox x:Name="EditorTopic" IsEditable="True" MinWidth="0" Text="{Binding Topic, UpdateSourceTrigger=PropertyChanged}"
+                                  ToolTip="Escolha um tópico já usado na área ou digite um novo" />
+                        <TextBlock Text="{Binding TopicOrigin}" Style="{StaticResource Muted}" Margin="0,4,0,0" />
+
+                        <TextBlock Text="Enunciado" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding Statement, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap"
+                                 MinHeight="110" VerticalContentAlignment="Top" />
+
+                        <TextBlock Text="Alternativas" Style="{StaticResource FieldLabel}" />
+                        <DockPanel Margin="0,0,0,6"><TextBlock Text="A)" Width="26" FontWeight="SemiBold" VerticalAlignment="Center" /><TextBox Text="{Binding OptionA, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" /></DockPanel>
+                        <DockPanel Margin="0,0,0,6"><TextBlock Text="B)" Width="26" FontWeight="SemiBold" VerticalAlignment="Center" /><TextBox Text="{Binding OptionB, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" /></DockPanel>
+                        <DockPanel Margin="0,0,0,6"><TextBlock Text="C)" Width="26" FontWeight="SemiBold" VerticalAlignment="Center" /><TextBox Text="{Binding OptionC, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" /></DockPanel>
+                        <DockPanel Margin="0,0,0,6"><TextBlock Text="D)" Width="26" FontWeight="SemiBold" VerticalAlignment="Center" /><TextBox Text="{Binding OptionD, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" /></DockPanel>
+                        <DockPanel Margin="0,0,0,6"><TextBlock Text="E)" Width="26" FontWeight="SemiBold" VerticalAlignment="Center" /><TextBox Text="{Binding OptionE, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" /></DockPanel>
+
+                        <TextBlock Text="Alternativa correta" Style="{StaticResource FieldLabel}" />
+                        <ComboBox x:Name="EditorCorrect" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Correct}" HorizontalAlignment="Left" />
+
+                        <TextBlock Text="Explicação da IA (opcional)" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding Explanation, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap"
+                                 MinHeight="70" VerticalContentAlignment="Top" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>

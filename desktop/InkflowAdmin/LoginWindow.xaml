@@ -1,0 +1,55 @@
+<Window x:Class="InkflowAdmin.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Title="Inkflow Admin — Entrar" Width="460" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Closed="OnClosed">
+    <Border Style="{StaticResource Card}" Margin="24" Padding="28">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Border Width="40" Height="40" CornerRadius="20" Background="{StaticResource Brand600}">
+                    <TextBlock Text="i" Foreground="White" FontSize="22" FontWeight="Bold" FontStyle="Italic"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="Inkflow Admin" FontSize="22" FontWeight="Bold" Foreground="{StaticResource Brand900}"
+                           VerticalAlignment="Center" Margin="10,0,0,0" />
+            </StackPanel>
+            <TextBlock Style="{StaticResource Muted}" Margin="0,12,0,4"
+                       Text="Administração da plataforma: usuários, questões, métricas de uso e pagamentos. Acesso só para administradores." />
+
+            <TextBlock Style="{StaticResource FieldLabel}" Text="E-mail" />
+            <TextBox x:Name="EmailBox" />
+
+            <TextBlock Style="{StaticResource FieldLabel}" Text="Senha" />
+            <!-- Hidden (PasswordBox) or visible (TextBox) password, switched by the eye button. -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <PasswordBox x:Name="PasswordBox" />
+                <TextBox x:Name="PasswordText" Visibility="Collapsed" />
+                <ToggleButton x:Name="ShowPassword" Grid.Column="1" Margin="6,0,0,0" Width="40" Cursor="Hand"
+                              ToolTip="Mostrar senha" AutomationProperties.Name="Mostrar senha"
+                              Checked="OnShowPassword" Unchecked="OnHidePassword"
+                              Background="White" BorderBrush="{StaticResource Border}" BorderThickness="1.5">
+                    <TextBlock x:Name="EyeIcon" Text="&#xE7B3;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                               Foreground="{StaticResource Brand800}" />
+                </ToggleButton>
+            </Grid>
+
+            <Expander Header="Servidor" Margin="0,12,0,0" Foreground="{StaticResource MutedBrush}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Endereço da API" />
+                    <TextBox x:Name="ApiUrlBox" />
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
+                               Text="Padrão: a API do Inkflow rodando neste computador (npm run dev na raiz do projeto)." />
+                </StackPanel>
+            </Expander>
+
+            <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorText}" Visibility="Collapsed" />
+            <Button x:Name="LoginButton" Content="Entrar" Margin="0,18,0,0" Padding="16,10" IsDefault="True" Click="OnLogin" />
+        </StackPanel>
+    </Border>
+</Window>

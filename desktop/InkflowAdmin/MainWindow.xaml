@@ -1,0 +1,55 @@
+﻿<Window x:Class="InkflowAdmin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Title="Inkflow Admin" Width="1280" Height="800" MinWidth="980" MinHeight="620"
+        WindowStartupLocation="CenterScreen" Closed="OnClosed">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <DockPanel Grid.Column="0" Background="{StaticResource Brand900}" LastChildFill="False">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="22,24,0,28">
+                <Border Width="36" Height="36" CornerRadius="18" Background="White">
+                    <TextBlock Text="i" Foreground="{StaticResource Brand800}" FontSize="20" FontWeight="Bold" FontStyle="Italic"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Inkflow" Foreground="White" FontSize="18" FontWeight="Bold" />
+                    <TextBlock Text="Administração" Foreground="#CCFFFFFF" FontSize="12" />
+                </StackPanel>
+            </StackPanel>
+
+            <RadioButton DockPanel.Dock="Top" Style="{StaticResource NavItem}" GroupName="Nav" Tag="painel" Checked="OnNavigate" x:Name="NavDashboard">📊  Painel</RadioButton>
+            <RadioButton DockPanel.Dock="Top" Style="{StaticResource NavItem}" GroupName="Nav" Tag="usuarios" Checked="OnNavigate">👥  Usuários</RadioButton>
+            <RadioButton DockPanel.Dock="Top" Style="{StaticResource NavItem}" GroupName="Nav" Tag="questoes" Checked="OnNavigate">📝  Questões</RadioButton>
+            <RadioButton DockPanel.Dock="Top" Style="{StaticResource NavItem}" GroupName="Nav" Tag="pagamentos" Checked="OnNavigate">💳  Pagamentos</RadioButton>
+
+            <StackPanel DockPanel.Dock="Bottom" Margin="22,0,22,22">
+                <TextBlock x:Name="UserName" Foreground="White" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="UserEmail" Foreground="#CCFFFFFF" FontSize="12" TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="ApiUrl" Foreground="#99FFFFFF" FontSize="11" Margin="0,4,0,10" TextTrimming="CharacterEllipsis" />
+                <Button Content="Sair" Style="{StaticResource SecondaryButton}" Click="OnLogout" />
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Content -->
+        <Grid Grid.Column="1" Margin="28,22,12,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Row="0" Margin="0,0,16,16">
+                <Button DockPanel.Dock="Right" Content="↻  Atualizar" Style="{StaticResource SecondaryButton}" Click="OnRefresh" ToolTip="Recarregar os dados da API (F5)" />
+                <StackPanel>
+                    <TextBlock x:Name="PageTitle" Style="{StaticResource Title}" />
+                    <TextBlock x:Name="PageSubtitle" Style="{StaticResource Muted}" />
+                </StackPanel>
+            </DockPanel>
+            <ContentControl x:Name="Page" Grid.Row="1" />
+        </Grid>
+    </Grid>
+</Window>

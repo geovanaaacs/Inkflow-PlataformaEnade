@@ -8,8 +8,9 @@ O repositório é um **monorepo** com uma pasta por camada:
 Inkflow/
 ├── frontend/   React 18 + Vite + TypeScript + Tailwind  → o que o navegador exibe
 ├── backend/    Node.js 22 + Express 5 + TypeScript      → lógica e API REST (/api)
-├── database/   SQL Server: scripts 01–09                → modelo, constraints e seed
+├── database/   SQL Server: scripts 01–10                → modelo, constraints e seed
 ├── mobile/     React Native + Expo (fora dos workspaces) → app para celular
+├── desktop/    C# + WPF (.NET 10)                       → app de administração para Windows
 ├── docs/       análise do design no Figma (fora do git)
 └── package.json   npm workspaces (frontend + backend)
 ```
@@ -20,6 +21,7 @@ Inkflow/
 | `backend/` | [backend/README.md](backend/README.md) — endpoints, sessão, conexão com o banco |
 | `database/` | [database/README.md](database/README.md) — modelo, diagrama, ordem dos scripts |
 | `mobile/` | [mobile/README.md](mobile/README.md) — app Expo, login por token, como rodar no celular |
+| `desktop/` | [desktop/README.md](desktop/README.md) — app de administração em C#/WPF: métricas, usuários, questões e pagamentos |
 
 ## Como as camadas conversam
 
@@ -28,6 +30,7 @@ flowchart LR
   browser["Navegador<br/>React (frontend/)"] -- "/api/* (JSON)<br/>cookie de sessão" --> vite["Vite dev server<br/>:5173 (proxy)"]
   vite --> api["Express (backend/)<br/>:3333"]
   phone["Celular<br/>Expo (mobile/)"] -- "/api/* (JSON)<br/>token Bearer" --> api
+  desk["Windows<br/>WPF (desktop/)"] -- "/api/admin/* (JSON)<br/>token Bearer" --> api
   api -- "ODBC · login do Windows" --> db[("SQL Server<br/>Inkflow (database/)")]
 ```
 
@@ -73,6 +76,6 @@ Para produção local, configure `NODE_ENV=production` e `API_PORT` no `backend/
 ## Situação atual
 
 - **frontend:** completo (perfis aluno, professor e admin; planos; questões; simulados; mentoria; ranking), com os dados vindos da API.
-- **database:** scripts 01–09 aplicados no SQL Server local.
+- **database:** scripts 01–10 aplicados no SQL Server local.
 - **backend:** todos os módulos prontos (auth, planos, questões, dashboard/ranking, simulados, mentoria, área do professor e admin), e o front já usa a API em todas as telas. Documentação Swagger em `/api/docs`.
 - **mobile:** completo para os três perfis (aluno, incluindo simulados e mentoria do Premium; professor; admin), usando a mesma API com login por token ([mobile/README.md](mobile/README.md)).

@@ -11,6 +11,7 @@ import {
   saveQuestion,
   updateUser,
 } from "./admin.repository.js";
+import { getAdminMetrics, listPayments } from "./metrics.repository.js";
 
 /*
  * Front: src/features/admin/api.ts (only the "admin" profile)
@@ -24,6 +25,10 @@ import {
  *   listAdminMockExams()          → GET    /api/admin/mock-exams
  *   createMockExam(input)         → POST   /api/admin/mock-exams
  *   updateMockExam(id, input)     → PUT    /api/admin/mock-exams/:id
+ *
+ * Desktop admin app (desktop/InkflowAdmin):
+ *   GET /api/admin/metrics          users, students per plan, usage and revenue
+ *   GET /api/admin/payments?limit=  payments, newest first
  */
 
 const idSchema = z.coerce.number({ message: "Identificador inválido." }).int().positive("Identificador inválido.");
@@ -78,6 +83,17 @@ const questionFiltersSchema = z.object({
 
 export const adminRouter = Router();
 adminRouter.use("/admin", requireUser("admin"));
+
+const paymentsQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(500).default(100) });
+
+adminRouter.get("/admin/metrics", async (_req, res) => {
+  res.json(await getAdminMetrics());
+});
+
+adminRouter.get("/admin/payments", async (req, res) => {
+  const { limit } = paymentsQuerySchema.parse(req.query);
+  res.json(await listPayments(limit));
+});
 
 adminRouter.get("/admin/users", async (req, res) => {
   res.json(await listUsers(userFiltersSchema.parse(req.query)));

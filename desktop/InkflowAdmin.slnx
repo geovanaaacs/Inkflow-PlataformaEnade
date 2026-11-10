@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="InkflowAdmin.Core/InkflowAdmin.Core.csproj" />
+  <Project Path="InkflowAdmin.Smoke/InkflowAdmin.Smoke.csproj" />
+  <Project Path="InkflowAdmin/InkflowAdmin.csproj" />
+</Solution>

@@ -10,6 +10,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { useOptionalPractice } from "../questions/practice";
 import { listPlans, subscribeToPlan, type Plan } from "./api";
 import { CheckoutSheet } from "./CheckoutSheet";
+import type { PaymentPayload } from "./payment";
 
 /**
  * Plans, for every profile (each one opens it from its own stack). Students
@@ -23,8 +24,8 @@ export function PlansScreen() {
   const [checkout, setCheckout] = useState<Plan | null>(null);
   const isStudent = user?.role === "aluno";
 
-  async function confirm(plan: Plan) {
-    await subscribeToPlan(plan.id);
+  async function confirm(plan: Plan, payment?: PaymentPayload) {
+    await subscribeToPlan(plan.id, payment);
     await refreshUser();
     // New limit and features (notes) for the practice screens.
     practice?.reload();

@@ -7,6 +7,13 @@
 
 export type PaymentMethod = "cartao" | "pix";
 
+/** What the API receives and records (dbo.Payments): never the full card number. */
+export type PaymentPayload = { method: "cartao"; cardLast4: string } | { method: "pix" };
+
+export function paymentPayload(method: PaymentMethod, cardNumber: string): PaymentPayload {
+  return method === "pix" ? { method } : { method, cardLast4: cardNumber.replace(/D/g, "").slice(-4) };
+}
+
 export interface CardInput {
   holder: string;
   number: string;
