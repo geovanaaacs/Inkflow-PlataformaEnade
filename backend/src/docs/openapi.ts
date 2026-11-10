@@ -375,6 +375,55 @@ const schemas: Record<string, Schema> = {
     },
     ["aiExplanation"]
   ),
+  PaymentInput: object(
+    {
+      method: { type: "string", enum: ["cartao", "pix"] },
+      cardLast4: str("4 últimos dígitos (só para cartão)", { pattern: "^\\d{4}$" }),
+    },
+    ["cardLast4"]
+  ),
+  AdminPayment: object({
+    id: str(),
+    userId: str(),
+    userName: str(),
+    userEmail: str(),
+    plan: ref("PlanId"),
+    planName: str(),
+    amount: { type: "number" },
+    method: { type: "string", enum: ["cartao", "pix", "legado"], description: "legado = assinatura anterior à tabela de pagamentos" },
+    cardLast4: nullable(str()),
+    status: { type: "string", enum: ["aprovado", "estornado"] },
+    paidAt: dateTime(),
+  }),
+  AdminMetrics: object({
+    users: object({
+      total: int(),
+      active: int(),
+      inactive: int(),
+      byRole: object({ aluno: int(), professor: int(), admin: int() }),
+      newLast30Days: int(),
+      newTeachersLast30Days: int("Contas de professor criadas nos últimos 30 dias"),
+    }),
+    adhesions: object({
+      last30Days: int("Planos pagos assinados por alunos nos últimos 30 dias (novas assinaturas e trocas)"),
+      byPlan: arrayOf(object({ plan: ref("PlanId"), name: str(), count: int() })),
+    }),
+    studentsByPlan: arrayOf(object({ plan: ref("PlanId"), name: str(), students: int(), price: { type: "number" } })),
+    activity: object({
+      answersToday: int(),
+      answersLast7Days: int(),
+      activeStudentsLast7Days: int(),
+      mockExamsFinishedLast30Days: int(),
+      mentoringRequestsLast30Days: int(),
+    }),
+    answersByDay: arrayOf(object({ date: str("YYYY-MM-DD (horário de Brasília)"), answers: int() })),
+    revenue: object({
+      monthlyRecurring: { type: "number", description: "Soma dos preços das assinaturas pagas ativas" },
+      last30Days: { type: "number" },
+      paymentsLast30Days: int(),
+      total: { type: "number" },
+    }),
+  }),
   QuestionCatalog: object({
     areas: arrayOf(ref("Area")),
     topicsByArea: record(arrayOf(str()), "slug da área → tópicos já usados"),
@@ -465,9 +514,12 @@ const paths = {
   "/me/subscription": {
     post: op({
       tag: "Planos",
-      summary: "Troca o plano do aluno (assinatura simulada, sem pagamento)",
+      summary: "Troca o plano do aluno (checkout simulado)",
+      description:
+        "Planos pagos exigem `payment`, que vem do checkout simulado e é gravado em dbo.Payments. " +
+        "Só a forma e os 4 últimos dígitos do cartão são enviados; o número completo nunca sai da tela.",
       auth: STUDENT,
-      requestBody: body(object({ planId: ref("PlanId") })),
+      requestBody: body(object({ planId: ref("PlanId"), payment: ref("PaymentInput") }, ["payment"])),
       responses: { 204: noContent, 400: E400, 403: E403, 404: E404 },
     }),
   },
@@ -768,6 +820,24 @@ const paths = {
   },
 
   /* ---------------------------------------------------------------- Admin */
+  "/admin/metrics": {
+    get: op({
+      tag: "Admin",
+      summary: "Métricas para o app desktop: usuários, alunos por plano, uso e receita",
+      description: "Só respostas dadas como aluno entram nas métricas de uso.",
+      auth: ADMIN,
+      responses: { 200: ok(ref("AdminMetrics")), 403: E403 },
+    }),
+  },
+  "/admin/payments": {
+    get: op({
+      tag: "Admin",
+      summary: "Pagamentos, mais recentes primeiro",
+      auth: ADMIN,
+      parameters: [queryParam("limit", "1 a 500 (padrão 100)", int(undefined, { minimum: 1, maximum: 500, default: 100 }))],
+      responses: { 200: ok(arrayOf(ref("AdminPayment"))), 400: E400, 403: E403 },
+    }),
+  },
   "/admin/users": {
     get: op({
       tag: "Admin",

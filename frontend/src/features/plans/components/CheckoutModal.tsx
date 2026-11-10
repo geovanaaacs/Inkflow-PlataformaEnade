@@ -14,18 +14,20 @@ import {
   TEST_CARD_NUMBER,
   formatCardNumber,
   formatExpiry,
+  paymentPayload,
   maskedCard,
   pixCode,
   validateCard,
   type CardInput,
   type PaymentMethod,
+  type PaymentPayload,
 } from "../payment";
 
 interface CheckoutModalProps {
   plan: Plan | null;
   onClose: () => void;
   /** Switches the plan in the API (POST /me/subscription) and refreshes the user. */
-  onConfirm: (plan: Plan) => Promise<void>;
+  onConfirm: (plan: Plan, payment?: PaymentPayload) => Promise<void>;
 }
 
 type Step = "form" | "processing" | "success";
@@ -84,11 +86,13 @@ export function CheckoutModal({ plan, onClose, onConfirm }: CheckoutModalProps) 
     setError(null);
     setReceipt(free ? "Plano gratuito" : method === "pix" ? "Pix" : `Cartão ${maskedCard(card.number)}`);
     // The card data is not needed anymore: clear it before "processing".
+    // Only the method and the last 4 digits go to the API; then the card data is cleared.
+    const payment = free ? undefined : paymentPayload(method, card.number);
     setCard(EMPTY_CARD);
     setStep("processing");
     timer.current = window.setTimeout(async () => {
       try {
-        await onConfirm(plan);
+        await onConfirm(plan, payment);
         setStep("success");
       } catch (confirmError) {
         setError(errorMessage(confirmError, "Não foi possível concluir a assinatura."));

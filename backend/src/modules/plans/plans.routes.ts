@@ -8,7 +8,9 @@ import type { PlanId } from "../../shared/plan-access.js";
 /*
  * Front: src/features/plans/api.ts
  *   listPlans() → GET /api/plans
- *   subscribeToPlan(planId) → POST /api/me/subscription { planId }
+ *   subscribeToPlan(planId, payment) → POST /api/me/subscription { planId, payment? }
+ *     payment = { method: "cartao", cardLast4 } | { method: "pix" }: required for paid
+ *     plans and recorded in dbo.Payments (database/10_pagamentos.sql)
  */
 
 interface PlanRow {
@@ -47,13 +49,30 @@ plansRouter.get("/plans", async (_req, res) => {
   );
 });
 
+/**
+ * Payment from the simulated checkout. Only the method and the last 4 card
+ * digits travel: the full card number never leaves the screen.
+ */
+const paymentSchema = z.discriminatedUnion(
+  "method",
+  [
+    z.object({
+      method: z.literal("cartao"),
+      cardLast4: z.string().regex(/^\d{4}$/, "Informe os 4 últimos dígitos do cartão."),
+    }),
+    z.object({ method: z.literal("pix") }),
+  ],
+  { message: "Forma de pagamento inválida." }
+);
+
 const subscribeSchema = z.object({
   planId: z.enum(["basico", "avancado", "premium"], { message: "Plano inválido." }),
+  payment: paymentSchema.optional(),
 });
 
 /** Simulated subscription (no payment yet): closes the active one and opens the new one. */
 plansRouter.post("/me/subscription", requireUser("aluno"), async (req, res) => {
-  const { planId } = subscribeSchema.parse(req.body);
+  const { planId, payment } = subscribeSchema.parse(req.body);
   const user = currentUser(req);
   const plan = await queryOne<{ Id: number; Price: number }>(
     `SELECT Id, Price FROM dbo.Plans WHERE Slug = @planId AND IsActive = 1`,
@@ -65,6 +84,10 @@ plansRouter.post("/me/subscription", requireUser("aluno"), async (req, res) => {
     return;
   }
 
+  // A paid plan needs the (simulated) payment from the checkout; the free plan doesn't.
+  const paid = Number(plan.Price) > 0;
+  if (paid && !payment) throw new HttpError(400, "Informe a forma de pagamento para assinar este plano.");
+
   await withTransaction(async (run) => {
     await run(
       `UPDATE dbo.Subscriptions
@@ -72,10 +95,26 @@ plansRouter.post("/me/subscription", requireUser("aluno"), async (req, res) => {
        WHERE UserId = @userId AND Status = N'ativa'`,
       { userId: user.id }
     );
-    await run(
-      `INSERT INTO dbo.Subscriptions (UserId, PlanId, Status, Price) VALUES (@userId, @planDbId, N'ativa', @price)`,
+    const [subscription] = await run<{ Id: number }>(
+      `INSERT INTO dbo.Subscriptions (UserId, PlanId, Status, Price)
+       OUTPUT inserted.Id
+       VALUES (@userId, @planDbId, N'ativa', @price)`,
       { userId: user.id, planDbId: plan.Id, price: plan.Price }
     );
+    if (paid && payment && subscription) {
+      await run(
+        `INSERT INTO dbo.Payments (UserId, PlanId, SubscriptionId, Amount, Method, CardLast4)
+         VALUES (@userId, @planDbId, @subscriptionId, @amount, @method, @cardLast4)`,
+        {
+          userId: user.id,
+          planDbId: plan.Id,
+          subscriptionId: subscription.Id,
+          amount: plan.Price,
+          method: payment.method,
+          cardLast4: payment.method === "cartao" ? payment.cardLast4 : null,
+        }
+      );
+    }
   });
   res.status(204).end();
 });

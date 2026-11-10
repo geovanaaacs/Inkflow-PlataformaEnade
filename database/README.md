@@ -22,6 +22,7 @@ Modelo relacional do Inkflow, a plataforma de prática para o ENADE. Ele foi der
 | 7 | `07_seed_frontend.sql` | Dados de exemplo alinhados aos mocks do front (questões, simulados, anotações, agenda) |
 | 8 | `08_alinhar_planos.sql` | Ordem e benefícios dos planos iguais aos da página de Planos; equipe (professor/admin) sem assinatura ativa |
 | 9 | `09_mais_areas_e_questoes.sql` | Teste de usabilidade: 5 áreas de TI novas (Segurança, Dev. Web, Ciência de Dados, Arquitetura, Nuvem), 20 questões novas com comentário de professor e simulados maiores (5 a 24 questões, mais um simulado das áreas novas) |
+| 10 | `10_pagamentos.sql` | Tabela de pagamentos (forma e 4 últimos dígitos do cartão) para o app desktop de administração; as assinaturas pagas anteriores viram registros "legado" |
 
 Todos os scripts são **idempotentes**: verificam se cada objeto ou registro já existe antes de criar. Rodar tudo de novo não gera erro nem duplica dados.
 
@@ -42,6 +43,7 @@ sqlcmd -S localhost -E -C -I -f 65001 -b -i 06_ajustes_pendentes.sql -v 'ADMIN_E
 sqlcmd -S localhost -E -C -I -f 65001 -b -i 07_seed_frontend.sql
 sqlcmd -S localhost -E -C -I -f 65001 -b -i 08_alinhar_planos.sql
 sqlcmd -S localhost -E -C -I -f 65001 -b -i 09_mais_areas_e_questoes.sql
+sqlcmd -S localhost -E -C -I -f 65001 -b -i 10_pagamentos.sql
 ```
 
 - `-I` liga `QUOTED_IDENTIFIER`. É **obrigatório**, porque há índices filtrados e o `sqlcmd` desliga essa opção por padrão. SSMS, ADO.NET, JDBC e os drivers Node já ligam sozinhos.
