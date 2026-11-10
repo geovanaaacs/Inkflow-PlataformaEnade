@@ -1,0 +1,58 @@
+<UserControl x:Class="InkflowAdmin.Views.UsersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="320" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Filters -->
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,16,12">
+            <TextBlock Text="Buscar" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBox x:Name="SearchBox" Width="300" ToolTip="Nome ou e-mail" KeyDown="OnSearchKeyDown" />
+            <ComboBox x:Name="RoleFilter" Margin="10,0,0,0" SelectionChanged="OnFilterChanged" />
+            <Button Content="Buscar" Margin="10,0,0,0" Click="OnSearch" />
+        </StackPanel>
+        <TextBlock x:Name="Status" Grid.Row="1" Grid.Column="0" Style="{StaticResource Muted}" Margin="0,0,0,8" />
+
+        <DataGrid x:Name="UsersGrid" Grid.Row="2" Grid.Column="0" Margin="0,0,16,16" SelectionChanged="OnSelect">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nome" Binding="{Binding Name}" Width="2*" />
+                <DataGridTextColumn Header="E-mail" Binding="{Binding Email}" Width="2*" />
+                <DataGridTextColumn Header="Perfil" Binding="{Binding RoleLabel}" Width="120" />
+                <DataGridTextColumn Header="Plano" Binding="{Binding PlanLabel}" Width="*" />
+                <DataGridTextColumn Header="Conta" Binding="{Binding StatusLabel}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Selected user -->
+        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock x:Name="EmptyHint" Style="{StaticResource Muted}" Text="Selecione um usuário na tabela para mudar o perfil, o plano ou o acesso." />
+                <StackPanel x:Name="Editor" Visibility="Collapsed">
+                    <TextBlock x:Name="SelectedName" Style="{StaticResource SectionTitle}" Margin="0" TextWrapping="Wrap" />
+                    <TextBlock x:Name="SelectedEmail" Style="{StaticResource Muted}" />
+                    <TextBlock x:Name="SelectedStatus" Margin="0,6,0,0" FontWeight="SemiBold" />
+
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Perfil" />
+                    <ComboBox x:Name="RoleBox" SelectionChanged="OnRoleChanged" />
+                    <TextBlock x:Name="RoleHint" Style="{StaticResource Muted}" Margin="0,4,0,0" />
+
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Plano" />
+                    <ComboBox x:Name="PlanBox" />
+                    <TextBlock x:Name="PlanHint" Style="{StaticResource Muted}" Margin="0,4,0,0" />
+
+                    <Button x:Name="SaveButton" Content="Salvar alterações" Margin="0,16,0,0" Click="OnSave" />
+                    <Button x:Name="ToggleButton" Margin="0,10,0,0" Style="{StaticResource DangerButton}" Click="OnToggleActive" />
+                    <TextBlock x:Name="EditorMessage" TextWrapping="Wrap" Margin="0,10,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

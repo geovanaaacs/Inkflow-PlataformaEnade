@@ -1,0 +1,39 @@
+<UserControl x:Class="InkflowAdmin.Views.QuestionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="0,0,16,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,12">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Content="⇪  Importar (PDF ou planilha)…" Style="{StaticResource SecondaryButton}" Click="OnImport" Margin="0,0,10,0"
+                        ToolTip="Cadastrar várias questões de uma vez a partir de um PDF de prova ou de uma planilha" />
+                <Button Content="+ Nova questão" Click="OnNew" />
+                <Button x:Name="EditButton" Content="Editar" Margin="10,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnEdit" IsEnabled="False" />
+                <Button x:Name="RemoveButton" Content="Remover" Margin="10,0,0,0" Style="{StaticResource DangerButton}" Click="OnRemove" IsEnabled="False" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Buscar" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox x:Name="SearchBox" Width="280" ToolTip="Código, tópico ou enunciado" KeyDown="OnSearchKeyDown" />
+                <ComboBox x:Name="AreaFilter" Margin="10,0,0,0" MinWidth="200" SelectionChanged="OnFilterChanged" />
+                <Button Content="Buscar" Margin="10,0,0,0" Click="OnSearch" />
+            </StackPanel>
+        </DockPanel>
+        <TextBlock x:Name="Status" Grid.Row="1" Style="{StaticResource Muted}" Margin="0,0,0,8" />
+
+        <DataGrid x:Name="QuestionsGrid" Grid.Row="2" SelectionChanged="OnSelect" MouseDoubleClick="OnRowDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Código" Binding="{Binding Code}" Width="110" />
+                <DataGridTextColumn Header="Área" Binding="{Binding Area.Name}" Width="*" />
+                <DataGridTextColumn Header="Tópico" Binding="{Binding Topic}" Width="*" />
+                <DataGridTextColumn Header="Ano" Binding="{Binding Year}" Width="70" />
+                <DataGridTextColumn Header="Dificuldade" Binding="{Binding Difficulty}" Width="100" />
+                <DataGridTextColumn Header="Gabarito" Binding="{Binding CorrectLetter}" Width="80" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

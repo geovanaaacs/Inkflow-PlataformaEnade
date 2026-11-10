@@ -1,0 +1,105 @@
+<UserControl x:Class="InkflowAdmin.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock x:Name="Status" Style="{StaticResource Muted}" Margin="0,0,0,12" />
+
+            <!-- Indicators -->
+            <ItemsControl x:Name="Kpis">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" Style="{StaticResource Muted}" />
+                                <TextBlock Text="{Binding Value}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource Brand800}" Margin="0,4,0,2" />
+                                <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Students per plan -->
+                <Border Grid.Column="0" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Alunos por plano" Style="{StaticResource SectionTitle}" />
+                        <ItemsControl x:Name="PlanBars">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        <Border Grid.Column="1" Background="{StaticResource BrandSoft}" CornerRadius="5" Height="22">
+                                            <Border Background="{StaticResource Brand600}" CornerRadius="5" HorizontalAlignment="Left"
+                                                    Width="{Binding Size}" />
+                                        </Border>
+                                        <TextBlock Grid.Column="2" Text="{Binding Display}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock x:Name="PlanNote" Style="{StaticResource Muted}" Margin="0,10,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Profiles and engagement -->
+                <Border Grid.Column="1" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Perfis e engajamento" Style="{StaticResource SectionTitle}" />
+                        <ItemsControl x:Name="Facts">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,5">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Value}" FontWeight="Bold" />
+                                        <TextBlock Text="{Binding Title}" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Answers per day -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Respostas de alunos por dia (últimos 14 dias)" Style="{StaticResource SectionTitle}" />
+                    <ItemsControl x:Name="DayBars" Height="190">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="4,0" ToolTip="{Binding Tooltip}">
+                                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding Label}" Style="{StaticResource Muted}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                                    <StackPanel VerticalAlignment="Bottom">
+                                        <TextBlock Text="{Binding Display}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,3" />
+                                        <Border Background="{StaticResource Brand600}" CornerRadius="4,4,0,0" Height="{Binding Size}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
