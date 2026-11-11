@@ -11,7 +11,7 @@ export type PaymentMethod = "cartao" | "pix";
 export type PaymentPayload = { method: "cartao"; cardLast4: string } | { method: "pix" };
 
 export function paymentPayload(method: PaymentMethod, cardNumber: string): PaymentPayload {
-  return method === "pix" ? { method } : { method, cardLast4: cardNumber.replace(/D/g, "").slice(-4) };
+  return method === "pix" ? { method } : { method, cardLast4: cardNumber.replace(/\D/g, "").slice(-4) };
 }
 
 export interface CardInput {
