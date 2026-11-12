@@ -21,6 +21,8 @@
                     <StackPanel Orientation="Horizontal">
                         <Button Content="📄  Abrir PDF…" Click="OnOpenPdf" />
                         <Button Content="📊  Abrir planilha…" Margin="8,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnOpenSheet" />
+                        <Button x:Name="AnswerKeyButton" Content="✅  Abrir gabarito (INEP)…" Margin="8,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnOpenAnswerKey" IsEnabled="False"
+                                ToolTip="Depois de abrir a prova: o PDF de gabarito do INEP preenche a alternativa correta de cada questão e marca as anuladas" />
                         <Button Content="Baixar modelo" Margin="8,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnTemplate"
                                 ToolTip="Planilha modelo (Excel) para digitar várias questões" />
                         <TextBlock Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="14,0,0,0" MaxWidth="560"

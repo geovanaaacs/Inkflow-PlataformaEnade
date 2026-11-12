@@ -260,6 +260,7 @@ public partial class ImportQuestionsWindow : Window
         EmptyHint.Visibility = _drafts.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         ExportButton.IsEnabled = ApproveAllButton.IsEnabled = _drafts.Count > 0 && !_importing;
         AiAllButton.IsEnabled = _drafts.Count > 0 && !_importing;
+        AnswerKeyButton.IsEnabled = _drafts.Count > 0 && !_importing && !_aiRunning;
         AiAllButton.Content = _aiRunning ? "■  Parar a IA" : "✨  Explicar todas com IA";
         ImportButton.IsEnabled = toImport > 0 && !_importing && !_aiRunning;
         ImportButton.Content = toImport == 1 ? "Importar 1 questão aprovada" : $"Importar {toImport} questões aprovadas";
@@ -307,6 +308,103 @@ public partial class ImportQuestionsWindow : Window
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
             MessageBox.Show(this, $"Não foi possível salvar: {error.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    /* ------------------------------------------------------------ Official answer key (INEP) */
+
+    private const string AnswerKeyLabel = "do gabarito oficial";
+    private const string AnnulledLabel = "ANULADA no gabarito oficial — não importe";
+    private static readonly System.Text.RegularExpressions.Regex SourceNumber = new(@"quest[aã]o (\d+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    /// <summary>Question number in the test: from where it was read ("PDF, página 3, questão 12"), else from the code (Q2021-12).</summary>
+    private static int? QuestionNumberOf(QuestionDraft draft)
+    {
+        var fromSource = SourceNumber.Match(draft.Source);
+        if (fromSource.Success) return int.Parse(fromSource.Groups[1].Value);
+        var dash = draft.Code.LastIndexOf('-');
+        return dash >= 0 && int.TryParse(draft.Code[(dash + 1)..], out var number) ? number : null;
+    }
+
+    /// <summary>
+    /// Fills the correct option of each question from the INEP answer key PDF (a
+    /// separate file from the test), marks the annulled ones, and offers to drop
+    /// the general-knowledge questions (1 to 8) of the ENADE.
+    /// </summary>
+    private async void OnOpenAnswerKey(object sender, RoutedEventArgs e)
+    {
+        if (_drafts.Count == 0) return;
+        var dialog = new OpenFileDialog { Title = "Abrir o PDF de gabarito do INEP", Filter = "PDF (*.pdf)|*.pdf" };
+        if (dialog.ShowDialog(this) != true) return;
+
+        List<AnswerKeyEntry> key;
+        Summary.Text = $"Lendo o gabarito {Path.GetFileName(dialog.FileName)}…";
+        try
+        {
+            key = await Task.Run(() => AnswerKeyReader.Read(dialog.FileName));
+        }
+        catch (InvalidDataException error)
+        {
+            MessageBox.Show(this, error.Message, "Não foi possível ler o gabarito", MessageBoxButton.OK, MessageBoxImage.Warning);
+            UpdateSummary();
+            return;
+        }
+
+        var byNumber = key.ToDictionary(entry => entry.Number);
+        int filled = 0, changed = 0, annulled = 0, missing = 0, aiReplaced = 0;
+        foreach (var draft in _drafts.Where(d => !d.Imported))
+        {
+            if (QuestionNumberOf(draft) is not int number || !byNumber.TryGetValue(number, out var entry))
+            {
+                missing++;
+                continue;
+            }
+            if (entry.Annulled)
+            {
+                draft.Correct = "";
+                draft.Approved = false;
+                draft.CorrectOrigin = AnnulledLabel;
+                annulled++;
+                continue;
+            }
+            var wasAi = draft.CorrectOrigin == AiSuggestedLabel;
+            if (draft.Correct.Length > 0 && draft.Correct != entry.Letter)
+            {
+                changed++;
+                // The AI explained another option: that explanation no longer fits.
+                if (wasAi && draft.Explanation.Length > 0)
+                {
+                    draft.Explanation = "";
+                    aiReplaced++;
+                }
+            }
+            draft.Correct = entry.Letter!;
+            draft.CorrectOrigin = AnswerKeyLabel; // after Correct: changing Correct clears the mark
+            filled++;
+        }
+        Revalidate();
+
+        var message = $"Gabarito lido: {key.Count} respostas.\n\n"
+                      + $"{filled} {(filled == 1 ? "questão recebeu" : "questões receberam")} a alternativa correta"
+                      + (changed > 0 ? $" ({changed} estavam com outra letra e foram corrigidas)" : "") + "."
+                      + (annulled > 0 ? $"\n{annulled} {(annulled == 1 ? "questão está anulada" : "questões estão anuladas")}: ficam marcadas e não podem ser importadas." : "")
+                      + (aiReplaced > 0 ? $"\n{aiReplaced} explicações da IA eram de outra alternativa e foram apagadas: gere de novo." : "")
+                      + (missing > 0 ? $"\n{missing} {(missing == 1 ? "questão não está" : "questões não estão")} no gabarito (confira se é o gabarito desta prova)." : "");
+        MessageBox.Show(this, message, "Gabarito oficial", MessageBoxButton.OK, missing > 0 ? MessageBoxImage.Warning : MessageBoxImage.Information);
+
+        // ENADE: questions 1-8 are "Formação Geral" (general knowledge, not IT).
+        var general = _drafts.Where(d => !d.Imported && QuestionNumberOf(d) is >= 1 and <= 8).ToList();
+        if (key.Count >= 30 && general.Count > 0 &&
+            MessageBox.Show(this,
+                $"No ENADE, as questões 1 a 8 são de Formação Geral (conhecimentos gerais, fora de TI). Tirar estas {general.Count} da revisão?",
+                "Formação Geral", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        {
+            foreach (var draft in general)
+            {
+                draft.PropertyChanged -= OnDraftChanged;
+                _drafts.Remove(draft);
+            }
+            Revalidate();
         }
     }
 
