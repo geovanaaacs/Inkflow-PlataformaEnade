@@ -1,4 +1,4 @@
-import { TODAY_SQL, query, withTransaction } from "../../db/pool.js";
+import { TODAY_SQL, execute, query } from "../../db/pool.js";
 import { HttpError } from "../../http/errors.js";
 import { userHasFeature } from "../../shared/plan-access.js";
 import type { SessionUser } from "../auth/users.repository.js";
@@ -40,8 +40,11 @@ export async function getDailyUsage(user: SessionUser): Promise<DailyUsage> {
 }
 
 /**
- * Records an attempt atomically: attempt number, daily limit check (first
- * attempts only) and the profile that answered (teachers don't count for rankings).
+ * Records an attempt with dbo.sp_RegistrarResposta (database/11): attempt
+ * number, daily limit check (first attempts only) and the profile that
+ * answered (teachers don't count for rankings), in one transaction in the
+ * database. The limit comes from the plan rules here (null = unlimited);
+ * "limit reached" and "question not found" come back as 403/404.
  */
 export async function answerQuestion(
   user: SessionUser,
@@ -49,52 +52,24 @@ export async function answerQuestion(
   letter: string
 ): Promise<AnswerResult> {
   const limit = limitFor(user);
-
-  return withTransaction(async (run) => {
-    const [option] = await run<{ OptionId: number; IsCorrect: boolean; CorrectLetter: string }>(
-      `SELECT o.Id AS OptionId, o.IsCorrect,
-              (SELECT Letter FROM dbo.QuestionOptions WHERE QuestionId = q.Id AND IsCorrect = 1) AS CorrectLetter
-       FROM dbo.Questions q
-       JOIN dbo.QuestionOptions o ON o.QuestionId = q.Id AND o.Letter = @letter
-       WHERE q.Id = @questionId AND q.IsActive = 1`,
-      { questionId, letter }
-    );
-    if (!option) throw new HttpError(404, "Questão ou alternativa não encontrada.");
-
-    const [attempt] = await run<{ Next: number }>(
-      `SELECT ISNULL(MAX(AttemptNumber), 0) + 1 AS Next
-       FROM dbo.UserAnswers WITH (UPDLOCK, HOLDLOCK)
-       WHERE UserId = @userId AND QuestionId = @questionId`,
-      { userId: user.id, questionId }
-    );
-    const attemptNumber = attempt?.Next ?? 1;
-
-    const [today] = await run<{ Used: number }>(COUNT_TODAY, { userId: user.id });
-    const used = today?.Used ?? 0;
-    if (attemptNumber === 1 && limit !== null && used >= limit) {
-      throw new HttpError(403, `Você atingiu o limite de ${limit} questões por dia do plano Básico.`);
-    }
-
-    await run(
-      `INSERT INTO dbo.UserAnswers (UserId, QuestionId, SelectedOptionId, IsCorrect, AttemptNumber, AnsweredAsRole)
-       VALUES (@userId, @questionId, @optionId, @isCorrect, @attemptNumber, @role)`,
-      {
-        userId: user.id,
-        questionId,
-        optionId: option.OptionId,
-        isCorrect: option.IsCorrect,
-        attemptNumber,
-        role: user.role,
-      }
-    );
-
-    return {
-      correct: option.IsCorrect,
-      correctOptionId: option.CorrectLetter,
-      attemptNumber,
-      usage: { used: attemptNumber === 1 ? used + 1 : used, limit },
-    };
+  const [rows] = await execute("dbo.sp_RegistrarResposta", {
+    UserId: user.id,
+    QuestionId: questionId,
+    Letter: letter,
+    Role: user.role,
+    DailyLimit: limit,
   });
+  const result = rows?.[0] as
+    | { IsCorrect: boolean; CorrectLetter: string; AttemptNumber: number; UsedToday: number }
+    | undefined;
+  if (!result) throw new HttpError(500, "Não foi possível registrar a resposta.");
+
+  return {
+    correct: result.IsCorrect,
+    correctOptionId: result.CorrectLetter,
+    attemptNumber: result.AttemptNumber,
+    usage: { used: result.UsedToday, limit },
+  };
 }
 
 export async function listRecentAnswers(user: SessionUser, limit: number): Promise<AnswerSummary[]> {

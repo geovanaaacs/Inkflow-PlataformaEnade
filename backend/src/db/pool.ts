@@ -39,6 +39,16 @@ export async function queryOne<T>(statement: string, inputs: QueryInputs = {}): 
   return rows[0] ?? null;
 }
 
+/**
+ * Runs a stored procedure (database/11_procedures_triggers.sql) and returns
+ * all its result sets, in order. Business errors raised with THROW 504xx
+ * become HTTP errors in http/errors.ts.
+ */
+export async function execute(procedure: string, inputs: QueryInputs = {}): Promise<Record<string, unknown>[][]> {
+  const result = await bind((await getPool()).request(), inputs).execute(procedure);
+  return (result.recordsets as unknown as Record<string, unknown>[][]) ?? [];
+}
+
 /** Runs several statements atomically. `run` behaves like `query`, inside the transaction. */
 export async function withTransaction<T>(
   work: (run: <R>(statement: string, inputs?: QueryInputs) => Promise<R[]>) => Promise<T>

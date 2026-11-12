@@ -1,4 +1,4 @@
-import { TODAY_SQL, query } from "../../db/pool.js";
+import { execute, query } from "../../db/pool.js";
 import { toUtcIso } from "../questions/answers.repository.js";
 import type { PlanId } from "../../shared/plan-access.js";
 
@@ -48,71 +48,22 @@ export interface AdminMetrics {
   };
 }
 
+type UserCounts = { Total: number; Active: number; Alunos: number; Professores: number; Admins: number; NewLast30: number; NewTeachers30: number };
+type PlanStudents = { Slug: PlanId; Name: string; Price: number; Students: number };
+type Activity = { Today: number; Last7: number; ActiveStudents: number; MockExams: number; Mentoring: number };
+type DayCount = { Day: Date; Answers: number };
+type Revenue = { Recurring: number | null; Last30: number | null; Count30: number; Total: number | null };
+type PlanAdhesions = { Slug: PlanId; Name: string; Adhesions: number };
+
+/** dbo.sp_MetricasAdmin (database/11) returns the 6 result sets, in this order. */
 export async function getAdminMetrics(): Promise<AdminMetrics> {
-  const [users, plans, activity, byDay, revenue, adhesions] = await Promise.all([
-    query<{ Total: number; Active: number; Alunos: number; Professores: number; Admins: number; NewLast30: number; NewTeachers30: number }>(
-      `SELECT COUNT(*) AS Total,
-              SUM(CASE WHEN IsActive = 1 THEN 1 ELSE 0 END) AS Active,
-              SUM(CASE WHEN Role = N'aluno' THEN 1 ELSE 0 END) AS Alunos,
-              SUM(CASE WHEN Role = N'professor' THEN 1 ELSE 0 END) AS Professores,
-              SUM(CASE WHEN Role = N'admin' THEN 1 ELSE 0 END) AS Admins,
-              SUM(CASE WHEN CreatedAt >= DATEADD(DAY, -30, SYSUTCDATETIME()) THEN 1 ELSE 0 END) AS NewLast30,
-              SUM(CASE WHEN Role = N'professor' AND CreatedAt >= DATEADD(DAY, -30, SYSUTCDATETIME()) THEN 1 ELSE 0 END) AS NewTeachers30
-       FROM dbo.Users
-       WHERE DeletedAt IS NULL`
-    ),
-    // Students without an active subscription are on the free plan (same rule as the login).
-    query<{ Slug: PlanId; Name: string; Price: number; Students: number }>(
-      `SELECT p.Slug, p.Name, p.Price, COUNT(st.Id) AS Students
-       FROM dbo.Plans p
-       LEFT JOIN (
-         SELECT u.Id, COALESCE(ap.Slug, N'basico') AS PlanSlug
-         FROM dbo.Users u
-         OUTER APPLY (SELECT TOP (1) pl.Slug FROM dbo.Subscriptions s
-                      JOIN dbo.Plans pl ON pl.Id = s.PlanId
-                      WHERE s.UserId = u.Id AND s.Status = N'ativa') ap
-         WHERE u.Role = N'aluno' AND u.IsActive = 1 AND u.DeletedAt IS NULL
-       ) st ON st.PlanSlug = p.Slug
-       WHERE p.IsActive = 1
-       GROUP BY p.Slug, p.Name, p.Price, p.DisplayOrder
-       ORDER BY p.DisplayOrder`
-    ),
-    query<{ Today: number; Last7: number; ActiveStudents: number; MockExams: number; Mentoring: number }>(
-      `SELECT
-         (SELECT COUNT(*) FROM dbo.UserAnswers WHERE AnsweredAsRole = N'aluno' AND AnsweredOn = ${TODAY_SQL}) AS Today,
-         (SELECT COUNT(*) FROM dbo.UserAnswers WHERE AnsweredAsRole = N'aluno' AND AnsweredOn > DATEADD(DAY, -7, ${TODAY_SQL})) AS Last7,
-         (SELECT COUNT(DISTINCT UserId) FROM dbo.UserAnswers WHERE AnsweredAsRole = N'aluno' AND AnsweredOn > DATEADD(DAY, -7, ${TODAY_SQL})) AS ActiveStudents,
-         (SELECT COUNT(*) FROM dbo.MockExamAttempts
-            WHERE Status IN (N'finalizado', N'expirado') AND FinishedAt >= DATEADD(DAY, -30, SYSUTCDATETIME())) AS MockExams,
-         (SELECT COUNT(*) FROM dbo.MentoringRequests WHERE CreatedAt >= DATEADD(DAY, -30, SYSUTCDATETIME())) AS Mentoring`
-    ),
-    query<{ Day: Date; Answers: number }>(
-      `SELECT AnsweredOn AS Day, COUNT(*) AS Answers
-       FROM dbo.UserAnswers
-       WHERE AnsweredAsRole = N'aluno' AND AnsweredOn > DATEADD(DAY, -${CHART_DAYS}, ${TODAY_SQL})
-       GROUP BY AnsweredOn`
-    ),
-    query<{ Recurring: number | null; Last30: number | null; Count30: number; Total: number | null }>(
-      `SELECT
-         (SELECT SUM(s.Price) FROM dbo.Subscriptions s
-            JOIN dbo.Users u ON u.Id = s.UserId
-            WHERE s.Status = N'ativa' AND s.Price > 0 AND u.IsActive = 1 AND u.DeletedAt IS NULL) AS Recurring,
-         (SELECT SUM(Amount) FROM dbo.Payments WHERE Status = N'aprovado' AND PaidAt >= DATEADD(DAY, -30, SYSUTCDATETIME())) AS Last30,
-         (SELECT COUNT(*) FROM dbo.Payments WHERE Status = N'aprovado' AND PaidAt >= DATEADD(DAY, -30, SYSUTCDATETIME())) AS Count30,
-         (SELECT SUM(Amount) FROM dbo.Payments WHERE Status = N'aprovado') AS Total`
-    ),
-    // Every paid plan a student started in the last 30 days (a new subscription, an upgrade or a switch).
-    query<{ Slug: PlanId; Name: string; Adhesions: number }>(
-      `SELECT p.Slug, p.Name, COUNT(s.Id) AS Adhesions
-       FROM dbo.Plans p
-       LEFT JOIN dbo.Subscriptions s
-         ON s.PlanId = p.Id AND s.Price > 0 AND s.StartedAt >= DATEADD(DAY, -30, SYSUTCDATETIME())
-         AND EXISTS (SELECT 1 FROM dbo.Users u WHERE u.Id = s.UserId AND u.Role = N'aluno' AND u.DeletedAt IS NULL)
-       WHERE p.IsActive = 1 AND p.Price > 0
-       GROUP BY p.Slug, p.Name, p.DisplayOrder
-       ORDER BY p.DisplayOrder`
-    ),
-  ]);
+  const sets = await execute("dbo.sp_MetricasAdmin", { ChartDays: CHART_DAYS });
+  const users = (sets[0] ?? []) as UserCounts[];
+  const plans = (sets[1] ?? []) as PlanStudents[];
+  const activity = (sets[2] ?? []) as Activity[];
+  const byDay = (sets[3] ?? []) as DayCount[];
+  const revenue = (sets[4] ?? []) as Revenue[];
+  const adhesions = (sets[5] ?? []) as PlanAdhesions[];
 
   const u = users[0];
   const a = activity[0];
