@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import "@fontsource/dm-sans";
 import { TooltipProvider } from "./design-system/components/Tooltip.tsx";
+import { ThemeProvider } from "./shared/theme/ThemeProvider";
 
 import App from "./App";
 
@@ -13,8 +14,10 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <TooltipProvider>
-      <App />
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
+    </ThemeProvider>
   </StrictMode>
 );

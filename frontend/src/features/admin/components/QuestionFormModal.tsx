@@ -180,7 +180,7 @@ function QuestionForm({ question, areas, topicsByArea, onCancel, onSaved }: Ques
               aria-label={`Alternativa ${optionId.toUpperCase()} é a correta`}
               className="size-4 accent-brand-800"
             />
-            <span className="w-5 text-sm font-semibold text-brand-800">{optionId.toUpperCase()})</span>
+            <span className="w-5 text-sm font-semibold text-brand-ink">{optionId.toUpperCase()})</span>
             <label className="sr-only" htmlFor={`option-${optionId}`}>
               Texto da alternativa {optionId.toUpperCase()}
             </label>
@@ -209,7 +209,7 @@ function QuestionForm({ question, areas, topicsByArea, onCancel, onSaved }: Ques
       />
 
       {error && (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="text-sm text-danger-ink">
           {error}
         </p>
       )}

@@ -3,8 +3,47 @@
 @tailwind utilities;
 
 @layer base {
+  /* Theme colors (see tailwind.config.ts). Light is the default; ThemeProvider
+     toggles the .dark class on <html>, and an inline script in index.html
+     applies the saved choice before the first paint. */
   :root {
     color-scheme: light;
+    --app-bg: 248 247 255;
+    --app-surface: 255 255 255;
+    --ink-strong: 44 44 42;
+    --ink-muted: 92 91 85;
+    --success-ink: 18 117 86;
+    --danger-ink: 184 40 43;
+    --warning-ink: 154 84 16;
+    --brand-ink: 88 8 173;
+    --brand-tint: 225 195 255;
+    --brand-tint-alpha: 0.53;
+    --overlay: 0 0 0;
+    --track: 229 231 235;
+    --toggle-off: 237 235 233;
+    --mini-card: rgba(225, 195, 255, 0.24);
+    --border-subtle: rgba(0, 0, 0, 0.1);
+    --border-navbar: rgba(0, 0, 0, 0.19);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --app-bg: 20 18 27;
+    --app-surface: 31 28 41;
+    --ink-strong: 241 239 246;
+    --ink-muted: 188 185 201;
+    --success-ink: 79 209 165;
+    --danger-ink: 255 143 145;
+    --warning-ink: 247 178 103;
+    --brand-ink: 210 182 255;
+    --brand-tint: 132 82 222;
+    --brand-tint-alpha: 0.28;
+    --overlay: 255 255 255;
+    --track: 52 48 64;
+    --toggle-off: 64 60 77;
+    --mini-card: rgba(150, 100, 235, 0.16);
+    --border-subtle: rgba(255, 255, 255, 0.12);
+    --border-navbar: rgba(255, 255, 255, 0.16);
   }
 
   html {

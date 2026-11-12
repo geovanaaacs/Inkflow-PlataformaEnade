@@ -67,7 +67,7 @@ export function AuthPage() {
 
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-brand-800 hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-medium text-brand-ink hover:underline"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Voltar para tela inicial

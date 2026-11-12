@@ -53,11 +53,11 @@ const sizeClasses: Record<ButtonSize, string> = {
 const variantClasses: Record<ButtonVariant, string> = {
   primary: "bg-brand-600 text-white hover:bg-brand-900 active:bg-brand-900",
   outline:
-    "border border-border-subtle bg-transparent text-ink-strong hover:bg-black/5 active:bg-black/10",
-  soft: "bg-brand-500-a24 text-brand-900 hover:bg-brand-400-a18",
-  ghost: "bg-transparent text-ink-strong hover:bg-black/5",
+    "border border-border-subtle bg-transparent text-ink-strong hover:-overlay/5 active:-overlay/10",
+  soft: "bg-brand-500-a24 text-brand-ink hover:bg-brand-400-a18",
+  ghost: "bg-transparent text-ink-strong hover:-overlay/5",
   danger:
-    "bg-danger-bg text-danger border border-transparent hover:border-danger-border hover:bg-danger hover:text-white",
+    "bg-danger-bg text-danger-ink border border-transparent hover:border-danger-border hover:bg-danger hover:text-white",
 };
 
 const activeNavClasses = "bg-brand-900 text-white hover:bg-brand-900";

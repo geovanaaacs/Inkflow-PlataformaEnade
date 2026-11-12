@@ -1,0 +1,25 @@
+<!--
+  Light palette (same tokens as the site: frontend/tailwind.config.ts and src/index.css).
+  ThemeManager swaps this dictionary for Colors.Dark.xaml; every color is used
+  through DynamicResource so open windows change on the spot.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="Brand900" Color="#521594" />
+    <SolidColorBrush x:Key="Brand800" Color="#5808AD" />
+    <SolidColorBrush x:Key="Brand600" Color="#7631E2" />
+    <!-- Brand-colored text on the page/card background (lighter in the dark theme). -->
+    <SolidColorBrush x:Key="BrandText" Color="#5808AD" />
+    <SolidColorBrush x:Key="BrandSoft" Color="#EFE6FB" />
+    <SolidColorBrush x:Key="Background" Color="#F8F7FF" />
+    <SolidColorBrush x:Key="Surface" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceAlt" Color="#FBFAFF" />
+    <SolidColorBrush x:Key="Ink" Color="#2C2C2A" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#6F6E68" />
+    <SolidColorBrush x:Key="Border" Color="#E3E1EC" />
+    <SolidColorBrush x:Key="Hover" Color="#F1ECFA" />
+    <SolidColorBrush x:Key="Success" Color="#1D9E75" />
+    <SolidColorBrush x:Key="Danger" Color="#D43336" />
+    <SolidColorBrush x:Key="DangerSoft" Color="#FBE4E4" />
+    <SolidColorBrush x:Key="Warning" Color="#F2994A" />
+</ResourceDictionary>

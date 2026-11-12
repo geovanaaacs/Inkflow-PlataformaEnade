@@ -16,11 +16,11 @@ export function SlotList({ slots, onRequest }: SlotListProps) {
       {slots.map((slot) => (
         <li
           key={slot.id}
-          className="flex flex-col gap-3 rounded-input border border-black/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-3 rounded-input border -overlay/5 p-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-base font-semibold text-ink-strong">
-              <Clock aria-hidden="true" className="size-4 text-brand-800" />
+              <Clock aria-hidden="true" className="size-4 text-brand-ink" />
               {formatSlotTime(slot.startsAt, slot.durationMinutes)}
             </p>
             <p className="mt-1 text-sm text-ink-strong">{slot.topic}</p>

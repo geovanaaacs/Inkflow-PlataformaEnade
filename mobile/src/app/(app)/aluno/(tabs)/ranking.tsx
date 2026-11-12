@@ -6,7 +6,7 @@ import { useAuth } from "../../../../features/auth/AuthProvider";
 import { getRanking, type RankingEntry, type RankingScope } from "../../../../features/dashboard/api";
 import { userHasFeature } from "../../../../lib/plan-access";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../../theme";
+import { colors, radius, spacing, themed } from "../../../../theme";
 
 const SCOPES: { value: RankingScope; label: string }[] = [
   { value: "geral", label: "Geral" },
@@ -108,11 +108,11 @@ function Row({ entry }: { entry: RankingEntry }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   rule: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   me: { alignItems: "center", gap: spacing(1) },
-  position: { fontSize: 40, fontWeight: "800", color: colors.brand800 },
+  position: { fontSize: 40, fontWeight: "800", color: colors.brandText },
   body: { fontSize: 14, color: colors.ink },
   muted: { fontSize: 13, color: colors.muted },
   center: { textAlign: "center" },
@@ -127,12 +127,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing(3),
   },
   rowMe: { backgroundColor: colors.brandSoft, borderWidth: 1, borderColor: colors.brand600 },
-  place: { width: 30, height: 30, borderRadius: 15, backgroundColor: "rgba(0,0,0,0.06)", alignItems: "center", justifyContent: "center" },
+  place: { width: 30, height: 30, borderRadius: 15, backgroundColor: colors.track, alignItems: "center", justifyContent: "center" },
   placePodium: { backgroundColor: colors.brand800 },
   placeText: { fontSize: 13, fontWeight: "700", color: colors.ink },
-  placeTextPodium: { color: colors.surface },
+  placeTextPodium: { color: colors.onBrand },
   name: { fontSize: 15, color: colors.ink },
   bold: { fontWeight: "700" },
   small: { fontSize: 12, color: colors.muted },
   points: { fontSize: 14, color: colors.muted, fontWeight: "600" },
-});
+}));

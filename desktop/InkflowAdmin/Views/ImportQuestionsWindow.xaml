@@ -107,7 +107,7 @@
                             <TextBlock Text="{Binding Source}" Style="{StaticResource Muted}" VerticalAlignment="Center" />
                         </DockPanel>
                         <TextBlock Text="{Binding Problems}" Style="{StaticResource ErrorText}" />
-                        <TextBlock Text="{Binding Result}" Foreground="{StaticResource Success}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Result}" Foreground="{DynamicResource Success}" FontWeight="SemiBold" TextWrapping="Wrap" />
 
                         <Grid>
                             <Grid.ColumnDefinitions>

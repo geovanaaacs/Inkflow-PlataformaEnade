@@ -130,7 +130,7 @@ export function CheckoutModal({ plan, onClose, onConfirm }: CheckoutModalProps) 
           {!free && (
             <>
               <p className="flex items-start gap-2 rounded-input bg-brand-500-a24 px-4 py-3 text-sm text-ink-strong">
-                <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand-800" />
+                <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand-ink" />
                 Ambiente de demonstração: nenhuma cobrança é feita e os dados do cartão não são
                 enviados nem guardados. Use o cartão de teste {TEST_CARD_NUMBER}.
               </p>
@@ -181,12 +181,12 @@ export function CheckoutModal({ plan, onClose, onConfirm }: CheckoutModalProps) 
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-3 rounded-card border border-black/5 p-5 text-center">
-                  <QrCode aria-hidden="true" className="size-24 text-brand-800" />
+                <div className="flex flex-col items-center gap-3 rounded-card border -overlay/5 p-5 text-center">
+                  <QrCode aria-hidden="true" className="size-24 text-brand-ink" />
                   <p className="text-sm text-ink-strong">
                     Escaneie o QR Code no app do seu banco ou use o código copia e cola:
                   </p>
-                  <code className="w-full break-all rounded-input bg-black/[0.04] px-3 py-2 text-xs text-ink-muted">
+                  <code className="w-full break-all rounded-input -overlay/[0.04] px-3 py-2 text-xs text-ink-muted">
                     {pixCode(plan.id, plan.price)}
                   </code>
                   <p className="text-xs text-ink-muted">
@@ -197,7 +197,7 @@ export function CheckoutModal({ plan, onClose, onConfirm }: CheckoutModalProps) 
             </>
           )}
           {error && (
-            <p role="alert" className="text-sm text-danger">
+            <p role="alert" className="text-sm text-danger-ink">
               {error}
             </p>
           )}
@@ -226,7 +226,7 @@ export function CheckoutModal({ plan, onClose, onConfirm }: CheckoutModalProps) 
 
       {step === "success" && plan && (
         <div role="status" aria-live="polite" className="flex flex-col items-center gap-4 text-center">
-          <CheckCircle2 aria-hidden="true" className="size-14 text-success" />
+          <CheckCircle2 aria-hidden="true" className="size-14 text-success-ink" />
           <p className="text-lg font-semibold text-ink-strong">
             {free
               ? `Pronto, ${firstName}! Agora você está no plano ${plan.name}.`
@@ -238,7 +238,7 @@ export function CheckoutModal({ plan, onClose, onConfirm }: CheckoutModalProps) 
               : "Obrigado por assinar o Inkflow. Todos os recursos do seu novo plano já estão liberados."}
           </p>
           <p className="flex items-center gap-2 rounded-input bg-success/10 px-4 py-3 text-sm text-ink-strong">
-            <Mail aria-hidden="true" className="size-4 shrink-0 text-success" />
+            <Mail aria-hidden="true" className="size-4 shrink-0 text-success-ink" />
             Enviamos um e-mail de confirmação para {user?.email}
             {free ? "." : ` com o comprovante (${receipt}).`}
           </p>

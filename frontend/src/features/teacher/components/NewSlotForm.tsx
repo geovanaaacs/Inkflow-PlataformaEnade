@@ -129,7 +129,7 @@ export function NewSlotForm({ defaultDate, onCreated }: NewSlotFormProps) {
         </div>
 
         {error && (
-          <p role="alert" className="text-sm text-danger">
+          <p role="alert" className="text-sm text-danger-ink">
             {error}
           </p>
         )}

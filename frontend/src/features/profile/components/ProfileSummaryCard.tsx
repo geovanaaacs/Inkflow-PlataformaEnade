@@ -14,7 +14,7 @@ export function ProfileSummaryCard({ name, description }: ProfileSummaryCardProp
         <div className="flex items-center gap-4">
           <span
             aria-hidden="true"
-            className="flex size-[50px] shrink-0 items-center justify-center rounded-badge bg-brand-500-a24 text-brand-800"
+            className="flex size-[50px] shrink-0 items-center justify-center rounded-badge bg-brand-500-a24 text-brand-ink"
           >
             <User className="size-6" />
           </span>

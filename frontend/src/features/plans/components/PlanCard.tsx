@@ -24,7 +24,7 @@ export function PlanCard({ plan, viewerRole, currentPlanId, onSelect }: PlanCard
     PLAN_RANK[plan.id] > PLAN_RANK[currentPlanId];
 
   const buttonClassName = plan.highlighted
-    ? "border-transparent bg-white text-brand-800 hover:bg-white/90"
+    ? "border-transparent bg-white !text-brand-800 hover:bg-white/90"
     : undefined;
   const buttonVariant = plan.highlighted ? "outline" : "soft";
 
@@ -73,7 +73,7 @@ export function PlanCard({ plan, viewerRole, currentPlanId, onSelect }: PlanCard
   return (
     <div className="relative h-full">
       {plan.highlighted && (
-        <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-badge bg-app-surface px-4 py-1 text-xs font-semibold text-brand-800 shadow-card">
+        <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-badge bg-app-surface px-4 py-1 text-xs font-semibold text-brand-ink shadow-card">
           Mais popular
         </span>
       )}
@@ -111,7 +111,7 @@ export function PlanCard({ plan, viewerRole, currentPlanId, onSelect }: PlanCard
                 aria-hidden="true"
                 className={cn(
                   "mt-0.5 size-4 shrink-0",
-                  plan.highlighted ? "text-white" : "text-success"
+                  plan.highlighted ? "text-white" : "text-success-ink"
                 )}
               />
               <span className={plan.highlighted ? "text-white" : "text-ink-strong"}>

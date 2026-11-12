@@ -45,7 +45,7 @@ export function PlansPage() {
         </p>
       </div>
 
-      <p role="status" aria-live="polite" className="text-sm font-semibold text-success">
+      <p role="status" aria-live="polite" className="text-sm font-semibold text-success-ink">
         {successMessage}
       </p>
 
@@ -81,7 +81,7 @@ export function PlansPage() {
       {!user && (
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-brand-800 hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-medium text-brand-ink hover:underline"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Voltar para tela inicial

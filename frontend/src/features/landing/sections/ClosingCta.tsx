@@ -29,7 +29,7 @@ export function ClosingCta() {
           to="/entrar?modo=cadastro"
           variant="outline"
           size="md"
-          className="mt-6 border-white bg-white text-brand-800 hover:bg-white/90"
+          className="mt-6 border-white bg-white !text-brand-800 hover:bg-white/90"
         >
           Cadastre-se agora
         </Button>

@@ -10,7 +10,7 @@ import { ChipRow } from "../../../../features/questions/components";
 import { getTeacherOverview, type MissedQuestion, type StudentAnswerRow, type TeacherOverview } from "../../../../features/teacher/api";
 import { formatDateTime, plural } from "../../../../lib/format";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../../theme";
+import { colors, radius, spacing, themed } from "../../../../theme";
 
 /** How students are doing on the question bank (only answers given as a student count). */
 export default function TeacherDashboardScreen() {
@@ -44,8 +44,8 @@ export default function TeacherDashboardScreen() {
 
 function Stats({ data }: { data: TeacherOverview }) {
   const stats: { icon: IconName; value: string; label: string; color: string }[] = [
-    { icon: "list-outline", value: String(data.totalAnswers), label: "Respostas registradas", color: colors.brand800 },
-    { icon: "people-outline", value: String(data.activeStudents), label: "Alunos ativos", color: colors.brand800 },
+    { icon: "list-outline", value: String(data.totalAnswers), label: "Respostas registradas", color: colors.brandText },
+    { icon: "people-outline", value: String(data.activeStudents), label: "Alunos ativos", color: colors.brandText },
     { icon: "checkmark-circle-outline", value: `${data.accuracyPercent}%`, label: "Acerto (1ª tentativa)", color: colors.success },
     { icon: "today-outline", value: String(data.answersToday), label: "Respostas hoje", color: colors.warning },
   ];
@@ -176,13 +176,13 @@ function AnswerRow({ row }: { row: StudentAnswerRow }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   muted: { fontSize: 14, color: colors.muted },
   small: { fontSize: 12, color: colors.muted },
   body: { fontSize: 14, color: colors.ink },
   bold: { fontWeight: "700" },
-  code: { fontWeight: "700", color: colors.brand800 },
+  code: { fontWeight: "700", color: colors.brandText },
   rowBetween: { flexDirection: "row", gap: spacing(2), alignItems: "flex-start" },
   pending: { backgroundColor: `${colors.warning}26`, borderRadius: radius.card, padding: spacing(4), gap: spacing(1) },
   pendingText: { fontSize: 14, fontWeight: "700", color: colors.ink },
@@ -210,4 +210,4 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
-});
+}));

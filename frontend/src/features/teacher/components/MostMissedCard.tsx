@@ -25,10 +25,10 @@ export function MostMissedCard({ questions }: MostMissedCardProps) {
             <li key={question.questionCode} className="flex flex-col gap-2">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <p className="text-sm font-semibold text-ink-strong">
-                  <span className="text-brand-800">[{question.questionCode}]</span> {question.topic}
+                  <span className="text-brand-ink">[{question.questionCode}]</span> {question.topic}
                   <span className="font-normal text-ink-muted"> · {question.areaName}</span>
                 </p>
-                <p className="text-sm font-semibold text-danger">{question.errorRate}% de erro</p>
+                <p className="text-sm font-semibold text-danger-ink">{question.errorRate}% de erro</p>
               </div>
               <ProgressBar
                 value={question.errorRate}

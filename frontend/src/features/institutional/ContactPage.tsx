@@ -17,7 +17,7 @@ export function ContactPage() {
               </li>
               <li>
                 Problemas técnicos e sugestões:{" "}
-                <a href={`${GITHUB_URL}/issues`} target="_blank" rel="noreferrer" className="font-semibold text-brand-800 underline">
+                <a href={`${GITHUB_URL}/issues`} target="_blank" rel="noreferrer" className="font-semibold text-brand-ink underline">
                   abra uma issue no GitHub do projeto
                 </a>
                 .

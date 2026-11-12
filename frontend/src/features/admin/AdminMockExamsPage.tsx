@@ -45,7 +45,7 @@ export function AdminMockExamsPage() {
         </Button>
       </div>
 
-      <p role="status" aria-live="polite" className="text-sm font-semibold text-success">
+      <p role="status" aria-live="polite" className="text-sm font-semibold text-success-ink">
         {feedback}
       </p>
 

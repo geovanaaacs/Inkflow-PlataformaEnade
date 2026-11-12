@@ -7,7 +7,7 @@ import { listMyNotes, type NoteWithQuestion } from "../../../features/questions/
 import { formatDateTime } from "../../../lib/format";
 import { userHasFeature } from "../../../lib/plan-access";
 import { useAsync } from "../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../theme";
+import { colors, radius, spacing, themed } from "../../../theme";
 
 /** Notes grouped by question, newest first (the API already sorts them). */
 function groupByQuestion(notes: NoteWithQuestion[]): NoteWithQuestion[][] {
@@ -74,12 +74,12 @@ function NotesList() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   title: { fontSize: 15, fontWeight: "700", color: colors.ink },
-  code: { color: colors.brand800 },
+  code: { color: colors.brandText },
   area: { fontSize: 13, color: colors.muted },
   note: { backgroundColor: colors.background, borderRadius: radius.input, padding: spacing(3), gap: spacing(1) },
   noteText: { fontSize: 15, color: colors.ink, lineHeight: 21 },
   date: { fontSize: 12, color: colors.muted },
   link: { fontSize: 14, fontWeight: "700", color: colors.brand600 },
-});
+}));

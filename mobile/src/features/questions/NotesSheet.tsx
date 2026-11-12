@@ -4,7 +4,7 @@ import { LoadState, LockedFeature } from "../../components/feedback";
 import { Button, Card, ErrorMessage, Screen, TextField, Title } from "../../components/ui";
 import { errorMessage, formatDateTime } from "../../lib/format";
 import { useAsync } from "../../lib/useAsync";
-import { colors, radius, spacing } from "../../theme";
+import { colors, radius, spacing, themed } from "../../theme";
 import { addNote, listQuestionNotes, type NoteRecord } from "./api";
 import { usePractice } from "./practice";
 
@@ -110,7 +110,7 @@ function NotesEditor({ questionId, questionCode }: { questionId: string; questio
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   header: { gap: spacing(3) },
   textarea: { minHeight: 110, paddingTop: spacing(3) },
   saved: { color: colors.success, fontSize: 14, fontWeight: "600" },
@@ -118,4 +118,4 @@ const styles = StyleSheet.create({
   note: { backgroundColor: colors.surface, borderRadius: radius.input, padding: spacing(3.5), gap: spacing(1.5) },
   noteText: { fontSize: 15, color: colors.ink, lineHeight: 21 },
   noteDate: { fontSize: 12, color: colors.muted },
-});
+}));

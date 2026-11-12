@@ -74,7 +74,7 @@ export function QuestionCard({
     <Card as="article" aria-labelledby={headingId} bare className="overflow-hidden shadow-card">
       <header className="bg-brand-300-a53/60 px-6 py-4">
         <h2 id={headingId} className="text-sm font-semibold text-ink-strong">
-          <span className="text-brand-800">[{question.code}]</span>{" "}
+          <span className="text-brand-ink">[{question.code}]</span>{" "}
           {question.area.name} › {question.topic}
         </h2>
       </header>
@@ -99,7 +99,7 @@ export function QuestionCard({
             role="status"
             className={cn(
               "inline-flex w-fit items-center gap-2 rounded-badge px-3 py-1.5 text-sm font-semibold",
-              result.correct ? "bg-success/15 text-success" : "bg-danger-bg text-danger"
+              result.correct ? "bg-success/15 text-success-ink" : "bg-danger-bg text-danger-ink"
             )}
           >
             {result.correct ? (
@@ -117,7 +117,7 @@ export function QuestionCard({
         )}
 
         {answerError && (
-          <p role="alert" className="text-sm text-danger">
+          <p role="alert" className="text-sm text-danger-ink">
             {answerError}
           </p>
         )}

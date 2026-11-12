@@ -16,7 +16,7 @@ import type { Difficulty, Question } from "../../../features/questions/api";
 import { ChipRow } from "../../../features/questions/components";
 import { errorMessage } from "../../../lib/format";
 import { useAsync } from "../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../theme";
+import { colors, radius, spacing, themed } from "../../../theme";
 
 const DIFFICULTIES: { value: Difficulty; label: string }[] = [
   { value: "fácil", label: "Fácil" },
@@ -195,7 +195,7 @@ function QuestionForm({ catalog, question }: { catalog: QuestionCatalog; questio
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   label: { fontSize: 14, fontWeight: "600", color: colors.ink },
   muted: { fontSize: 13, color: colors.muted },
@@ -213,5 +213,5 @@ const styles = StyleSheet.create({
   },
   letterCorrect: { backgroundColor: colors.success, borderColor: colors.success },
   letterText: { fontSize: 16, fontWeight: "700", color: colors.muted },
-  letterTextCorrect: { color: colors.surface },
-});
+  letterTextCorrect: { color: colors.onBrand },
+}));

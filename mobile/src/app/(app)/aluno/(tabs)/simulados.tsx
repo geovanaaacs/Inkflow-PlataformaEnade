@@ -8,7 +8,7 @@ import type { Difficulty } from "../../../../features/questions/api";
 import { formatRelativeDay } from "../../../../lib/format";
 import { userHasFeature } from "../../../../lib/plan-access";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, spacing } from "../../../../theme";
+import { colors, spacing, themed } from "../../../../theme";
 
 const DIFFICULTY_TONE: Record<Difficulty, Tone> = { fácil: "success", médio: "warning", difícil: "danger" };
 
@@ -80,10 +80,10 @@ function ExamCard({ exam, locked }: { exam: MockExamSummary; locked: boolean }) 
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   badges: { flexDirection: "row", gap: spacing(2), flexWrap: "wrap" },
   title: { fontSize: 18, fontWeight: "700", color: colors.ink },
   description: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   meta: { fontSize: 14, color: colors.ink },
   bold: { fontWeight: "700", color: colors.ink },
-});
+}));

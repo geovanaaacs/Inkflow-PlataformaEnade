@@ -43,7 +43,7 @@ export function MyRequestsCard({ requests, loading, onChanged }: MyRequestsCardP
       </h2>
 
       {error && (
-        <p role="alert" className="mt-3 text-sm text-danger">
+        <p role="alert" className="mt-3 text-sm text-danger-ink">
           {error}
         </p>
       )}
@@ -65,10 +65,10 @@ export function MyRequestsCard({ requests, loading, onChanged }: MyRequestsCardP
             return (
               <li
                 key={request.id}
-                className="flex flex-col gap-3 rounded-input border border-black/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 rounded-input border -overlay/5 p-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase text-brand-800">
+                  <p className="text-xs font-semibold uppercase text-brand-ink">
                     {SESSION_TYPE_LABEL[request.slot.type]}
                   </p>
                   <p className="text-sm font-semibold text-ink-strong">{request.slot.topic}</p>

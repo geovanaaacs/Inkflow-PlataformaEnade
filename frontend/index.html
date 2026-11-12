@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f8f7ff" />
     <title>Inkflow — Prepare-se para o ENADE</title>
+    <script>
+      // Applies the saved theme before the first paint (no light flash in the
+      // dark theme). Same rules as src/shared/theme/theme.ts.
+      (function () {
+        var theme;
+        try { theme = localStorage.getItem("inkflow-theme"); } catch (e) {}
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        if (theme === "dark") {
+          document.documentElement.classList.add("dark");
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "#14121b");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

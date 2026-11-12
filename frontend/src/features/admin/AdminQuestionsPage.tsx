@@ -107,7 +107,7 @@ export function AdminQuestionsPage() {
       <p
         role="status"
         aria-live="polite"
-        className={feedback?.tone === "danger" ? "text-sm text-danger" : "text-sm font-semibold text-success"}
+        className={feedback?.tone === "danger" ? "text-sm text-danger-ink" : "text-sm font-semibold text-success-ink"}
       >
         {feedback?.text}
       </p>
@@ -130,7 +130,7 @@ export function AdminQuestionsPage() {
             <table className="w-full min-w-[720px] border-collapse text-left text-sm">
               <caption className="sr-only">Questões do banco</caption>
               <thead>
-                <tr className="border-b border-black/10 text-xs uppercase text-ink-muted">
+                <tr className="border-b -overlay/10 text-xs uppercase text-ink-muted">
                   <th scope="col" className="py-2 pr-4 font-semibold">Código</th>
                   <th scope="col" className="py-2 pr-4 font-semibold">Área › Tópico</th>
                   <th scope="col" className="py-2 pr-4 font-semibold">Ano</th>
@@ -140,8 +140,8 @@ export function AdminQuestionsPage() {
               </thead>
               <tbody>
                 {questions.map((question) => (
-                  <tr key={question.id} className="border-b border-black/5 last:border-0">
-                    <td className="py-3 pr-4 font-semibold text-brand-800">{question.code}</td>
+                  <tr key={question.id} className="border-b -overlay/5 last:border-0">
+                    <td className="py-3 pr-4 font-semibold text-brand-ink">{question.code}</td>
                     <td className="py-3 pr-4 text-ink-strong">
                       {question.area.name} › {question.topic}
                     </td>

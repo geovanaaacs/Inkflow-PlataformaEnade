@@ -31,7 +31,7 @@ export function QuestionNavigator({
                   "flex size-10 w-full items-center justify-center rounded-dropdown text-sm font-semibold transition-colors",
                   answered
                     ? "bg-brand-600 text-white hover:bg-brand-900"
-                    : "bg-black/5 text-ink-strong hover:bg-brand-500-a24",
+                    : "-overlay/5 text-ink-strong hover:bg-brand-500-a24",
                   current && "ring-2 ring-brand-900 ring-offset-2"
                 )}
               >
@@ -46,7 +46,7 @@ export function QuestionNavigator({
           <span aria-hidden="true" className="size-3 rounded-sm bg-brand-600" /> Respondida
         </span>
         <span className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="size-3 rounded-sm bg-black/10" /> Sem resposta
+          <span aria-hidden="true" className="size-3 rounded-sm -overlay/10" /> Sem resposta
         </span>
       </p>
     </nav>

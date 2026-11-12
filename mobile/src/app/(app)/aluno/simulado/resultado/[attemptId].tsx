@@ -6,7 +6,7 @@ import { Button, Card, Screen, Title } from "../../../../../components/ui";
 import { getAttemptDetails } from "../../../../../features/mock-exams/api";
 import { formatElapsed, plural } from "../../../../../lib/format";
 import { useAsync } from "../../../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../../../theme";
+import { colors, radius, spacing, themed } from "../../../../../theme";
 
 /** Score, time spent and question-by-question review of a finished attempt. */
 export default function MockExamResultScreen() {
@@ -106,7 +106,7 @@ function Score({ label, value, hint, highlight = false }: { label: string; value
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   muted: { fontSize: 13, color: colors.muted, fontWeight: "400" },
   scores: { flexDirection: "row", gap: spacing(2) },
@@ -114,8 +114,8 @@ const styles = StyleSheet.create({
   scoreHighlight: { backgroundColor: colors.brandSoft },
   scoreLabel: { fontSize: 12, color: colors.muted, textAlign: "center" },
   scoreValue: { fontSize: 20, fontWeight: "800", color: colors.ink, textAlign: "center" },
-  scoreValueHighlight: { color: colors.brand800 },
+  scoreValueHighlight: { color: colors.brandText },
   row: { flexDirection: "row", alignItems: "center", gap: spacing(3) },
   code: { fontSize: 14, fontWeight: "700", color: colors.ink },
   link: { fontSize: 14, fontWeight: "700", color: colors.brand600, padding: spacing(1.5) },
-});
+}));

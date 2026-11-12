@@ -51,10 +51,10 @@ export function QuestionOptionsList({
             />
             <span className="flex-1">{option.label}</span>
             {showAsCorrect && (
-              <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-success" />
+              <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-success-ink" />
             )}
             {showAsWrong && (
-              <XCircle aria-hidden="true" className="size-4 shrink-0 text-danger" />
+              <XCircle aria-hidden="true" className="size-4 shrink-0 text-danger-ink" />
             )}
           </label>
         );

@@ -24,7 +24,7 @@ export function Logo({ className, size="sm", showText=true, imgClassName }: Logo
         className={cn(sizeClasses[size], imgClassName)}
       />
       {showText && (
-        <span className="hidden sm:inline text-2xl font-semibold text-brand-800">Inkflow</span>
+        <span className="hidden sm:inline text-2xl font-semibold text-brand-ink">Inkflow</span>
       )}
     </span>
   );

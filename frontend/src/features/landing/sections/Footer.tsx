@@ -46,7 +46,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-neutral-700 pt-4 text-sm text-neutral-500 md:flex-row">
+        <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-neutral-700 pt-4 text-sm text-neutral-400 md:flex-row">
           <p>© 2026 Inkflow. Todos os direitos reservados.</p>
 
           <nav aria-label="Rodapé" className="flex gap-6">

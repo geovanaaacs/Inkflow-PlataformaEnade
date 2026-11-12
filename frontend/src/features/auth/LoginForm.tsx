@@ -78,7 +78,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       <button
         type="button"
         onClick={onForgotPassword}
-        className="self-end text-sm font-medium text-brand-800 hover:underline"
+        className="self-end text-sm font-medium text-brand-ink hover:underline"
       >
         Esqueceu sua senha?
       </button>

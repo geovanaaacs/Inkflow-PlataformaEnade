@@ -19,7 +19,7 @@ import {
 import { dayKey, errorMessage, formatLongDate, formatTimeRange } from "../../../lib/format";
 import { userHasFeature } from "../../../lib/plan-access";
 import { useAsync } from "../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../theme";
+import { colors, radius, spacing, themed } from "../../../theme";
 
 const TYPES: { value: SessionType; label: string }[] = [
   { value: "mentoria", label: SESSION_TYPE_LABEL.mentoria },
@@ -245,16 +245,16 @@ function RequestModal({ slot, onClose, onRequested }: { slot: OpenSlot | null; o
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   muted: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   success: { fontSize: 15, color: colors.success, fontWeight: "700" },
   day: { gap: spacing(3) },
-  dayLabel: { fontSize: 16, fontWeight: "700", color: colors.brand900, marginTop: spacing(2) },
+  dayLabel: { fontSize: 16, fontWeight: "700", color: colors.brandText, marginTop: spacing(2) },
   time: { fontSize: 16, fontWeight: "700", color: colors.ink },
   topic: { fontSize: 15, fontWeight: "600", color: colors.ink },
-  kind: { fontSize: 12, fontWeight: "700", color: colors.brand800 },
+  kind: { fontSize: 12, fontWeight: "700", color: colors.brandText },
   request: { gap: spacing(1.5), paddingVertical: spacing(3), borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
   requestFooter: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   cancel: { fontSize: 14, fontWeight: "700", color: colors.danger, padding: spacing(1.5) },
   textarea: { minHeight: 100, paddingTop: spacing(3), borderRadius: radius.input },
-});
+}));

@@ -24,6 +24,7 @@ public partial class App : Application
             typeof(FrameworkElement),
             new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
 
+        ThemeManager.Initialize();
         DispatcherUnhandledException += OnUnhandledException;
         ShowLogin();
     }

@@ -38,11 +38,11 @@ export function MockExamCard({ exam, locked }: MockExamCardProps) {
 
       <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-strong">
         <li className="flex items-center gap-1.5">
-          <ListChecks aria-hidden="true" className="size-4 text-brand-800" />
+          <ListChecks aria-hidden="true" className="size-4 text-brand-ink" />
           {exam.questionCount} questões
         </li>
         <li className="flex items-center gap-1.5">
-          <Clock aria-hidden="true" className="size-4 text-brand-800" />
+          <Clock aria-hidden="true" className="size-4 text-brand-ink" />
           {exam.timeLimitMinutes} min
         </li>
       </ul>

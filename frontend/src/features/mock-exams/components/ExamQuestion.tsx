@@ -24,7 +24,7 @@ export function ExamQuestion({
   return (
     <article aria-labelledby={headingId} className="flex flex-col gap-5">
       <header>
-        <p className="text-sm font-semibold text-brand-800">
+        <p className="text-sm font-semibold text-brand-ink">
           Questão {position} de {total}
         </p>
         <h2 id={headingId} className="mt-1 text-sm font-semibold text-ink-strong">
@@ -54,7 +54,7 @@ export function ExamQuestion({
                 onChange={() => onSelect(option.id)}
                 className="size-4 accent-brand-800"
               />
-              <span className="w-5 font-semibold text-brand-800">{option.id.toUpperCase()})</span>
+              <span className="w-5 font-semibold text-brand-ink">{option.id.toUpperCase()})</span>
               <span className="flex-1">{option.label}</span>
             </label>
           );

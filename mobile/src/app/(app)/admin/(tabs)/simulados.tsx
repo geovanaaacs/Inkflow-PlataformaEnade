@@ -5,7 +5,7 @@ import { Button, Card, Screen, Subtitle, Title } from "../../../../components/ui
 import { listAdminMockExams } from "../../../../features/admin/api";
 import { plural } from "../../../../lib/format";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, spacing } from "../../../../theme";
+import { colors, spacing, themed } from "../../../../theme";
 
 /** Timed mock exams offered to Premium students: list, create and edit. */
 export default function AdminMockExamsScreen() {
@@ -41,9 +41,9 @@ export default function AdminMockExamsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   badges: { flexDirection: "row", gap: spacing(2), flexWrap: "wrap" },
   title: { fontSize: 17, fontWeight: "700", color: colors.ink },
   body: { fontSize: 14, color: colors.ink },
   muted: { fontSize: 13, color: colors.muted, lineHeight: 19 },
-});
+}));

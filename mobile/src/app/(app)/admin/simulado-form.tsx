@@ -17,7 +17,7 @@ import type { Area, Difficulty, Question } from "../../../features/questions/api
 import { ChipRow } from "../../../features/questions/components";
 import { errorMessage } from "../../../lib/format";
 import { useAsync } from "../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../theme";
+import { colors, radius, spacing, themed } from "../../../theme";
 
 const DIFFICULTIES: { value: Difficulty; label: string }[] = [
   { value: "fácil", label: "Fácil" },
@@ -157,7 +157,7 @@ function MockExamForm({ exam, questions, areas }: { exam: MockExam | null; quest
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   label: { fontSize: 14, fontWeight: "600", color: colors.ink },
   muted: { fontSize: 13, color: colors.muted, lineHeight: 19 },
@@ -174,6 +174,6 @@ const styles = StyleSheet.create({
   questionSelected: { borderColor: colors.brand600, backgroundColor: colors.brandSoft },
   check: { width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: colors.muted, alignItems: "center", justifyContent: "center" },
   checkOn: { backgroundColor: colors.brand600, borderColor: colors.brand600 },
-  checkText: { color: colors.surface, fontWeight: "700", fontSize: 13 },
-  code: { fontSize: 14, fontWeight: "700", color: colors.brand800 },
-});
+  checkText: { color: colors.onBrand, fontWeight: "700", fontSize: 13 },
+  code: { fontSize: 14, fontWeight: "700", color: colors.brandText },
+}));

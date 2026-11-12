@@ -8,7 +8,7 @@ import type { Difficulty, Question } from "../../../../features/questions/api";
 import { ChipRow } from "../../../../features/questions/components";
 import { errorMessage, plural } from "../../../../lib/format";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, spacing } from "../../../../theme";
+import { colors, spacing, themed } from "../../../../theme";
 
 const DIFFICULTY_TONE: Record<Difficulty, Tone> = { fácil: "success", médio: "warning", difícil: "danger" };
 
@@ -100,12 +100,12 @@ export default function AdminQuestionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   feedback: { fontSize: 15, fontWeight: "700" },
   muted: { fontSize: 13, color: colors.muted, lineHeight: 19 },
   body: { fontSize: 14, color: colors.ink },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  code: { fontSize: 16, fontWeight: "700", color: colors.brand800 },
+  code: { fontSize: 16, fontWeight: "700", color: colors.brandText },
   actions: { flexDirection: "row", gap: spacing(2) },
-});
+}));

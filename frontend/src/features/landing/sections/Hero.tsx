@@ -22,7 +22,7 @@ export function Hero() {
           <div>
             <h1 className="text-2xl font-bold leading-tight text-ink-strong sm:text-4xl lg:text-[32px]">
               Prepare-se para o ENADE: pratique e melhore seu{" "}
-              <span className="text-brand-800">desempenho</span>.
+              <span className="text-brand-ink">desempenho</span>.
             </h1>
             <p className="mt-4 max-w-xl text-sm text-ink-muted sm:text-base">
               Plataforma acadêmica completa para praticar questões do ENADE,
@@ -39,7 +39,7 @@ export function Hero() {
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center">
                   <dt className="sr-only">{stat.label}</dt>
-                  <dd className="text-2xl font-bold text-brand-800">
+                  <dd className="text-2xl font-bold text-brand-ink">
                     {stat.value}
                   </dd>
                   <dd className="text-sm text-ink-muted">{stat.label}</dd>

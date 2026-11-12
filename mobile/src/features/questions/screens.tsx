@@ -5,7 +5,7 @@ import { LoadState, PlanBanner } from "../../components/feedback";
 import { Button, Screen, TextField, Title } from "../../components/ui";
 import { plural } from "../../lib/format";
 import { useAsync } from "../../lib/useAsync";
-import { colors, spacing } from "../../theme";
+import { colors, spacing, themed } from "../../theme";
 import { useAuth } from "../auth/AuthProvider";
 import { getQuestionByCode, getQuestionFilterOptions, listQuestions, type QuestionFilters } from "./api";
 import { ChipRow, QuestionCard, QuestionList } from "./components";
@@ -103,7 +103,7 @@ export function QuestionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   results: { gap: spacing(3) },
   count: { fontSize: 13, color: colors.muted },
-});
+}));

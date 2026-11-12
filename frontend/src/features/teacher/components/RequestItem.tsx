@@ -18,7 +18,7 @@ export function RequestItem({ request, details, busy, onRespond }: RequestItemPr
     request.status === "pendente" ? "Pendente" : REQUEST_STATUS_LABEL[request.status];
 
   return (
-    <li className="flex flex-col gap-3 rounded-input bg-black/[0.03] p-3 sm:flex-row sm:items-start sm:justify-between">
+    <li className="flex flex-col gap-3 rounded-input -overlay/[0.03] p-3 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0">
         <p className="text-sm font-semibold text-ink-strong">{request.studentName}</p>
         {details && <div className="text-xs text-ink-muted">{details}</div>}

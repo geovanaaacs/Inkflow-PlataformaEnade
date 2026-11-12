@@ -13,7 +13,7 @@ import {
   type TextInputProps,
 } from "react-native";
 import { SafeAreaView, type Edge } from "react-native-safe-area-context";
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, spacing, themed } from "../theme";
 
 interface ScreenProps {
   children: ReactNode;
@@ -94,7 +94,7 @@ export function Button({ label, onPress, variant = "primary", loading = false, d
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={primary ? colors.surface : colors.brand600} />
+        <ActivityIndicator color={primary ? colors.onBrand : colors.brand600} />
       ) : (
         <Text style={[styles.buttonLabel, !primary && styles.buttonLabelSecondary]}>{label}</Text>
       )}
@@ -167,7 +167,7 @@ export function LoadingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   safe: { flex: 1, backgroundColor: colors.background },
   center: { alignItems: "center", justifyContent: "center" },
@@ -181,8 +181,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  brandMarkText: { color: colors.surface, fontSize: 20, fontWeight: "700", fontStyle: "italic" },
-  brandName: { fontSize: 22, fontWeight: "700", color: colors.brand900 },
+  brandMarkText: { color: colors.onBrand, fontSize: 20, fontWeight: "700", fontStyle: "italic" },
+  brandName: { fontSize: 22, fontWeight: "700", color: colors.brandText },
   title: { fontSize: 26, fontWeight: "700", color: colors.ink },
   subtitle: { fontSize: 15, color: colors.muted, lineHeight: 21 },
   card: {
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   buttonPrimary: { backgroundColor: colors.brand600 },
   buttonSecondary: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.brand600 },
   buttonDimmed: { opacity: 0.7 },
-  buttonLabel: { color: colors.surface, fontSize: 16, fontWeight: "600" },
+  buttonLabel: { color: colors.onBrand, fontSize: 16, fontWeight: "600" },
   buttonLabelSecondary: { color: colors.brand600 },
   field: { gap: spacing(1.5) },
   fieldLabel: { fontSize: 14, fontWeight: "600", color: colors.ink },
@@ -229,5 +229,5 @@ const styles = StyleSheet.create({
   segment: { flex: 1, minHeight: 40, borderRadius: radius.button - 2, alignItems: "center", justifyContent: "center" },
   segmentSelected: { backgroundColor: colors.surface },
   segmentLabel: { fontSize: 15, color: colors.muted, fontWeight: "500" },
-  segmentLabelSelected: { color: colors.brand800, fontWeight: "700" },
-});
+  segmentLabelSelected: { color: colors.brandText, fontWeight: "700" },
+}));

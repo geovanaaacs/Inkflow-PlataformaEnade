@@ -6,7 +6,7 @@ import { SESSION_TYPE_DESCRIPTION, SESSION_TYPE_LABEL, type SessionType } from "
 import { ChipRow } from "../../../features/questions/components";
 import { createSlot } from "../../../features/teacher/api";
 import { dayKey, errorMessage } from "../../../lib/format";
-import { colors } from "../../../theme";
+import { colors, themed } from "../../../theme";
 
 /** Same defaults as the web form (NewSlotForm): bigger class for mentoring, small group otherwise. */
 const DEFAULT_CAPACITY: Record<SessionType, number> = { mentoria: 30, grupo: 8 };
@@ -113,6 +113,6 @@ export default function NewSlotScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   muted: { fontSize: 14, color: colors.muted, lineHeight: 20 },
-});
+}));

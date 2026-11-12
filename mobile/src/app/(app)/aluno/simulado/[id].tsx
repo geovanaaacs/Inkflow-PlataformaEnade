@@ -19,7 +19,7 @@ import { errorMessage, formatCountdown } from "../../../../lib/format";
 import { ApiError } from "../../../../lib/http";
 import { userHasFeature } from "../../../../lib/plan-access";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../../theme";
+import { colors, radius, spacing, themed } from "../../../../theme";
 
 /** Intro screen, then the timed exam — same flow as frontend MockExamRunnerPage. */
 export default function MockExamScreen() {
@@ -261,7 +261,7 @@ function ExamSession({ exam, questions, attempt }: { exam: MockExam; questions: 
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   meta: { fontSize: 15, color: colors.ink },
   rule: { fontSize: 14, color: colors.muted, lineHeight: 20 },
@@ -280,11 +280,11 @@ const styles = StyleSheet.create({
   timer: { backgroundColor: colors.brandSoft, borderRadius: radius.button, paddingHorizontal: spacing(3), paddingVertical: spacing(1.5) },
   timerWarning: { backgroundColor: `${colors.warning}33` },
   timerDanger: { backgroundColor: colors.dangerBg },
-  timerText: { fontSize: 18, fontWeight: "800", color: colors.brand900, fontVariant: ["tabular-nums"] },
+  timerText: { fontSize: 18, fontWeight: "800", color: colors.brandText, fontVariant: ["tabular-nums"] },
   timerTextAlert: { color: colors.danger },
   progress: { flex: 1, fontSize: 13, color: colors.muted },
   finishButton: { backgroundColor: colors.brand600, borderRadius: radius.button, paddingHorizontal: spacing(3.5), paddingVertical: spacing(2) },
-  finishText: { color: colors.surface, fontWeight: "700", fontSize: 14 },
+  finishText: { color: colors.onBrand, fontWeight: "700", fontSize: 14 },
   content: { padding: spacing(4), gap: spacing(4), paddingBottom: spacing(10) },
   navigator: { gap: spacing(2) },
   navItem: {
@@ -298,10 +298,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   navAnswered: { backgroundColor: colors.brand600, borderColor: colors.brand600 },
-  navCurrent: { borderColor: colors.brand900, borderWidth: 3 },
+  navCurrent: { borderColor: colors.brandText, borderWidth: 3 },
   navText: { fontSize: 14, fontWeight: "700", color: colors.ink },
-  navTextOn: { color: colors.surface },
-  position: { fontSize: 13, fontWeight: "700", color: colors.brand800 },
+  navTextOn: { color: colors.onBrand },
+  position: { fontSize: 13, fontWeight: "700", color: colors.brandText },
   path: { fontSize: 14, fontWeight: "600", color: colors.ink },
   statement: { fontSize: 16, color: colors.ink, lineHeight: 24 },
   options: { gap: spacing(2.5) },
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   letter: { width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: colors.muted, alignItems: "center", justifyContent: "center" },
   letterSelected: { borderColor: colors.brand600, backgroundColor: colors.brand600 },
   letterText: { fontSize: 13, fontWeight: "700", color: colors.muted },
-  letterTextSelected: { color: colors.surface },
+  letterTextSelected: { color: colors.onBrand },
   optionText: { flex: 1, fontSize: 15, color: colors.ink, lineHeight: 21 },
   pager: { flexDirection: "row", gap: spacing(3) },
-});
+}));

@@ -125,7 +125,7 @@ export function Calendar({
         <button
           type="button"
           onClick={() => changeMonth(-1)}
-          className="rounded-button p-2 text-ink-strong hover:bg-black/5"
+          className="rounded-button p-2 text-ink-strong hover:-overlay/5"
           aria-label="Mês anterior"
         >
           <ChevronLeft aria-hidden="true" className="size-5" />
@@ -136,7 +136,7 @@ export function Calendar({
         <button
           type="button"
           onClick={() => changeMonth(1)}
-          className="rounded-button p-2 text-ink-strong hover:bg-black/5"
+          className="rounded-button p-2 text-ink-strong hover:-overlay/5"
           aria-label="Próximo mês"
         >
           <ChevronRight aria-hidden="true" className="size-5" />
@@ -192,7 +192,7 @@ export function Calendar({
                       selected
                         ? "bg-brand-600 font-semibold text-white"
                         : disabled
-                          ? "cursor-default text-ink-muted/60"
+                          ? "cursor-default text-ink-muted/75"
                           : "text-ink-strong hover:bg-brand-500-a24",
                       isToday && !selected && "ring-1 ring-brand-600"
                     )}

@@ -13,7 +13,7 @@ export function NotificationsSection() {
         id="notifications-heading"
         className="flex items-center gap-2 text-lg font-semibold text-ink-strong"
       >
-        <Bell aria-hidden="true" className="size-4 text-brand-800" />
+        <Bell aria-hidden="true" className="size-4 text-brand-ink" />
         Notificações
       </h2>
 

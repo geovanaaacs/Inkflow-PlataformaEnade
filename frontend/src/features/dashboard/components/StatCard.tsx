@@ -36,7 +36,7 @@ export function StatCard({
       <ProgressBar value={progressPercent} label={label} tone={progressTone} />
       <p
         className={`flex items-center gap-1 text-sm font-semibold ${
-          deltaPositive ? "text-success" : "text-ink-strong"
+          deltaPositive ? "text-success-ink" : "text-ink-strong"
         }`}
       >
         {deltaPositive && <ArrowUp aria-hidden="true" className="size-3.5" />}

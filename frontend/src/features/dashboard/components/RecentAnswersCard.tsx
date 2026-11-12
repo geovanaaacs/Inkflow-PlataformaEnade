@@ -29,13 +29,13 @@ export function RecentAnswersCard({ answers, showHistoryUpsell }: RecentAnswersC
           {answers.map((answer) => (
             <li
               key={answer.id}
-              className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4 last:border-0 last:pb-0"
+              className="flex flex-wrap items-center justify-between gap-3 border-b -overlay/5 pb-4 last:border-0 last:pb-0"
             >
               <div className="flex items-start gap-3">
                 {answer.correct ? (
-                  <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-success" />
+                  <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-success-ink" />
                 ) : (
-                  <XCircle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-danger" />
+                  <XCircle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-danger-ink" />
                 )}
                 <div>
                   <p className="text-sm font-semibold text-ink-strong">

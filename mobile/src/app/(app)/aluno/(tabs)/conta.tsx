@@ -4,7 +4,8 @@ import { Badge } from "../../../../components/feedback";
 import { Button, Card, Screen, Title } from "../../../../components/ui";
 import { useAuth } from "../../../../features/auth/AuthProvider";
 import { PLAN_LABEL } from "../../../../lib/plan-access";
-import { colors, spacing } from "../../../../theme";
+import { ThemeSwitch } from "../../../../features/theme/ThemeSwitch";
+import { colors, spacing, themed } from "../../../../theme";
 
 /** Account tab: who is logged in, plan, notes and logout. */
 export default function AccountScreen() {
@@ -26,13 +27,14 @@ export default function AccountScreen() {
       <Button label="Planos" onPress={() => router.push("/aluno/planos")} />
       <Button label="Minhas anotações" variant="secondary" onPress={() => router.push("/aluno/anotacoes")} />
       <Button label="Mentoria e grupos de estudo" variant="secondary" onPress={() => router.push("/aluno/mentoria")} />
+      <ThemeSwitch />
       <Button label="Sair" variant="secondary" onPress={() => void logout()} />
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   name: { fontSize: 18, fontWeight: "700", color: colors.ink },
   muted: { fontSize: 14, color: colors.muted },
   badges: { flexDirection: "row", gap: spacing(2) },
-});
+}));

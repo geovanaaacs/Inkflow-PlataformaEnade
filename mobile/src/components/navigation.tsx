@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import type { ComponentProps } from "react";
 import type { ColorValue } from "react-native";
-import { colors } from "../theme";
+import { colors, themed } from "../theme";
 
 export type IconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -13,19 +13,19 @@ export function tabIcon(name: IconName) {
 }
 
 /** Tab bar look shared by every profile. */
-export const tabScreenOptions = {
+export const tabScreenOptions = themed(() => ({
   headerShown: false,
   tabBarActiveTintColor: colors.brand600,
   tabBarInactiveTintColor: colors.muted,
   tabBarStyle: { backgroundColor: colors.surface },
-} as const;
+}) as const);
 
 /** Header look of the screens opened on top of the tabs. */
-export const stackScreenOptions = {
-  headerTintColor: colors.brand800,
+export const stackScreenOptions = themed(() => ({
+  headerTintColor: colors.brandText,
   headerTitleStyle: { color: colors.ink },
   headerStyle: { backgroundColor: colors.background },
   headerShadowVisible: false,
   headerBackTitle: "Voltar",
   contentStyle: { backgroundColor: colors.background },
-} as const;
+}) as const);
