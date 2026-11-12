@@ -34,6 +34,7 @@ public static class QuestionTextParser
     private static readonly Regex OptionLoose = new(@"^([A-E])(?:\s+(.+))?$", RegexOptions.Compiled);
 
     private static readonly Regex Noise = new(@"^(?:ÁREA LIVRE|AREA LIVRE|\*[A-Z0-9]+\*|\d{1,3}|P[áa]gina\s+\d+(?:\s+de\s+\d+)?)$", Options);
+    private static readonly Regex PerceptionSurvey = new(@"^QUESTION[ÁA]RIO\s+DE\s+PERCEP[ÇC][ÃA]O(?:\s+DA\s+PROVA)?$", Options);
     private static readonly Regex RomanItem = new(@"^(?:I|II|III|IV|V|VI|VII|VIII)\s*[.)–-]\s", RegexOptions.Compiled);
 
     public static List<QuestionDraft> Parse(IReadOnlyList<SourceLine> source, DraftDefaults defaults)
@@ -42,6 +43,22 @@ public static class QuestionTextParser
             .Select(l => l with { Text = Regex.Replace(l.Text, @"\s+", " ").Trim() })
             .Where(l => l.Text.Length > 0 && !Noise.IsMatch(l.Text))
             .ToList();
+
+        // 0. ENADE tests end with the "Questionário de Percepção da Prova" (how hard was
+        // the test, how long it took…): numbered 1–9 with A–E options, but not questions.
+        // The cover also names it (instructions, table of parts): only the title on a line
+        // of its own, after the first question, counts. Everything from that page on is
+        // dropped (in reading order the title may come after the page's first items).
+        var firstQuestion = lines.FindIndex(l => ExamHeading.IsMatch(l.Text));
+        if (firstQuestion >= 0)
+        {
+            var survey = lines.FindIndex(firstQuestion, l => PerceptionSurvey.IsMatch(l.Text));
+            if (survey >= 0)
+            {
+                var surveyPage = lines[survey].Page;
+                lines = lines.Where(l => l.Page < surveyPage).ToList();
+            }
+        }
 
         // 1. Answer key at the end ("GABARITO" and pairs number → letter).
         var answerKey = new Dictionary<int, string>();

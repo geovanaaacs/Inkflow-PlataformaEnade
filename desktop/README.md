@@ -37,9 +37,18 @@ Em **Questões → Importar (PDF ou planilha)…**:
 
 1. **Abrir PDF…** — o programa lê o texto da prova (também em duas colunas, como no ENADE) e separa cada questão: enunciado, alternativas A–E e, se houver, o gabarito. O **ano e a dificuldade padrão** valem para todas (o código vira `Q<ano>-<número da questão>`); **área e tópico são sugeridos** (veja abaixo).
    Ou **Abrir planilha…** — um `.xlsx` ou `.csv` no formato do **modelo** (botão "Baixar modelo"), uma questão por linha. Linhas sem tópico também recebem sugestão.
+   **Abrir gabarito (INEP)…** — depois de abrir a prova, o PDF de gabarito oficial (o INEP publica separado da prova) preenche a alternativa correta de cada questão, marcada "do gabarito oficial"; questões **anuladas** ficam marcadas e não podem ser importadas. Em seguida o programa oferece tirar da revisão as questões **1 a 8** (Formação Geral, fora de TI). Se o arquivo escolhido não for um gabarito (por exemplo, a própria prova), ele avisa e não muda nada.
 2. **Revisar** — à esquerda, a lista com a situação de cada questão (*Pronta* ou *Corrigir*, com o motivo); à direita, o editor completo da questão selecionada. Corrija o que for preciso e marque **Aprovar**. "Aplicar a todas" troca área, tópico, ano e dificuldade de todas de uma vez.
    Se preferir revisar no Excel: **Exportar para Excel/CSV**, corrija lá, marque `sim` na coluna `aprovar` e use **Abrir planilha** para trazer de volta.
 3. **Importar N questões aprovadas** — só as aprovadas e sem problemas são gravadas, uma a uma; a coluna Situação mostra o resultado de cada uma (por exemplo, código já existente).
+
+### Questões reais do ENADE (INEP)
+
+As provas e os gabaritos oficiais ficam em [gov.br/inep → Enade → Provas e gabaritos](https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade/provas-e-gabaritos) (cada curso tem **Prova**, **Gabarito** e **Padrão de resposta**). De computação: ADS (2008, 2011, 2014, 2017, 2021), Ciência da Computação (2008, 2011, 2014, 2021), Sistemas de Informação (2014, 2021), Redes de Computadores (2008, 2011, 2014, 2017, 2021), Gestão da TI (2017, 2021) e Engenharia de Computação (2014, 2019, 2023).
+
+Fluxo: **Abrir PDF** (a prova, com o ano dela como ano padrão) → **Abrir gabarito (INEP)** → tirar as questões 1–8 → conferir as questões com figura, tabela ou código (o leitor pega só o texto) → **Explicar todas com IA** → aprovar e importar. O leitor pula as questões discursivas e o "Questionário de Percepção da Prova" do fim do caderno. Testado com a prova de ADS 2021 (35 questões objetivas lidas, todas casadas com o gabarito) e com os gabaritos de 2011, 2014, 2017, 2021 e 2023.
+
+O site do INEP publica o conteúdo sob a licença Creative Commons BY-ND 3.0 (atribuição, sem derivações): mantenha enunciado e alternativas como estão e cite a fonte (ex.: "INEP/ENADE 2021, questão 15").
 
 As regras conferidas antes de gravar são as mesmas da API: código no formato `Q2024-15` e ainda não usado, área existente, tópico, ano entre 2004 e o ano que vem, as cinco alternativas e a correta.
 
