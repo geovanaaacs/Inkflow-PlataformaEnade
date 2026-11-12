@@ -79,7 +79,7 @@ export function TeacherRequestsCard({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-auto px-1 py-0 text-xs text-brand-800 underline"
+                    className="h-auto px-1 py-0 text-xs text-brand-ink underline"
                     onClick={() => onShowDay(dayKey(new Date(request.slot.startsAt)))}
                   >
                     ver no calendário

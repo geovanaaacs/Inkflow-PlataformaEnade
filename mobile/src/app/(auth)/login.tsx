@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Brand, Button, Card, ErrorMessage, Screen, Subtitle, TextField, Title } from "../../components/ui";
 import { useAuth } from "../../features/auth/AuthProvider";
 import { testAccounts } from "../../features/auth/test-accounts";
-import { colors, radius, spacing } from "../../theme";
+import { colors, radius, spacing, themed } from "../../theme";
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -93,7 +93,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   footer: { flexDirection: "row", justifyContent: "center", gap: spacing(1.5) },
   footerText: { color: colors.muted, fontSize: 15 },
   link: { color: colors.brand600, fontSize: 15, fontWeight: "700" },
@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     borderColor: colors.brand600,
   },
-  devTitle: { fontSize: 13, fontWeight: "700", color: colors.brand800 },
+  devTitle: { fontSize: 13, fontWeight: "700", color: colors.brandText },
   devAccount: { paddingVertical: spacing(1.5) },
   devPressed: { opacity: 0.6 },
   devDescription: { fontSize: 14, fontWeight: "600", color: colors.ink },
   devEmail: { fontSize: 13, color: colors.muted },
-});
+}));

@@ -130,7 +130,7 @@ export function TeacherAgendaPage() {
       <p
         role="status"
         aria-live="polite"
-        className={feedback?.tone === "danger" ? "text-sm text-danger" : "text-sm font-semibold text-success"}
+        className={feedback?.tone === "danger" ? "text-sm text-danger-ink" : "text-sm font-semibold text-success-ink"}
       >
         {feedback?.text}
       </p>

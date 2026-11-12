@@ -5,6 +5,7 @@ import { AppLayout } from "@/layouts/AppLayout";
 import { LandingPage } from "@/features/landing/LandingPage";
 import { AuthPage } from "@/features/auth/AuthPage";
 import { AuthProvider } from "@/features/auth/AuthProvider";
+import { ThemeFab } from "@/shared/theme/ThemeFab";
 import { RequireAuth } from "@/features/auth/RequireAuth";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { QuestionsPage } from "@/features/questions/QuestionsPage";
@@ -41,6 +42,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <ThemeFab />
         <Routes>
           <Route element={<PublicLayout />}>
             <Route index element={<LandingPage />} />

@@ -6,7 +6,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "db:dev-accounts": "tsx src/scripts/dev-accounts.ts"
+    "db:dev-accounts": "tsx src/scripts/dev-accounts.ts",
+    "db:setup": "tsx src/scripts/db-setup.ts"
   },
   "description": "API REST do Inkflow (Node.js + Express + SQL Server)",
   "private": true,

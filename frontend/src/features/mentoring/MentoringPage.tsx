@@ -122,7 +122,7 @@ function MentoringScheduler() {
         <p className="text-sm text-ink-muted">{SESSION_TYPE_DESCRIPTION[type]}</p>
       </div>
 
-      <p role="status" aria-live="polite" className="text-sm font-semibold text-success">
+      <p role="status" aria-live="polite" className="text-sm font-semibold text-success-ink">
         {statusMessage}
       </p>
 

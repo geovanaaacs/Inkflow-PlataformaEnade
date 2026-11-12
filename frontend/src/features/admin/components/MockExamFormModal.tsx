@@ -141,17 +141,17 @@ function MockExamForm({ exam, areas, questions, onCancel, onSaved }: MockExamFor
             Ordem no simulado: {input.questionIds.map((id) => codeById.get(id) ?? id).join(" → ")}
           </p>
         )}
-        <ul className="max-h-64 overflow-y-auto rounded-input border border-black/5 p-2">
+        <ul className="max-h-64 overflow-y-auto rounded-input border -overlay/5 p-2">
           {questions.map((question) => (
             <li key={question.id}>
-              <label className="flex cursor-pointer items-center gap-3 rounded-dropdown px-2 py-1.5 text-sm hover:bg-black/[0.03]">
+              <label className="flex cursor-pointer items-center gap-3 rounded-dropdown px-2 py-1.5 text-sm hover:-overlay/[0.03]">
                 <input
                   type="checkbox"
                   checked={input.questionIds.includes(question.id)}
                   onChange={() => toggleQuestion(question.id)}
                   className="size-4 accent-brand-800"
                 />
-                <span className="font-semibold text-brand-800">{question.code}</span>
+                <span className="font-semibold text-brand-ink">{question.code}</span>
                 <span className="truncate text-ink-strong">
                   {question.area.shortName} · {question.topic}
                 </span>
@@ -162,7 +162,7 @@ function MockExamForm({ exam, areas, questions, onCancel, onSaved }: MockExamFor
       </fieldset>
 
       {error && (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="text-sm text-danger-ink">
           {error}
         </p>
       )}

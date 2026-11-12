@@ -19,7 +19,7 @@ import {
 } from "../../../../features/teacher/api";
 import { dayKey, errorMessage, formatLongDate, formatTimeRange, plural } from "../../../../lib/format";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../../theme";
+import { colors, radius, spacing, themed } from "../../../../theme";
 
 type AgendaView = "horarios" | "solicitacoes";
 type RequestFilter = "pendente" | "confirmada" | "todas";
@@ -229,18 +229,18 @@ function RequestItem({ request, busy, onRespond }: { request: MentoringRequest; 
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   muted: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   feedback: { fontSize: 15, fontWeight: "700" },
   day: { gap: spacing(3) },
-  dayLabel: { fontSize: 16, fontWeight: "700", color: colors.brand900, marginTop: spacing(2) },
+  dayLabel: { fontSize: 16, fontWeight: "700", color: colors.brandText, marginTop: spacing(2) },
   slotTitle: { fontSize: 16, fontWeight: "700", color: colors.ink },
-  kind: { fontSize: 12, fontWeight: "700", color: colors.brand800 },
+  kind: { fontSize: 12, fontWeight: "700", color: colors.brandText },
   remove: { fontSize: 14, fontWeight: "700", color: colors.danger, alignSelf: "flex-start", paddingVertical: spacing(1) },
   request: { backgroundColor: colors.background, borderRadius: radius.input, padding: spacing(3), gap: spacing(2) },
   requestHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing(2) },
   student: { fontSize: 15, fontWeight: "700", color: colors.ink, flex: 1 },
   message: { fontSize: 14, fontStyle: "italic", color: colors.ink },
   actions: { flexDirection: "row", gap: spacing(2) },
-});
+}));

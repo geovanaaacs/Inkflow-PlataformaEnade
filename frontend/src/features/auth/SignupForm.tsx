@@ -107,7 +107,7 @@ export function SignupForm() {
         />
       </div>
       {serverError && (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="text-sm text-danger-ink">
           {serverError}
         </p>
       )}
@@ -116,7 +116,7 @@ export function SignupForm() {
       </Button>
       <p className="text-center text-sm text-ink-muted">
         Ao criar uma conta, você concorda com nossos {" "}
-        <span className="text-brand-800 underline">Termos de uso e Política e privacidade</span>.
+        <span className="text-brand-ink underline">Termos de uso e Política e privacidade</span>.
       </p>
     </form>
   );

@@ -76,10 +76,10 @@ function NotesList({ onNavigate }: { onNavigate: () => void }) {
       {groupByQuestion(notes).map((group) => {
         const first = group[0];
         return (
-          <li key={first.questionCode} className="rounded-input border border-black/5 p-4">
+          <li key={first.questionCode} className="rounded-input border -overlay/5 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-semibold text-ink-strong">
-                <span className="text-brand-800">[{first.questionCode}]</span> {first.topic}
+                <span className="text-brand-ink">[{first.questionCode}]</span> {first.topic}
                 <span className="font-normal text-ink-muted"> · {first.areaName}</span>
               </p>
               <Button
@@ -95,7 +95,7 @@ function NotesList({ onNavigate }: { onNavigate: () => void }) {
             </div>
             <ul className="mt-3 flex flex-col gap-2">
               {group.map((note) => (
-                <li key={note.id} className="rounded-input bg-black/[0.02] px-3 py-2">
+                <li key={note.id} className="rounded-input -overlay/[0.02] px-3 py-2">
                   <p className="whitespace-pre-line text-sm text-ink-strong">{note.content}</p>
                   <p className="mt-1 text-xs text-ink-muted">{formatDateTime(note.createdAt)}</p>
                 </li>

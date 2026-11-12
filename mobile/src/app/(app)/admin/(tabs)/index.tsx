@@ -9,7 +9,7 @@ import { ChipRow } from "../../../../features/questions/components";
 import { errorMessage, plural } from "../../../../lib/format";
 import { PLAN_LABEL } from "../../../../lib/plan-access";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, spacing } from "../../../../theme";
+import { colors, spacing, themed } from "../../../../theme";
 
 const ROLE_LABEL: Record<UserRole, string> = { aluno: "Aluno", professor: "Professor", admin: "Admin" };
 const ROLES = (Object.keys(ROLE_LABEL) as UserRole[]).map((role) => ({ value: role, label: ROLE_LABEL[role] }));
@@ -162,11 +162,11 @@ export default function AdminUsersScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   feedback: { fontSize: 15, fontWeight: "700" },
   muted: { fontSize: 13, color: colors.muted, lineHeight: 19 },
   header: { flexDirection: "row", alignItems: "flex-start", gap: spacing(2) },
   name: { fontSize: 16, fontWeight: "700", color: colors.ink },
   label: { fontSize: 13, fontWeight: "700", color: colors.muted },
-});
+}));

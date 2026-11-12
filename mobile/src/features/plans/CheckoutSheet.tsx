@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from "react-native";
 import { Button, Card, ErrorMessage, Screen, Segmented, Subtitle, TextField, Title } from "../../components/ui";
 import { errorMessage, formatPrice } from "../../lib/format";
-import { colors, radius, spacing } from "../../theme";
+import { colors, radius, spacing, themed } from "../../theme";
 import { useAuth } from "../auth/AuthProvider";
 import type { Plan } from "./api";
 import {
@@ -107,7 +107,7 @@ export function CheckoutSheet({ plan, onClose, onConfirm }: CheckoutSheetProps) 
               {!free && (
                 <>
                   <View style={styles.demo}>
-                    <Ionicons name="lock-closed" size={16} color={colors.brand800} />
+                    <Ionicons name="lock-closed" size={16} color={colors.brandText} />
                     <Text style={styles.demoText}>
                       Ambiente de demonstração: nenhuma cobrança é feita e os dados do cartão não são enviados nem guardados. Use o
                       cartão de teste {TEST_CARD_NUMBER}.
@@ -152,7 +152,7 @@ export function CheckoutSheet({ plan, onClose, onConfirm }: CheckoutSheetProps) 
                   ) : (
                     <Card>
                       <View style={styles.center}>
-                        <Ionicons name="qr-code-outline" size={96} color={colors.brand800} />
+                        <Ionicons name="qr-code-outline" size={96} color={colors.brandText} />
                       </View>
                       <Text style={styles.body}>Abra o app do seu banco e use o código copia e cola:</Text>
                       <Text style={styles.code} selectable>
@@ -206,7 +206,7 @@ export function CheckoutSheet({ plan, onClose, onConfirm }: CheckoutSheetProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   full: { alignSelf: "stretch" },
   row: { flexDirection: "row", gap: spacing(3) },
@@ -228,4 +228,4 @@ const styles = StyleSheet.create({
     padding: spacing(3),
     alignSelf: "stretch",
   },
-});
+}));

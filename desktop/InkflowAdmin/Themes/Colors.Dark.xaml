@@ -1,0 +1,20 @@
+<!-- Dark palette: same keys as Colors.Light.xaml (and the same values as the site's dark theme). -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="Brand900" Color="#3F1075" />
+    <SolidColorBrush x:Key="Brand800" Color="#5808AD" />
+    <SolidColorBrush x:Key="Brand600" Color="#8448EE" />
+    <SolidColorBrush x:Key="BrandText" Color="#C9A7FF" />
+    <SolidColorBrush x:Key="BrandSoft" Color="#2E2545" />
+    <SolidColorBrush x:Key="Background" Color="#14121B" />
+    <SolidColorBrush x:Key="Surface" Color="#1F1C29" />
+    <SolidColorBrush x:Key="SurfaceAlt" Color="#24212F" />
+    <SolidColorBrush x:Key="Ink" Color="#ECEAF2" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#A3A0B0" />
+    <SolidColorBrush x:Key="Border" Color="#38344A" />
+    <SolidColorBrush x:Key="Hover" Color="#2A2638" />
+    <SolidColorBrush x:Key="Success" Color="#2BB98C" />
+    <SolidColorBrush x:Key="Danger" Color="#E5585B" />
+    <SolidColorBrush x:Key="DangerSoft" Color="#3A2026" />
+    <SolidColorBrush x:Key="Warning" Color="#F2994A" />
+</ResourceDictionary>

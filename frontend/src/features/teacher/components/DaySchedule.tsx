@@ -33,7 +33,7 @@ export function DaySchedule({ slots, requests, busyRequestId, onRespond, onDelet
         const past = new Date(slot.startsAt).getTime() < Date.now();
 
         return (
-          <li key={slot.id} className="rounded-input border border-black/5 p-4">
+          <li key={slot.id} className="rounded-input border -overlay/5 p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <Badge tone={slot.type === "mentoria" ? "brand" : "neutral"}>

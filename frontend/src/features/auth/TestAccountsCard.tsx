@@ -37,7 +37,7 @@ export function TestAccountsCard() {
         id="test-accounts-heading"
         className="flex items-center gap-2 text-sm font-semibold text-ink-strong"
       >
-        <FlaskConical aria-hidden="true" className="size-4 text-brand-800" />
+        <FlaskConical aria-hidden="true" className="size-4 text-brand-ink" />
         Contas de teste (modo desenvolvimento)
       </h2>
 
@@ -63,7 +63,7 @@ export function TestAccountsCard() {
       </ul>
 
       {error && (
-        <p role="alert" className="mt-3 text-sm text-danger">
+        <p role="alert" className="mt-3 text-sm text-danger-ink">
           {error}
         </p>
       )}

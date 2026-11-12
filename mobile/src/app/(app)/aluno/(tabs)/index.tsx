@@ -10,7 +10,7 @@ import { usePractice } from "../../../../features/questions/practice";
 import { formatRelativeDay, plural } from "../../../../lib/format";
 import { hasFeature, PLAN_LABEL, FEATURE_MIN_PLAN, type FeatureKey } from "../../../../lib/plan-access";
 import { useAsync } from "../../../../lib/useAsync";
-import { colors, radius, spacing } from "../../../../theme";
+import { colors, radius, spacing, themed } from "../../../../theme";
 
 /** Premium features at the bottom: shortcuts when unlocked, teasers otherwise. */
 const UPSELLS: { feature: FeatureKey; label: string; route: "/aluno/simulados" | "/aluno/mentoria" }[] = [
@@ -199,7 +199,7 @@ function StatCard({
   positive?: boolean;
   tone?: "brand" | "danger";
 }) {
-  const color = tone === "danger" ? colors.danger : colors.brand800;
+  const color = tone === "danger" ? colors.danger : colors.brandText;
   return (
     <Card>
       <View style={styles.statHeader}>
@@ -215,7 +215,7 @@ function StatCard({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   muted: { fontSize: 14, color: colors.muted },
   small: { fontSize: 13, color: colors.muted },
@@ -244,4 +244,4 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   upsellText: { fontSize: 14, fontWeight: "600", color: colors.ink },
-});
+}));

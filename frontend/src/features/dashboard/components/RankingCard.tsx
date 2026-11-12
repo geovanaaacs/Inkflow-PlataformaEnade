@@ -56,7 +56,7 @@ export function RankingCard({ plan }: RankingCardProps) {
             id="ranking-heading"
             className="flex items-center gap-2 text-lg font-semibold text-ink-strong"
           >
-            <Trophy aria-hidden="true" className="size-5 text-brand-800" />
+            <Trophy aria-hidden="true" className="size-5 text-brand-ink" />
             Ranking
           </h2>
           <p className="mt-1 text-sm text-ink-muted">
@@ -79,7 +79,7 @@ export function RankingCard({ plan }: RankingCardProps) {
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="inline-flex items-center gap-1 rounded-badge px-2 py-0.5 text-xs font-semibold text-brand-800 hover:bg-brand-500-a24"
+              className="inline-flex items-center gap-1 rounded-badge px-2 py-0.5 text-xs font-semibold text-brand-ink hover:bg-brand-500-a24"
               aria-label={`Como funciona o ${rule.title}`}
             >
               <Info aria-hidden="true" className="size-3.5" />
@@ -132,7 +132,7 @@ function RankingBoard({ scope }: { scope: RankingScope }) {
         {me ? (
           <>
             <p className="text-sm text-ink-muted">Sua posição</p>
-            <p className="text-4xl font-bold text-brand-800">{me.position}º</p>
+            <p className="text-4xl font-bold text-brand-ink">{me.position}º</p>
             <p className="text-sm text-ink-strong">
               de {ranking.totalParticipants} estudantes · {me.points} pts
             </p>
@@ -174,13 +174,13 @@ function RankingRow({ entry }: { entry: RankingEntry }) {
     <li
       className={cn(
         "flex items-center gap-3 rounded-input px-4 py-2.5",
-        entry.isCurrentUser ? "bg-brand-500-a24 font-semibold" : "bg-black/[0.02]"
+        entry.isCurrentUser ? "bg-brand-500-a24 font-semibold" : "-overlay/[0.02]"
       )}
     >
       <span
         className={cn(
           "flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-          entry.position <= 3 ? "bg-brand-800 text-white" : "bg-black/5 text-ink-strong"
+          entry.position <= 3 ? "bg-brand-800 text-white" : "-overlay/5 text-ink-strong"
         )}
       >
         {entry.position === 1 ? (

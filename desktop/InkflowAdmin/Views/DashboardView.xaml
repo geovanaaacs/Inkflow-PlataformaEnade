@@ -17,7 +17,7 @@
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
                                 <TextBlock Text="{Binding Title}" Style="{StaticResource Muted}" />
-                                <TextBlock Text="{Binding Value}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource Brand800}" Margin="0,4,0,2" />
+                                <TextBlock Text="{Binding Value}" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource BrandText}" Margin="0,4,0,2" />
                                 <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" />
                             </StackPanel>
                         </Border>
@@ -45,8 +45,8 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                        <Border Grid.Column="1" Background="{StaticResource BrandSoft}" CornerRadius="5" Height="22">
-                                            <Border Background="{StaticResource Brand600}" CornerRadius="5" HorizontalAlignment="Left"
+                                        <Border Grid.Column="1" Background="{DynamicResource BrandSoft}" CornerRadius="5" Height="22">
+                                            <Border Background="{DynamicResource Brand600}" CornerRadius="5" HorizontalAlignment="Left"
                                                     Width="{Binding Size}" />
                                         </Border>
                                         <TextBlock Grid.Column="2" Text="{Binding Display}" Margin="10,0,0,0" VerticalAlignment="Center" />
@@ -92,7 +92,7 @@
                                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding Label}" Style="{StaticResource Muted}" HorizontalAlignment="Center" Margin="0,6,0,0" />
                                     <StackPanel VerticalAlignment="Bottom">
                                         <TextBlock Text="{Binding Display}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,3" />
-                                        <Border Background="{StaticResource Brand600}" CornerRadius="4,4,0,0" Height="{Binding Size}" />
+                                        <Border Background="{DynamicResource Brand600}" CornerRadius="4,4,0,0" Height="{Binding Size}" />
                                     </StackPanel>
                                 </DockPanel>
                             </DataTemplate>

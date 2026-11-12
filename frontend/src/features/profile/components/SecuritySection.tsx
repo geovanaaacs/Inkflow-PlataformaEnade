@@ -15,7 +15,7 @@ export function SecuritySection() {
         id="security-heading"
         className="flex items-center gap-2 text-lg font-semibold text-ink-strong"
       >
-        <Lock aria-hidden="true" className="size-4 text-brand-800" />
+        <Lock aria-hidden="true" className="size-4 text-brand-ink" />
         Segurança
       </h2>
 

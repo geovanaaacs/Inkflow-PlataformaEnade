@@ -36,7 +36,7 @@ function TooltipContent({
       <TooltipPrimitive.Content
         sideOffset={sideOffset}
         className={cn(
-          "z-50 rounded-lg bg-white px-3 py-1.5 text-xs text-black shadow-lg",
+          "z-50 rounded-lg bg-app-surface px-3 py-1.5 text-xs text-ink-strong shadow-lg",
           className
         )}
         {...props}
@@ -44,7 +44,7 @@ function TooltipContent({
         {props.children}
 
         <TooltipPrimitive.Arrow
-          className="fill-white shadow-lg"
+          className="fill-app-surface shadow-lg"
           width={10}
           height={5}
         />

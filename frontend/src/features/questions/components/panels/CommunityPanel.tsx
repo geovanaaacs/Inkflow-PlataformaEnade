@@ -29,9 +29,9 @@ export function CommunityPanel({ id, comments, onAddComment }: CommunityPanelPro
   }
 
   return (
-    <div id={id} className="rounded-card bg-black/[0.02] p-6">
+    <div id={id} className="rounded-card -overlay/[0.02] p-6">
       <h3 className="flex items-center gap-2 text-base font-semibold text-ink-strong">
-        <Users aria-hidden="true" className="size-4 text-brand-800" />
+        <Users aria-hidden="true" className="size-4 text-brand-ink" />
         Comunidade
       </h3>
 
@@ -46,15 +46,15 @@ export function CommunityPanel({ id, comments, onAddComment }: CommunityPanelPro
             <li key={`${comment.author}-${comment.comment.slice(0, 20)}`} className="flex gap-3">
               <span
                 aria-hidden="true"
-                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-500-a24 text-xs font-semibold text-brand-800"
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-500-a24 text-xs font-semibold text-brand-ink"
               >
                 {comment.author.charAt(0)}
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-ink-strong">{comment.author}</p>
                 <div className="relative mt-2">
-                  <div className="absolute left-3 top-1 h-3 w-3 -translate-x-1/2 rotate-45 rounded-sm border-t border-l border-border-subtle bg-white" />
-                  <div className="rounded-3xl border border-border-subtle bg-white px-4 py-3 text-sm text-ink-strong shadow-sm">
+                  <div className="absolute left-3 top-1 h-3 w-3 -translate-x-1/2 rotate-45 rounded-sm border-t border-l border-border-subtle bg-app-surface" />
+                  <div className="rounded-3xl border border-border-subtle bg-app-surface px-4 py-3 text-sm text-ink-strong shadow-sm">
                     {comment.comment}
                   </div>
                 </div>

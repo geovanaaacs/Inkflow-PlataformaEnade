@@ -106,7 +106,7 @@ export function Modal({
         type="button"
         tabIndex={-1}
         aria-hidden="true"
-        className="absolute inset-0 cursor-default bg-ink-strong/40"
+        className="absolute inset-0 cursor-default bg-black/50"
         onClick={onClose}
       />
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- WAI-ARIA dialog pattern: this element owns the Escape/Tab focus-trap handling for its subtree. */}

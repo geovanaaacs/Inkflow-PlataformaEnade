@@ -111,7 +111,9 @@ IF OBJECT_ID(N'dbo.UQ_QuestionOptions_Id_Question', N'UQ') IS NULL
 
 IF OBJECT_ID(N'dbo.UQ_TeacherComments_Question_Teacher', N'UQ') IS NULL
     ALTER TABLE dbo.TeacherComments ADD CONSTRAINT UQ_TeacherComments_Question_Teacher UNIQUE (QuestionId, TeacherUserId);
+-- Replaced in 06 (several notes per question): skip once 06 has run.
 IF OBJECT_ID(N'dbo.UQ_UserNotes_User_Question', N'UQ') IS NULL
+   AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_UserNotes_User_Question_CreatedAt' AND object_id = OBJECT_ID(N'dbo.UserNotes'))
     ALTER TABLE dbo.UserNotes ADD CONSTRAINT UQ_UserNotes_User_Question UNIQUE (UserId, QuestionId);
 
 IF OBJECT_ID(N'dbo.UQ_MockExamQuestions_Exam_Order', N'UQ') IS NULL
@@ -120,7 +122,9 @@ IF OBJECT_ID(N'dbo.UQ_MockExamQuestions_Exam_Order', N'UQ') IS NULL
 IF OBJECT_ID(N'dbo.UQ_UserAnswers_User_Question_Attempt', N'UQ') IS NULL
     ALTER TABLE dbo.UserAnswers ADD CONSTRAINT UQ_UserAnswers_User_Question_Attempt UNIQUE (UserId, QuestionId, AttemptNumber);
 
+-- Replaced in 06 by UQ_RankingSnapshots_Scope_Period_User: skip once 06 has run.
 IF OBJECT_ID(N'dbo.UQ_RankingSnapshots_Period_User', N'UQ') IS NULL
+   AND OBJECT_ID(N'dbo.UQ_RankingSnapshots_Scope_Period_User', N'UQ') IS NULL
     ALTER TABLE dbo.RankingSnapshots ADD CONSTRAINT UQ_RankingSnapshots_Period_User UNIQUE (PeriodType, PeriodStart, UserId);
 
 IF OBJECT_ID(N'dbo.UQ_StudyGroupPlanItems_Group_Order', N'UQ') IS NULL

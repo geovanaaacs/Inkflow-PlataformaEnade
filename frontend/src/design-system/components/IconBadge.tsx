@@ -4,10 +4,10 @@ import { cn } from "@/design-system/utils/cn";
 export type IconBadgeTone = "brand" | "success" | "warning" | "danger";
 
 const toneClasses: Record<IconBadgeTone, string> = {
-  brand: "bg-brand-500-a24 text-brand-800",
-  success: "bg-success/15 text-success",
-  warning: "bg-warning/15 text-warning",
-  danger: "bg-danger-bg text-danger",
+  brand: "bg-brand-500-a24 text-brand-ink",
+  success: "bg-success/15 text-success-ink",
+  warning: "bg-warning/15 text-warning-ink",
+  danger: "bg-danger-bg text-danger-ink",
 };
 
 export type IconBadgeSize = "sm" | "md";

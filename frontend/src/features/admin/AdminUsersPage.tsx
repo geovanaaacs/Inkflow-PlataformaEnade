@@ -103,7 +103,7 @@ export function AdminUsersPage() {
       <p
         role="status"
         aria-live="polite"
-        className={feedback?.tone === "danger" ? "text-sm text-danger" : "text-sm font-semibold text-success"}
+        className={feedback?.tone === "danger" ? "text-sm text-danger-ink" : "text-sm font-semibold text-success-ink"}
       >
         {feedback?.text}
       </p>
@@ -133,7 +133,7 @@ export function AdminUsersPage() {
             <table className="w-full min-w-[760px] border-collapse text-left text-sm">
               <caption className="sr-only">Contas do Inkflow</caption>
               <thead>
-                <tr className="border-b border-black/10 text-xs uppercase text-ink-muted">
+                <tr className="border-b -overlay/10 text-xs uppercase text-ink-muted">
                   <th scope="col" className="py-2 pr-4 font-semibold">Usuário</th>
                   <th scope="col" className="py-2 pr-4 font-semibold">Perfil</th>
                   <th scope="col" className="py-2 pr-4 font-semibold">Plano</th>
@@ -146,7 +146,7 @@ export function AdminUsersPage() {
                   const isMe = user.id === me?.id;
                   const busy = busyId === user.id;
                   return (
-                    <tr key={user.id} className="border-b border-black/5 last:border-0">
+                    <tr key={user.id} className="border-b -overlay/5 last:border-0">
                       <td className="py-3 pr-4">
                         <span className="font-medium text-ink-strong">
                           {user.name}

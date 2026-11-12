@@ -4,17 +4,17 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import type { PlanId } from "../features/auth/api";
 import { errorMessage } from "../lib/format";
 import { FEATURE_MIN_PLAN, PLAN_LABEL, type DailyUsage, type FeatureKey } from "../lib/plan-access";
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, spacing, themed } from "../theme";
 import { Button } from "./ui";
 
 export type Tone = "brand" | "success" | "warning" | "danger";
 
-const TONE_COLOR: Record<Tone, string> = {
+const TONE_COLOR = themed<Record<Tone, string>>(() => ({
   brand: colors.brand600,
   success: colors.success,
   warning: colors.warning,
   danger: colors.danger,
-};
+}));
 
 /** Same thresholds as the web (design-system/utils/progress-tone.ts). */
 export function toneForPercent(percent: number): Tone {
@@ -138,8 +138,8 @@ export function LockedFeature({ feature, label, description }: { feature: Featur
   );
 }
 
-const styles = StyleSheet.create({
-  track: { height: 8, borderRadius: 4, backgroundColor: "rgba(0,0,0,0.07)", overflow: "hidden" },
+const styles = themed(() => StyleSheet.create({
+  track: { height: 8, borderRadius: 4, backgroundColor: colors.track, overflow: "hidden" },
   fill: { height: "100%", borderRadius: 4 },
   badge: { alignSelf: "flex-start", borderRadius: radius.badge, paddingHorizontal: spacing(2.5), paddingVertical: spacing(1) },
   badgeText: { fontSize: 12, fontWeight: "700" },
@@ -149,12 +149,12 @@ const styles = StyleSheet.create({
   state: { alignItems: "center", justifyContent: "center", paddingVertical: spacing(10), gap: spacing(4) },
   stateText: { fontSize: 15, color: colors.muted, textAlign: "center" },
   banner: { backgroundColor: colors.brand800, borderRadius: radius.card, padding: spacing(4), gap: spacing(2) },
-  bannerTitle: { color: colors.surface, fontSize: 15, fontWeight: "700" },
-  bannerText: { color: colors.surface, fontSize: 14 },
-  bannerLink: { color: colors.surface, fontSize: 14, fontWeight: "700", textDecorationLine: "underline" },
+  bannerTitle: { color: colors.onBrand, fontSize: 15, fontWeight: "700" },
+  bannerText: { color: colors.onBrand, fontSize: 14 },
+  bannerLink: { color: colors.onBrand, fontSize: 14, fontWeight: "700", textDecorationLine: "underline" },
   dotsRow: { flexDirection: "row", alignItems: "center", gap: spacing(3), flexWrap: "wrap" },
   dots: { flexDirection: "row", gap: spacing(1.5) },
-  dot: { width: 12, height: 12, borderRadius: 6, borderWidth: 1, borderColor: colors.surface },
+  dot: { width: 12, height: 12, borderRadius: 6, borderWidth: 1, borderColor: colors.onBrand },
   dotFilled: { backgroundColor: colors.surface },
   locked: {
     backgroundColor: colors.brandSoft,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     padding: spacing(4),
     gap: spacing(2),
   },
-  lockedTitle: { fontSize: 16, fontWeight: "700", color: colors.brand900 },
+  lockedTitle: { fontSize: 16, fontWeight: "700", color: colors.brandText },
   lockedText: { fontSize: 14, color: colors.ink, lineHeight: 20 },
-  lockedPlan: { fontSize: 13, color: colors.brand800, fontWeight: "600" },
-});
+  lockedPlan: { fontSize: 13, color: colors.brandText, fontWeight: "600" },
+}));

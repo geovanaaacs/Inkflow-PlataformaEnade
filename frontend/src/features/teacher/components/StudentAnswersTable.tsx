@@ -95,7 +95,7 @@ export function StudentAnswersTable({ rows, students, areas }: StudentAnswersTab
           <table className="w-full min-w-[720px] border-collapse text-left text-sm">
             <caption className="sr-only">Respostas dos alunos, das mais recentes às mais antigas</caption>
             <thead>
-              <tr className="border-b border-black/10 text-xs uppercase text-ink-muted">
+              <tr className="border-b -overlay/10 text-xs uppercase text-ink-muted">
                 <th scope="col" className="py-2 pr-4 font-semibold">Aluno</th>
                 <th scope="col" className="py-2 pr-4 font-semibold">Questão</th>
                 <th scope="col" className="py-2 pr-4 font-semibold">Resposta</th>
@@ -106,10 +106,10 @@ export function StudentAnswersTable({ rows, students, areas }: StudentAnswersTab
             </thead>
             <tbody>
               {filtered.slice(0, visible).map((row) => (
-                <tr key={row.id} className="border-b border-black/5 last:border-0">
+                <tr key={row.id} className="border-b -overlay/5 last:border-0">
                   <td className="py-3 pr-4 font-medium text-ink-strong">{row.studentName}</td>
                   <td className="py-3 pr-4">
-                    <span className="font-semibold text-brand-800">{row.questionCode}</span>
+                    <span className="font-semibold text-brand-ink">{row.questionCode}</span>
                     <span className="block text-xs text-ink-muted">
                       {row.area.shortName} · {row.topic}
                     </span>
@@ -120,11 +120,11 @@ export function StudentAnswersTable({ rows, students, areas }: StudentAnswersTab
                   </td>
                   <td className="py-3 pr-4">
                     {row.correct ? (
-                      <span className="flex items-center gap-1.5 font-semibold text-success">
+                      <span className="flex items-center gap-1.5 font-semibold text-success-ink">
                         <CheckCircle2 aria-hidden="true" className="size-4" /> Acertou
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1.5 font-semibold text-danger">
+                      <span className="flex items-center gap-1.5 font-semibold text-danger-ink">
                         <XCircle aria-hidden="true" className="size-4" /> Errou
                       </span>
                     )}

@@ -55,7 +55,7 @@ export function MockExamResultPage() {
       <Card as="section" aria-labelledby="result-heading" className="flex flex-col gap-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-brand-800">Resultado do simulado</p>
+            <p className="text-sm font-semibold text-brand-ink">Resultado do simulado</p>
             <h1 id="result-heading" className="text-2xl font-semibold text-ink-strong">
               {exam.title}
             </h1>
@@ -68,15 +68,15 @@ export function MockExamResultPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-card bg-brand-300-a53 p-5 text-center">
             <p className="text-sm text-ink-muted">Acertos</p>
-            <p className="text-3xl font-bold text-brand-800">
+            <p className="text-3xl font-bold text-brand-ink">
               {correctCount}/{results.length}
             </p>
           </div>
-          <div className="rounded-card bg-black/[0.03] p-5 text-center">
+          <div className="rounded-card -overlay/[0.03] p-5 text-center">
             <p className="text-sm text-ink-muted">Aproveitamento</p>
             <p className="text-3xl font-bold text-ink-strong">{percent}%</p>
           </div>
-          <div className="rounded-card bg-black/[0.03] p-5 text-center">
+          <div className="rounded-card -overlay/[0.03] p-5 text-center">
             <p className="text-sm text-ink-muted">Tempo utilizado</p>
             <p className="text-3xl font-bold text-ink-strong">{formatElapsed(elapsedMs)}</p>
             <p className="text-xs text-ink-muted">de {exam.timeLimitMinutes} min</p>
@@ -103,15 +103,15 @@ export function MockExamResultPage() {
             return (
               <li
                 key={result.questionId}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-input border border-black/5 px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-input border -overlay/5 px-4 py-3"
               >
                 <div className="flex items-start gap-3">
                   {skipped ? (
                     <MinusCircle aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
                   ) : result.correct ? (
-                    <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-success" />
+                    <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-success-ink" />
                   ) : (
-                    <XCircle aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-danger" />
+                    <XCircle aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-danger-ink" />
                   )}
                   <div>
                     <p className="text-sm font-semibold text-ink-strong">

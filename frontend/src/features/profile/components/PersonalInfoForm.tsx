@@ -35,7 +35,7 @@ export function PersonalInfoForm({ initialValue }: PersonalInfoFormProps) {
         id="personal-info-heading"
         className="flex items-center gap-2 text-lg font-semibold text-ink-strong"
       >
-        <User aria-hidden="true" className="size-4 text-brand-800" />
+        <User aria-hidden="true" className="size-4 text-brand-ink" />
         Informações pessoais
       </h2>
 
@@ -71,7 +71,7 @@ export function PersonalInfoForm({ initialValue }: PersonalInfoFormProps) {
         </div>
         <div className="flex items-center gap-4">
           <Button type="submit">Salvar alterações</Button>
-          <p role="status" aria-live="polite" className="text-sm text-success">
+          <p role="status" aria-live="polite" className="text-sm text-success-ink">
             {savedMessage}
           </p>
         </div>

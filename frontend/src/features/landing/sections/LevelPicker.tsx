@@ -70,16 +70,16 @@ const toneStyles: Record<
     check: "text-brand-600",
   },
   success: {
-    tagline: "text-success font-semibold",
-    check: "text-success",
+    tagline: "text-success-ink font-semibold",
+    check: "text-success-ink",
   },
   warning: {
-    tagline: "text-warning font-semibold",
-    check: "text-warning",
+    tagline: "text-warning-ink font-semibold",
+    check: "text-warning-ink",
   },
   danger: {
-    tagline: "text-danger font-semibold",
-    check: "text-danger",
+    tagline: "text-danger-ink font-semibold",
+    check: "text-danger-ink",
   },
 };
 

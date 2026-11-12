@@ -43,8 +43,8 @@ export function SegmentedControl<T extends string>({
             className={cn(
               "h-[45px] rounded-input px-6 text-[16px] font-medium transition-colors",
               selected
-                ? "bg-app-surface text-brand-800 shadow-input font-semibold"
-                : "text-brand-800/80 hover:text-brand-800"
+                ? "bg-app-surface text-brand-ink shadow-input font-semibold"
+                : "text-brand-ink/80 hover:text-brand-ink"
             )}
           >
             {option.label}

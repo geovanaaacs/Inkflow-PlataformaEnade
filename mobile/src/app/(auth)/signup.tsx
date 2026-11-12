@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Brand, Button, Card, ErrorMessage, Screen, Segmented, Subtitle, TextField, Title } from "../../components/ui";
 import type { SignupInput } from "../../features/auth/api";
 import { useAuth } from "../../features/auth/AuthProvider";
-import { colors, spacing } from "../../theme";
+import { colors, spacing, themed } from "../../theme";
 
 type Role = SignupInput["role"];
 
@@ -109,8 +109,8 @@ export default function SignupScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   footer: { flexDirection: "row", justifyContent: "center", gap: spacing(1.5) },
   footerText: { color: colors.muted, fontSize: 15 },
   link: { color: colors.brand600, fontSize: 15, fontWeight: "700" },
-});
+}));

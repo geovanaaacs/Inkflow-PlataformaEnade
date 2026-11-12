@@ -92,7 +92,7 @@ export function AppNavbar() {
           <Logo />
         </Link>
 
-        <nav aria-label="Principal" className="hidden lg:block">
+        <nav aria-label="Principal" className="hidden xl:block">
           <ul className="flex items-center gap-2">
             {navItems.map((item) => (
               <li key={item.to}>{renderItem(item, false)}</li>
@@ -129,7 +129,7 @@ export function AppNavbar() {
         </div>
       </div>
 
-      <nav aria-label="Principal" className="border-t border-border-navbar px-4 py-2 lg:hidden">
+      <nav aria-label="Principal" className="border-t border-border-navbar px-4 py-2 xl:hidden">
         <ul className="flex w-full items-center gap-2 overflow-x-auto sm:justify-center">
           {navItems.map((item) => (
             <li key={item.to} className="shrink-0">

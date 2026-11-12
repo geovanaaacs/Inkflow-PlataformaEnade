@@ -19,7 +19,7 @@ export function LockedFeature({ feature, label, description, className }: Locked
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       <p className="flex items-start gap-2 text-sm text-ink-muted">
-        <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand-800" />
+        <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand-ink" />
         {description}
       </p>
       <UpsellBar label={label} requiredPlan={requiredPlanFor(feature)} />

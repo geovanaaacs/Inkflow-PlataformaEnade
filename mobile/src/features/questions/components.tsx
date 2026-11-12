@@ -7,7 +7,7 @@ import { Button, Card, ErrorMessage } from "../../components/ui";
 import { errorMessage, plural } from "../../lib/format";
 import { ApiError } from "../../lib/http";
 import { userHasFeature } from "../../lib/plan-access";
-import { colors, radius, spacing } from "../../theme";
+import { colors, radius, spacing, themed } from "../../theme";
 import { useAuth } from "../auth/AuthProvider";
 import { answerQuestion, type AnswerResult, type Difficulty, type Question } from "./api";
 import { NotesSheet } from "./NotesSheet";
@@ -327,7 +327,7 @@ function CommunityPanel({ comments }: { comments: Question["community"] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   flex: { flex: 1 },
   pressed: { opacity: 0.7 },
   list: { gap: spacing(3) },
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   listHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  code: { fontSize: 14, fontWeight: "700", color: colors.brand800 },
+  code: { fontSize: 14, fontWeight: "700", color: colors.brandText },
   path: { fontSize: 14, fontWeight: "600", color: colors.ink },
   preview: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   small: { fontSize: 13, color: colors.muted },
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   chipSelected: { backgroundColor: colors.brand600, borderColor: colors.brand600 },
   chipText: { fontSize: 14, color: colors.ink },
-  chipTextSelected: { color: colors.surface, fontWeight: "700" },
+  chipTextSelected: { color: colors.onBrand, fontWeight: "700" },
   cardGap: { gap: spacing(4) },
   badges: { flexDirection: "row", gap: spacing(2) },
   statement: { fontSize: 16, color: colors.ink, lineHeight: 24 },
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
   },
   letterSelected: { borderColor: colors.brand600, backgroundColor: colors.brand600 },
   letterText: { fontSize: 13, fontWeight: "700", color: colors.muted },
-  letterTextSelected: { color: colors.surface },
+  letterTextSelected: { color: colors.onBrand },
   optionText: { flex: 1, fontSize: 15, color: colors.ink, lineHeight: 21 },
   result: { borderRadius: radius.badge, padding: spacing(3) },
   resultText: { fontSize: 15, fontWeight: "700" },
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   },
   actionActive: { backgroundColor: colors.brandSoft },
   actionText: { fontSize: 14, color: colors.brand600, fontWeight: "600" },
-  actionTextActive: { color: colors.brand800 },
+  actionTextActive: { color: colors.brandText },
   actionLocked: { borderColor: colors.border },
   actionTextLocked: { color: colors.muted },
   panelHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: spacing(2), flexWrap: "wrap" },
@@ -416,6 +416,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: { fontWeight: "700", color: colors.brand800 },
+  avatarText: { fontWeight: "700", color: colors.brandText },
   commentAuthor: { fontSize: 14, fontWeight: "700", color: colors.ink },
-});
+}));

@@ -24,7 +24,7 @@ export function SuggestedQuestionsGrid({ topics }: SuggestedQuestionsGridProps) 
       <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {topics.map((topic) => (
           <li key={topic.areaSlug}>
-            <Card className="flex h-full flex-col gap-3 border border-black/5 p-5">
+            <Card className="flex h-full flex-col gap-3 border -overlay/5 p-5">
               <h3 className="text-base font-semibold text-ink-strong">{topic.title}</h3>
               <p className="text-sm text-ink-muted">
                 Nível {topic.level} · {topic.totalQuestions}{" "}

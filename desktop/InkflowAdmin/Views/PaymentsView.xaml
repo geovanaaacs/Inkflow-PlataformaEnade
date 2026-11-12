@@ -19,7 +19,7 @@
                     <Border Style="{StaticResource Card}" Margin="0,0,12,12">
                         <StackPanel>
                             <TextBlock Text="{Binding Title}" Style="{StaticResource Muted}" />
-                            <TextBlock Text="{Binding Value}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource Brand800}" />
+                            <TextBlock Text="{Binding Value}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource BrandText}" />
                             <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" />
                         </StackPanel>
                     </Border>

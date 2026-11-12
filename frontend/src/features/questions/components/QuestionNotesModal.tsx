@@ -113,7 +113,7 @@ function NotesEditor({ questionId, questionCode, onClose, onNoteAdded }: NotesEd
         ) : (
           <ul className="flex max-h-60 flex-col gap-2 overflow-y-auto pr-1">
             {notes.map((note) => (
-              <li key={note.id} className="rounded-input bg-black/[0.03] px-3 py-2">
+              <li key={note.id} className="rounded-input -overlay/[0.03] px-3 py-2">
                 <p className="whitespace-pre-line text-sm text-ink-strong">{note.content}</p>
                 <p className="mt-1 text-xs text-ink-muted">{formatDateTime(note.createdAt)}</p>
               </li>
@@ -122,7 +122,7 @@ function NotesEditor({ questionId, questionCode, onClose, onNoteAdded }: NotesEd
         )}
       </section>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 border-t border-black/5 pt-5">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 border-t -overlay/5 pt-5">
         <Textarea
           label={`Nova anotação para a questão ${questionCode}`}
           placeholder="Escreva aqui sua anotação, dúvida ou resumo sobre essa questão..."
@@ -132,7 +132,7 @@ function NotesEditor({ questionId, questionCode, onClose, onNoteAdded }: NotesEd
           maxLength={2000}
           error={formError ?? undefined}
         />
-        <p role="status" aria-live="polite" className="-mt-2 text-sm text-success">
+        <p role="status" aria-live="polite" className="-mt-2 text-sm text-success-ink">
           {savedMessage}
         </p>
         <div className="flex gap-3">

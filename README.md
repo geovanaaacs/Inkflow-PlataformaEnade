@@ -67,6 +67,7 @@ npm run db:dev-accounts
 | `npm run lint` | ESLint do frontend |
 | `npm run build` | Build de produção dos dois |
 | `npm start` | Faz o build e inicia o Express em modo produção, servindo frontend e API |
+| `npm run db:setup -w backend` | cria tabelas e dados de exemplo num banco **novo** (local ou Azure) pela conexão do `.env` — ver `database/README.md`, "Banco na Azure" |
 | `npm run db:dev-accounts` | (dev) senhas de teste nas contas do seed + conta admin pelo `.env` |
 
 Para instalar uma dependência num projeto só: `npm install <pacote> -w frontend` ou `-w backend`.

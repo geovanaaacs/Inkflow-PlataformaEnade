@@ -91,17 +91,17 @@ function ExamLoader({ examId }: { examId: string }) {
         <BackButton fallback="/simulados" label="Voltar aos simulados" />
         <Card className="mx-auto flex w-full max-w-2xl flex-col gap-5">
           <div>
-            <p className="text-sm font-semibold text-brand-800">Simulado</p>
+            <p className="text-sm font-semibold text-brand-ink">Simulado</p>
             <h1 className="text-2xl font-semibold text-ink-strong">{exam.title}</h1>
             <p className="mt-2 text-sm text-ink-muted">{exam.description}</p>
           </div>
           <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-strong">
             <li className="flex items-center gap-1.5">
-              <ListChecks aria-hidden="true" className="size-4 text-brand-800" />
+              <ListChecks aria-hidden="true" className="size-4 text-brand-ink" />
               {questions.length} questões
             </li>
             <li className="flex items-center gap-1.5">
-              <Clock aria-hidden="true" className="size-4 text-brand-800" />
+              <Clock aria-hidden="true" className="size-4 text-brand-ink" />
               {exam.timeLimitMinutes} minutos
             </li>
           </ul>
@@ -112,7 +112,7 @@ function ExamLoader({ examId }: { examId: string }) {
             <li>O gabarito e a correção aparecem só no resultado.</li>
           </ul>
           {startError && (
-            <p role="alert" className="text-sm text-danger">
+            <p role="alert" className="text-sm text-danger-ink">
               {startError}
             </p>
           )}
@@ -184,7 +184,7 @@ function ExamSession({ exam, questions, attempt }: ExamSessionProps) {
     return (
       <Container as="div" className="flex min-h-[50vh] flex-col items-center justify-center gap-3">
         {finishing === "timeout" && (
-          <p className="text-lg font-semibold text-danger">Tempo esgotado!</p>
+          <p className="text-lg font-semibold text-danger-ink">Tempo esgotado!</p>
         )}
         <Spinner label="Finalizando e corrigindo o simulado…" />
       </Container>
@@ -210,7 +210,7 @@ function ExamSession({ exam, questions, attempt }: ExamSessionProps) {
       </Card>
 
       {error && (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="text-sm text-danger-ink">
           {error}
         </p>
       )}
@@ -236,7 +236,7 @@ function ExamSession({ exam, questions, attempt }: ExamSessionProps) {
             disabled={remaining <= 0}
           />
 
-          <div className="flex items-center justify-between gap-3 border-t border-black/5 pt-5">
+          <div className="flex items-center justify-between gap-3 border-t -overlay/5 pt-5">
             <Button
               variant="outline"
               size="sm"

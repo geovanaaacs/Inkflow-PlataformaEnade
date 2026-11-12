@@ -5,7 +5,7 @@ import { Button, Card, Screen, Subtitle, Title } from "../../components/ui";
 import { formatPrice } from "../../lib/format";
 import { PLAN_RANK } from "../../lib/plan-access";
 import { useAsync } from "../../lib/useAsync";
-import { colors, radius, spacing } from "../../theme";
+import { colors, radius, spacing, themed } from "../../theme";
 import { useAuth } from "../auth/AuthProvider";
 import { useOptionalPractice } from "../questions/practice";
 import { listPlans, subscribeToPlan, type Plan } from "./api";
@@ -76,13 +76,13 @@ export function PlansScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() => StyleSheet.create({
   note: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   planWrap: { borderRadius: radius.card + 2 },
   highlighted: { borderWidth: 2, borderColor: colors.brand600 },
   header: { flexDirection: "row", alignItems: "center", gap: spacing(2), flexWrap: "wrap" },
   name: { fontSize: 20, fontWeight: "700", color: colors.ink },
-  price: { fontSize: 24, fontWeight: "800", color: colors.brand800 },
+  price: { fontSize: 24, fontWeight: "800", color: colors.brandText },
   description: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   item: { fontSize: 14, color: colors.ink, lineHeight: 20 },
-});
+}));

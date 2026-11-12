@@ -27,7 +27,7 @@ function FieldWrapper({
       <label htmlFor={htmlFor} className="text-sm font-medium text-ink-strong">
         {label}
         {required && (
-          <span className="text-danger" aria-hidden="true">
+          <span className="text-danger-ink" aria-hidden="true">
             {" "}
             *
           </span>
@@ -40,7 +40,7 @@ function FieldWrapper({
         </p>
       )}
       {error && (
-        <p id={`${htmlFor}-error`} className="text-sm text-danger" role="alert">
+        <p id={`${htmlFor}-error`} className="text-sm text-danger-ink" role="alert">
           {error}
         </p>
       )}

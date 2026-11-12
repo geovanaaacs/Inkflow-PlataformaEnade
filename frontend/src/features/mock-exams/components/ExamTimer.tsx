@@ -13,10 +13,10 @@ const ONE_MINUTE = 60_000;
 export function ExamTimer({ remainingMs }: ExamTimerProps) {
   const tone =
     remainingMs <= ONE_MINUTE
-      ? "bg-danger-bg text-danger"
+      ? "bg-danger-bg text-danger-ink"
       : remainingMs <= FIVE_MINUTES
-        ? "bg-warning/15 text-warning"
-        : "bg-brand-500-a24 text-brand-900";
+        ? "bg-warning/15 text-warning-ink"
+        : "bg-brand-500-a24 text-brand-ink";
 
   const announcement =
     remainingMs <= 0

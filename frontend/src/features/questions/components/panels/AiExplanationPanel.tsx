@@ -17,7 +17,7 @@ export function AiExplanationPanel({ id, question }: AiExplanationPanelProps) {
     <div id={id} className="rounded-card bg-brand-300-a53 p-6">
       <div className="flex items-center justify-between gap-4">
         <h3 className="flex items-center gap-2 text-base font-semibold text-ink-strong">
-          <Sparkles aria-hidden="true" className="size-4 text-brand-800" />
+          <Sparkles aria-hidden="true" className="size-4 text-brand-ink" />
           Gabarito Comentado por IA
         </h3>
         <Badge tone="brand">Resposta: {correctLetter}</Badge>
