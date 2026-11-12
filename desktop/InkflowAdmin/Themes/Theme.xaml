@@ -12,6 +12,8 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource Ink}" />
         <Setter Property="Background" Value="{DynamicResource Background}" />
+        <!-- Logo do Inkflow na barra de título e na barra de tarefas -->
+        <Setter Property="Icon" Value="pack://application:,,,/InkflowAdmin;component/Assets/inkflow.ico" />
     </Style>
     <Style x:Key="Title" TargetType="TextBlock">
         <Setter Property="FontSize" Value="24" />
