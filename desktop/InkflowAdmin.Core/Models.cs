@@ -57,6 +57,12 @@ public record QuestionInput(
     string CorrectOptionId,
     string AiExplanation);
 
+/// <summary>
+/// Answer of POST /admin/questions/ai-explanation. SuggestedByAi = the question had
+/// no answer key and the AI chose CorrectOptionId: the reviewer must check it.
+/// </summary>
+public record AiExplanation(string CorrectOptionId, bool SuggestedByAi, string Explanation, string Model);
+
 public record UserCounts(int Total, int Active, int Inactive, RoleCounts ByRole, int NewLast30Days, int NewTeachersLast30Days);
 
 /// <summary>Paid plans students signed up for in the last 30 days.</summary>

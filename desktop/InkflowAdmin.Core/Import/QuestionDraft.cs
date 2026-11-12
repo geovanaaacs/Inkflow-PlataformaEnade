@@ -51,6 +51,18 @@ public sealed class QuestionDraft : INotifyPropertyChanged
 
     public string Explanation { get => _explanation; set => Set(ref _explanation, value ?? ""); }
 
+    private string _correctOrigin = "";
+
+    /// <summary>
+    /// "sugerida pela IA — confira" when the PDF had no answer key and the AI chose it;
+    /// empty once the reviewer picks the answer by hand.
+    /// </summary>
+    public string CorrectOrigin { get => _correctOrigin; set => Set(ref _correctOrigin, value ?? ""); }
+
+    /// <summary>Has statement and the five options: enough to ask the AI for an explanation.</summary>
+    public bool CanAskAi =>
+        Statement.Trim().Length >= 10 && new[] { OptionA, OptionB, OptionC, OptionD, OptionE }.All(o => o.Trim().Length > 0);
+
     private string _topicOrigin = "";
 
     /// <summary>

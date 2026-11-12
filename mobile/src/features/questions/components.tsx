@@ -279,11 +279,22 @@ function AiPanel({ question }: { question: Question }) {
         <Badge>Resposta: {question.correctOptionId.toUpperCase()}</Badge>
       </View>
       <Text style={styles.body} selectable>
-        {question.aiExplanation || "A explicação da IA para esta questão ainda está sendo preparada."}
+        {question.aiExplanation
+          ? question.aiExplanation.split("\n").map((line, index) => (
+              <Text key={index} style={SECTION_TITLE.test(line.trim()) ? styles.sectionTitle : undefined}>
+                {index > 0 ? "\n" : ""}
+                {line}
+              </Text>
+            ))
+          : "A explicação da IA para esta questão ainda está sendo preparada."}
       </Text>
     </Card>
   );
 }
+
+/** Section titles of the AI explanation format (backend/src/modules/ai), shown in bold. */
+const SECTION_TITLE =
+  /^(Gabarito: Alternativa [A-E]|Por que essa é a resposta\?|Onde está o erro das outras opções\?|Para lembrar na hora da prova:)$/;
 
 function TeacherPanel({ teacher }: { teacher: Question["teacher"] }) {
   if (!teacher.comment) {
@@ -346,6 +357,7 @@ const styles = themed(() => StyleSheet.create({
   small: { fontSize: 13, color: colors.muted },
   muted: { fontSize: 14, color: colors.muted },
   body: { fontSize: 15, color: colors.ink, lineHeight: 22 },
+  sectionTitle: { fontWeight: "700", color: colors.brandText },
   chipBlock: { gap: spacing(2) },
   chipLabel: { fontSize: 13, fontWeight: "700", color: colors.muted },
   chips: { gap: spacing(2), paddingRight: spacing(4) },

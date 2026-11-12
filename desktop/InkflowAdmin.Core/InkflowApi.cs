@@ -29,7 +29,7 @@ public sealed class InkflowApi : IDisposable
     public InkflowApi(string baseUrl = DefaultBaseUrl)
     {
         BaseUrl = baseUrl.TrimEnd('/');
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(60) }; // room for the AI explanation (Gemini)
         _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
@@ -91,6 +91,21 @@ public sealed class InkflowApi : IDisposable
 
     public Task<Question> UpdateQuestionAsync(string questionId, QuestionInput input) =>
         SendAsync<Question>(HttpMethod.Put, $"/admin/questions/{Uri.EscapeDataString(questionId)}", input);
+
+    /// <summary>
+    /// Explanation of the answer by AI (the API calls Google Gemini; nothing is saved).
+    /// With the answer key, the AI explains it; without it, the AI also suggests the answer.
+    /// </summary>
+    public Task<AiExplanation> ExplainQuestionAsync(string statement, IReadOnlyList<string> options, string? correctOptionId)
+    {
+        var body = new JsonObject
+        {
+            ["statement"] = statement,
+            ["options"] = new JsonArray(options.Select(o => JsonValue.Create(o)).ToArray<JsonNode?>()),
+        };
+        if (!string.IsNullOrWhiteSpace(correctOptionId)) body["correctOptionId"] = correctOptionId.Trim().ToLowerInvariant();
+        return SendAsync<AiExplanation>(HttpMethod.Post, "/admin/questions/ai-explanation", body);
+    }
 
     /// <summary>Deactivates the question and removes it from the mock exams (answers stay in the history).</summary>
     public Task DeleteQuestionAsync(string questionId) =>

@@ -45,6 +45,7 @@ export function updateAdminUser(userId: string, changes: AdminUserChanges): Prom
 /* ------------------------------------------------------------------ Questões */
 
 export const OPTION_IDS = ["a", "b", "c", "d", "e"] as const;
+export type OptionId = (typeof OPTION_IDS)[number];
 
 export interface QuestionInput {
   code: string;
@@ -72,6 +73,23 @@ export function getQuestionCatalog(): Promise<{ areas: Area[]; topicsByArea: Rec
 
 export function createQuestion(input: QuestionInput): Promise<Question> {
   return http.post<Question>("/admin/questions", input);
+}
+
+export interface AiExplanation {
+  correctOptionId: OptionId;
+  /** True when the question had no answer key and the AI chose it: check before saving. */
+  suggestedByAi: boolean;
+  explanation: string;
+  model: string;
+}
+
+/** Explanation by AI (Google Gemini, through the API); nothing is saved. */
+export function explainQuestion(input: {
+  statement: string;
+  options: string[];
+  correctOptionId?: OptionId;
+}): Promise<AiExplanation> {
+  return http.post<AiExplanation>("/admin/questions/ai-explanation", input);
 }
 
 export function updateQuestion(questionId: string, input: QuestionInput): Promise<Question> {

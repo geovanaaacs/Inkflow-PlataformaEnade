@@ -37,6 +37,15 @@ public partial class ImportQuestionsWindow : Window
     private bool _importing;
     /// <summary>True while the program (not the reviewer) sets area/topic, so the "sugerido" mark stays.</summary>
     private bool _settingTopics;
+    /// <summary>True while the AI fills a draft, so its "sugerida pela IA" mark stays.</summary>
+    private bool _settingByAi;
+    private bool _aiRunning;
+    private bool _aiStop;
+
+    private const string AiSuggestedLabel = "sugerida pela IA — confira";
+    /// <summary>Pause between AI calls in "Explicar todas" (free tier: few requests per minute).</summary>
+    private static readonly TimeSpan AiPause = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan AiRateLimitWait = TimeSpan.FromSeconds(60);
 
     /// <param name="bank">Questions already in the bank: their codes can't be reused, and they teach the topic suggester.</param>
     public ImportQuestionsWindow(InkflowApi api, QuestionCatalog catalog, IReadOnlyList<Question> bank)
@@ -145,7 +154,9 @@ public partial class ImportQuestionsWindow : Window
         if (e.PropertyName is nameof(QuestionDraft.Problems) or nameof(QuestionDraft.IsValid) or nameof(QuestionDraft.StatusLabel)
             or nameof(QuestionDraft.Result) or nameof(QuestionDraft.Preview)) return;
         if (e.PropertyName == nameof(QuestionDraft.Approved)) { UpdateSummary(); return; }
-        if (e.PropertyName == nameof(QuestionDraft.TopicOrigin)) return;
+        if (e.PropertyName is nameof(QuestionDraft.TopicOrigin) or nameof(QuestionDraft.CorrectOrigin)) return;
+        // The reviewer picked the answer by hand: no longer the AI's suggestion.
+        if (e.PropertyName == nameof(QuestionDraft.Correct) && !_settingByAi && sender is QuestionDraft changed) changed.CorrectOrigin = "";
         if (e.PropertyName is nameof(QuestionDraft.AreaSlug) or nameof(QuestionDraft.Topic) && sender is QuestionDraft draft)
         {
             // The reviewer changed it: no longer a suggestion.
@@ -248,7 +259,9 @@ public partial class ImportQuestionsWindow : Window
 
         EmptyHint.Visibility = _drafts.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         ExportButton.IsEnabled = ApproveAllButton.IsEnabled = _drafts.Count > 0 && !_importing;
-        ImportButton.IsEnabled = toImport > 0 && !_importing;
+        AiAllButton.IsEnabled = _drafts.Count > 0 && !_importing;
+        AiAllButton.Content = _aiRunning ? "■  Parar a IA" : "✨  Explicar todas com IA";
+        ImportButton.IsEnabled = toImport > 0 && !_importing && !_aiRunning;
         ImportButton.Content = toImport == 1 ? "Importar 1 questão aprovada" : $"Importar {toImport} questões aprovadas";
         Summary.Text = _drafts.Count == 0
             ? ""
@@ -297,10 +310,156 @@ public partial class ImportQuestionsWindow : Window
         }
     }
 
+    /* ------------------------------------------------------------ AI explanation */
+
+    /// <summary>Fills the draft's explanation (and, without an answer key, the AI's answer). Throws ApiException.</summary>
+    private async Task ExplainDraftAsync(QuestionDraft draft)
+    {
+        var options = new[] { draft.OptionA, draft.OptionB, draft.OptionC, draft.OptionD, draft.OptionE }.Select(o => o.Trim()).ToList();
+        var result = await _api.ExplainQuestionAsync(draft.Statement.Trim(), options, string.IsNullOrEmpty(draft.Correct) ? null : draft.Correct);
+        _settingByAi = true;
+        try
+        {
+            draft.Explanation = result.Explanation;
+            if (result.SuggestedByAi)
+            {
+                draft.Correct = result.CorrectOptionId;
+                draft.CorrectOrigin = AiSuggestedLabel;
+            }
+        }
+        finally
+        {
+            _settingByAi = false;
+        }
+    }
+
+    private async void OnExplainSelected(object sender, RoutedEventArgs e)
+    {
+        if (Editor.DataContext is not QuestionDraft draft) return;
+        if (!draft.CanAskAi)
+        {
+            MessageBox.Show(this, "Preencha o enunciado e as cinco alternativas antes de pedir a explicação.", "Gerar com IA", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        if (draft.Explanation.Trim().Length > 0 &&
+            MessageBox.Show(this, "Substituir a explicação atual pela da IA?", "Gerar com IA", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        EditorAiButton.IsEnabled = false;
+        Summary.Text = $"Gerando a explicação de {draft.Code} com IA…";
+        try
+        {
+            await ExplainDraftAsync(draft);
+        }
+        catch (ApiException error)
+        {
+            MessageBox.Show(this, error.Message, "Gerar com IA", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            EditorAiButton.IsEnabled = true;
+            UpdateSummary();
+        }
+    }
+
+    /// <summary>
+    /// Explains every pending draft that has no explanation yet, one at a time with a
+    /// pause (free tier limits). Waits and retries once on "limit reached"; the same
+    /// button stops it.
+    /// </summary>
+    private async void OnExplainAll(object sender, RoutedEventArgs e)
+    {
+        if (_aiRunning)
+        {
+            _aiStop = true;
+            Summary.Text = "Parando a IA depois da questão atual…";
+            return;
+        }
+
+        var targets = _drafts.Where(d => !d.Imported && d.Explanation.Trim().Length == 0 && d.CanAskAi).ToList();
+        var incomplete = _drafts.Count(d => !d.Imported && d.Explanation.Trim().Length == 0 && !d.CanAskAi);
+        if (targets.Count == 0)
+        {
+            MessageBox.Show(this,
+                incomplete > 0
+                    ? $"As questões sem explicação ({incomplete}) ainda não têm o enunciado e as cinco alternativas completos."
+                    : "Todas as questões já têm explicação. Para refazer uma, use \"Gerar com IA\" no editor.",
+                "Explicar com IA", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        var minutes = Math.Max(1, (int)Math.Ceiling(targets.Count * (AiPause.TotalSeconds + 4) / 60));
+        if (MessageBox.Show(this,
+                $"Gerar a explicação de {targets.Count} {(targets.Count == 1 ? "questão" : "questões")} com IA (Google Gemini)?\n\n"
+                + $"Uma de cada vez, por causa do limite gratuito: leva cerca de {minutes} min. Questões sem gabarito recebem a alternativa sugerida pela IA, marcada para você conferir.\n\n"
+                + "Revise os textos antes de aprovar.",
+                "Explicar com IA", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        _aiRunning = true;
+        _aiStop = false;
+        UpdateSummary();
+        int done = 0, failed = 0;
+        string? stoppedBy = null;
+        for (var index = 0; index < targets.Count && !_aiStop; index++)
+        {
+            var draft = targets[index];
+            Summary.Text = $"IA: questão {index + 1} de {targets.Count} ({draft.Code})…";
+            try
+            {
+                await ExplainDraftAsync(draft);
+                done++;
+            }
+            catch (ApiException error) when (error.Status == 429)
+            {
+                // Free-tier limit: wait a minute, then try this question once more.
+                for (var left = (int)AiRateLimitWait.TotalSeconds; left > 0 && !_aiStop; left--)
+                {
+                    Summary.Text = $"Limite gratuito da IA: continuando em {left} s… ({done} de {targets.Count} prontas)";
+                    await Task.Delay(1000);
+                }
+                if (_aiStop) break;
+                try
+                {
+                    await ExplainDraftAsync(draft);
+                    done++;
+                }
+                catch (ApiException again)
+                {
+                    stoppedBy = again.Message;
+                    break;
+                }
+            }
+            catch (ApiException error) when (error.Status is 0 or 401 or 503)
+            {
+                // API down, session expired or AI not configured: no point in going on.
+                stoppedBy = error.Message;
+                break;
+            }
+            catch (ApiException)
+            {
+                failed++; // this question only; the next one may work
+            }
+            if (index < targets.Count - 1 && !_aiStop) await Task.Delay(AiPause);
+        }
+
+        _aiRunning = false;
+        UpdateSummary();
+        var text = $"{done} de {targets.Count} {(targets.Count == 1 ? "questão recebeu" : "questões receberam")} explicação da IA."
+                   + (failed > 0 ? $"\n{failed} não deram certo: tente de novo pelo botão do editor." : "")
+                   + (stoppedBy is not null ? $"\n\nParou: {stoppedBy}" : _aiStop ? "\n\nParado por você." : "")
+                   + "\n\nRevise os textos (e as alternativas marcadas como \"sugerida pela IA\") antes de aprovar.";
+        MessageBox.Show(this, text, "Explicar com IA", MessageBoxButton.OK, stoppedBy is null ? MessageBoxImage.Information : MessageBoxImage.Warning);
+    }
+
     /* ------------------------------------------------------------ Import */
 
     private async void OnImport(object sender, RoutedEventArgs e)
     {
+        if (_aiRunning) return;
         var batch = _drafts.Where(d => d.Approved && d.IsValid && !d.Imported).ToList();
         var skipped = _drafts.Count(d => d.Approved && !d.IsValid && !d.Imported);
         var message = $"Gravar {batch.Count} {(batch.Count == 1 ? "questão" : "questões")} no banco de questões?"
@@ -342,6 +501,14 @@ public partial class ImportQuestionsWindow : Window
         if (_importing)
         {
             e.Cancel = true;
+            return;
+        }
+        if (_aiRunning)
+        {
+            // Let the loop finish the current question before the window goes away.
+            _aiStop = true;
+            e.Cancel = true;
+            Summary.Text = "Parando a IA… feche de novo em instantes.";
             return;
         }
         var pendingApproved = _drafts.Count(d => d.Approved && !d.Imported);

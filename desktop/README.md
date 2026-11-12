@@ -51,6 +51,15 @@ O que o leitor de PDF reconhece:
 | Alternativas | `A)`, `(A)`, `A.`, `a)` ou a letra sozinha seguida do texto (formato do ENADE) |
 | Gabarito | Seção `GABARITO` no fim (`1 - B   2 - D` …) ou uma linha `Gabarito: B` / `Resposta: B` dentro da questão |
 
+### Explicação e gabarito por IA
+
+Com `GEMINI_API_KEY` no `backend/.env` (chave gratuita do Google Gemini, ver `backend/README.md`):
+
+- **Gerar com IA** no editor de questão e na revisão da importação: a IA escreve o gabarito comentado (por que a resposta está certa, o erro de cada alternativa com a principal pegadinha destacada e lembretes para a prova). Se a questão ainda não tem gabarito, a IA também marca a alternativa que considera correta, com o aviso "sugerida pela IA — confira".
+- **Explicar todas com IA**, na barra de baixo da importação: faz o mesmo para todas as questões sem explicação, uma de cada vez com uma pausa (limite do plano gratuito). Se o limite for atingido, espera um minuto e continua; o mesmo botão para o processo.
+
+Nada é gravado sem a sua revisão e aprovação.
+
 ### Sugestão de área e tópico
 
 O PDF normalmente não diz o assunto de cada questão, então o programa **sugere** a área e o tópico (sem internet e sem IA paga), nesta ordem:

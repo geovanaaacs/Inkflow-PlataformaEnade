@@ -61,7 +61,13 @@
                 <TextBlock Style="{StaticResource FieldLabel}" Text="Alternativas (marque a correta)" />
                 <StackPanel x:Name="OptionsPanel" />
 
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Explicação da IA (opcional)" />
+                <DockPanel Margin="0,10,0,4">
+                    <Button x:Name="AiButton" DockPanel.Dock="Right" Content="✨  Gerar com IA" Style="{StaticResource SecondaryButton}"
+                            Padding="12,4" Click="OnGenerateExplanation"
+                            ToolTip="A IA (Google Gemini) escreve uma explicação curta da resposta. Sem alternativa marcada, ela também sugere a correta." />
+                    <TextBlock Style="{StaticResource FieldLabel}" Margin="0" VerticalAlignment="Bottom" Text="Explicação da IA (opcional)" />
+                </DockPanel>
+                <TextBlock x:Name="AiStatus" Style="{StaticResource Muted}" Margin="0,0,0,4" Visibility="Collapsed" />
                 <TextBox x:Name="ExplanationBox" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" VerticalContentAlignment="Top"
                          VerticalScrollBarVisibility="Auto" />
                 <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
