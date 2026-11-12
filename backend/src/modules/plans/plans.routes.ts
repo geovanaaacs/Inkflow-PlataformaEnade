@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { query, queryOne, withTransaction } from "../../db/pool.js";
-import { HttpError } from "../../http/errors.js";
+import { execute, query } from "../../db/pool.js";
 import { currentUser, requireUser } from "../../http/session.js";
 import type { PlanId } from "../../shared/plan-access.js";
 
@@ -70,51 +69,24 @@ const subscribeSchema = z.object({
   payment: paymentSchema.optional(),
 });
 
-/** Simulated subscription (no payment yet): closes the active one and opens the new one. */
+/**
+ * Simulated subscription: dbo.sp_AssinarPlano closes the active plan, opens the
+ * new one and, for a paid plan, records the payment, all in one transaction in
+ * the database (database/11_procedures_triggers.sql). Rule errors (no payment
+ * for a paid plan, plan not found…) come back as 400/404 with the message.
+ */
 plansRouter.post("/me/subscription", requireUser("aluno"), async (req, res) => {
   const { planId, payment } = subscribeSchema.parse(req.body);
   const user = currentUser(req);
-  const plan = await queryOne<{ Id: number; Price: number }>(
-    `SELECT Id, Price FROM dbo.Plans WHERE Slug = @planId AND IsActive = 1`,
-    { planId }
-  );
-  if (!plan) throw new HttpError(404, "Plano não encontrado.");
   if (user.plan === planId) {
     res.status(204).end();
     return;
   }
-
-  // A paid plan needs the (simulated) payment from the checkout; the free plan doesn't.
-  const paid = Number(plan.Price) > 0;
-  if (paid && !payment) throw new HttpError(400, "Informe a forma de pagamento para assinar este plano.");
-
-  await withTransaction(async (run) => {
-    await run(
-      `UPDATE dbo.Subscriptions
-       SET Status = N'cancelada', CanceledAt = SYSUTCDATETIME(), UpdatedAt = SYSUTCDATETIME()
-       WHERE UserId = @userId AND Status = N'ativa'`,
-      { userId: user.id }
-    );
-    const [subscription] = await run<{ Id: number }>(
-      `INSERT INTO dbo.Subscriptions (UserId, PlanId, Status, Price)
-       OUTPUT inserted.Id
-       VALUES (@userId, @planDbId, N'ativa', @price)`,
-      { userId: user.id, planDbId: plan.Id, price: plan.Price }
-    );
-    if (paid && payment && subscription) {
-      await run(
-        `INSERT INTO dbo.Payments (UserId, PlanId, SubscriptionId, Amount, Method, CardLast4)
-         VALUES (@userId, @planDbId, @subscriptionId, @amount, @method, @cardLast4)`,
-        {
-          userId: user.id,
-          planDbId: plan.Id,
-          subscriptionId: subscription.Id,
-          amount: plan.Price,
-          method: payment.method,
-          cardLast4: payment.method === "cartao" ? payment.cardLast4 : null,
-        }
-      );
-    }
+  await execute("dbo.sp_AssinarPlano", {
+    UserId: user.id,
+    PlanSlug: planId,
+    Method: payment?.method ?? null,
+    CardLast4: payment?.method === "cartao" ? payment.cardLast4 : null,
   });
   res.status(204).end();
 });

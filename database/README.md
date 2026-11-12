@@ -23,6 +23,7 @@ Modelo relacional do Inkflow, a plataforma de prática para o ENADE. Ele foi der
 | 8 | `08_alinhar_planos.sql` | Ordem e benefícios dos planos iguais aos da página de Planos; equipe (professor/admin) sem assinatura ativa |
 | 9 | `09_mais_areas_e_questoes.sql` | Teste de usabilidade: 5 áreas de TI novas (Segurança, Dev. Web, Ciência de Dados, Arquitetura, Nuvem), 20 questões novas com comentário de professor e simulados maiores (5 a 24 questões, mais um simulado das áreas novas) |
 | 10 | `10_pagamentos.sql` | Tabela de pagamentos (forma e 4 últimos dígitos do cartão) para o app desktop de administração; as assinaturas pagas anteriores viram registros "legado" |
+| 11 | `11_procedures_triggers.sql` | Procedures que a API chama (`sp_AssinarPlano`, `sp_RegistrarResposta`, `sp_MetricasAdmin`), a tabela `AuditLog` e as triggers (auditoria de perfil, só aluno com assinatura ativa, `UpdatedAt` automático). Ver [Procedures e triggers](#procedures-e-triggers-11) |
 
 Todos os scripts são **idempotentes**: verificam se cada objeto ou registro já existe antes de criar. Rodar tudo de novo não gera erro nem duplica dados.
 
@@ -198,6 +199,25 @@ erDiagram
 | `MentoringSessions` | Encontros agendados. |
 
 ---
+
+## Procedures e triggers (`11`)
+
+| Objeto | Tipo | O que faz | Quem usa |
+|---|---|---|---|
+| `dbo.sp_AssinarPlano` | procedure | Fecha a assinatura ativa, abre a nova e, se o plano é pago, grava o pagamento — numa transação só. Recusa plano pago sem forma de pagamento | `POST /api/me/subscription` |
+| `dbo.sp_RegistrarResposta` | procedure | Grava a resposta (número da tentativa, perfil de quem respondeu) e confere o limite diário do Básico (só a 1ª tentativa conta), com trava contra cliques duplos | `POST /api/questions/:id/answers` |
+| `dbo.sp_MetricasAdmin` | procedure | Os números do painel em 6 resultados: usuários, alunos por plano, atividade, respostas por dia, receita e adesões | `GET /api/admin/metrics` (app desktop) |
+| `dbo.AuditLog` | tabela | Histórico de alterações: tabela, registro, ação, valor antigo e novo, quem fez e quando | triggers abaixo |
+| `dbo.trg_Users_AuditoriaPerfil` | trigger (UPDATE) | Registra no `AuditLog` toda troca de perfil (aluno/professor/admin) e de acesso (ativo/desativado); "quem fez" vem do `SESSION_CONTEXT('UserId')`, definido pela API | automático |
+| `dbo.trg_Subscriptions_SomenteAlunos` | trigger (INSERT, UPDATE) | Impede assinatura ativa de professor ou administrador | automático |
+| `dbo.trg_<Tabela>_UpdatedAt` | trigger (UPDATE) | Uma por tabela com `UpdatedAt` (22): preenche a data de alteração em toda mudança, inclusive feita direto no banco | automático |
+
+- **Erros de regra:** as procedures e triggers usam `THROW 50400/50403/50404/50409`; a API devolve o status HTTP correspondente (400, 403, 404, 409) com a mesma mensagem (`backend/src/http/errors.ts`).
+- **Uma assinatura ativa por aluno** continua garantida pelo índice único filtrado `UX_Subscriptions_User_Active` (script `03`), que barra a duplicata antes de qualquer trigger.
+- **`OUTPUT` sem `INTO`:** o SQL Server não aceita `UPDATE ... OUTPUT inserted...` numa tabela com trigger de UPDATE. Por isso a API usa `OUTPUT ... INTO @tabela` nesses casos.
+- Consultar a auditoria: `SELECT a.*, u.Email AS QuemFez FROM dbo.AuditLog a LEFT JOIN dbo.Users u ON u.Id = a.ChangedByUserId ORDER BY a.ChangedAt DESC;`
+
+Aplicar num banco que já tem os scripts 01–10: `npm run db:setup -w backend -- --from=11`.
 
 ## Regras de negócio
 

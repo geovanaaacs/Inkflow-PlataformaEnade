@@ -33,9 +33,11 @@ async function main() {
   for (const [email, password] of Object.entries(SEED_PASSWORDS)) {
     const hash = await bcrypt.hash(password, 10);
     const rows = await query<{ Email: string }>(
-      `UPDATE dbo.Users SET PasswordHash = @hash, UpdatedAt = SYSUTCDATETIME()
-       OUTPUT inserted.Email
-       WHERE Email = @email AND PasswordHash = @placeholder`,
+      `DECLARE @changed TABLE (Email NVARCHAR(254));
+       UPDATE dbo.Users SET PasswordHash = @hash, UpdatedAt = SYSUTCDATETIME()
+       OUTPUT inserted.Email INTO @changed
+       WHERE Email = @email AND PasswordHash = @placeholder;
+       SELECT Email FROM @changed;`,
       { hash, email, placeholder: PLACEHOLDER_HASH }
     );
     console.log(rows.length ? `senha de teste definida: ${email}` : `sem alteração: ${email}`);

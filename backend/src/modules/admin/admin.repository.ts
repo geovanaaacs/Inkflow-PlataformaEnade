@@ -71,6 +71,14 @@ export async function updateUser(adminId: string, userId: string, changes: Admin
   }
 
   await withTransaction(async (run) => {
+    // Who is making the change, for the audit trigger (dbo.trg_Users_AuditoriaPerfil
+    // reads it into dbo.AuditLog). Same connection as the UPDATE below.
+    // (Typed variable: the driver sends strings as NVARCHAR(MAX), which session context doesn't accept.)
+    await run(
+      `DECLARE @who UNIQUEIDENTIFIER = TRY_CAST(@adminId AS UNIQUEIDENTIFIER);
+       EXEC sys.sp_set_session_context @key = N'UserId', @value = @who;`,
+      { adminId }
+    );
     const [current] = await run<AdminUserRow>(`${SELECT_ADMIN_USERS} AND u.Id = @userId`, { userId });
     if (!current) throw new HttpError(404, "Usuário não encontrado.");
 
@@ -205,11 +213,13 @@ export async function saveQuestion(questionId: number | null, input: QuestionInp
       }
     } else {
       const [updated] = await run<{ Id: number }>(
-        `UPDATE dbo.Questions
+        `DECLARE @saved TABLE (Id INT);
+         UPDATE dbo.Questions
          SET Code = @code, TopicId = @topicId, Year = @year, Difficulty = @difficulty,
              Statement = @statement, AiExplanation = @aiExplanation, UpdatedAt = SYSUTCDATETIME()
-         OUTPUT inserted.Id
-         WHERE Id = @id AND IsActive = 1`,
+         OUTPUT inserted.Id INTO @saved
+         WHERE Id = @id AND IsActive = 1;
+         SELECT Id FROM @saved;`,
         { ...fields, id }
       );
       if (!updated) throw new HttpError(404, "Questão não encontrada.");
@@ -237,8 +247,10 @@ export async function saveQuestion(questionId: number | null, input: QuestionInp
 export async function deactivateQuestion(questionId: number): Promise<void> {
   await withTransaction(async (run) => {
     const [updated] = await run<{ Id: number }>(
-      `UPDATE dbo.Questions SET IsActive = 0, UpdatedAt = SYSUTCDATETIME() OUTPUT inserted.Id
-       WHERE Id = @questionId AND IsActive = 1`,
+      `DECLARE @removed TABLE (Id INT);
+       UPDATE dbo.Questions SET IsActive = 0, UpdatedAt = SYSUTCDATETIME() OUTPUT inserted.Id INTO @removed
+       WHERE Id = @questionId AND IsActive = 1;
+       SELECT Id FROM @removed;`,
       { questionId }
     );
     if (!updated) throw new HttpError(404, "Questão não encontrada.");
@@ -291,10 +303,12 @@ export async function saveMockExam(examId: number | null, input: MockExamInput):
       savedId = created?.Id ?? null;
     } else {
       const [updated] = await run<{ Id: number }>(
-        `UPDATE dbo.MockExams
+        `DECLARE @saved TABLE (Id INT);
+         UPDATE dbo.MockExams
          SET Title = @title, Description = @description, AreaId = @areaId, Difficulty = @difficulty,
              TimeLimitMinutes = @minutes, UpdatedAt = SYSUTCDATETIME()
-         OUTPUT inserted.Id WHERE Id = @examId AND IsActive = 1`,
+         OUTPUT inserted.Id INTO @saved WHERE Id = @examId AND IsActive = 1;
+         SELECT Id FROM @saved;`,
         { ...fields, examId: savedId }
       );
       if (!updated) throw new HttpError(404, "Simulado não encontrado.");
