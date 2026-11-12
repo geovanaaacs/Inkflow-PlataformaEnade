@@ -50,6 +50,46 @@ sqlcmd -S localhost -E -C -I -f 65001 -b -i 10_pagamentos.sql
 - `-f 65001` lê os arquivos como UTF-8 (acentos e símbolos como ✔).
 - Para usar o LocalDB, troque `-S localhost` por `-S "(localdb)\MSSQLLocalDB"`.
 
+### Pela API (`npm run db:setup`) — banco novo, local ou na Azure
+
+Sem SSMS nem sqlcmd: o backend roda os scripts `02` a `10` pela mesma conexão da API (`DB_CONNECTION_STRING` do `backend/.env`), pulando as linhas `USE Inkflow;` (a Azure não aceita `USE`) e o bloco da conta admin do `06`. Depois, `npm run db:dev-accounts` define as senhas das contas de teste e cria o admin do `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
+
+```bash
+npm run db:setup -w backend
+npm run db:dev-accounts -w backend
+```
+
+É só para **banco novo e vazio**: se o banco já tem usuários, o comando para sem mexer em nada (os dados de exemplo podem conflitar com o que já foi feito no banco).
+
+Se o banco parou num script antigo (por exemplo, criado só com `01`–`05` numa versão anterior do projeto), continue a partir do próximo: `npm run db:setup -w backend -- --from=06`.
+
+---
+
+## Banco na Azure (Azure SQL Database)
+
+Para quem não tem SQL Server instalado: o banco fica na Azure e cada pessoa roda a API no próprio computador, apontando para ele.
+
+**Uma vez, no portal da Azure** (quem criou o servidor):
+
+1. No servidor SQL, **Criar banco de dados** com o nome `Inkflow`. Em *Configurações adicionais*, ordenação **`Latin1_General_CI_AI`** (a busca sem acentos depende dela). A oferta gratuita ou o plano Basic bastam.
+2. No servidor, **Configurações → Microsoft Entra ID**: deixe **desmarcado** "Dar suporte apenas à autenticação do Microsoft Entra" — a API entra com usuário e senha do SQL (o administrador do SQL; a senha pode ser trocada em *Redefinir senha*).
+3. **Segurança → Rede**: acesso público em *Redes selecionadas* e adicione o IP de cada pessoa (*Adicionar o endereço IPv4 do cliente*). IP de casa muda de vez em quando; se a API parar de conectar, adicione o novo.
+4. Num computador com o projeto e o `.env` já apontando para a Azure (passo abaixo), rode `npm run db:setup -w backend` e `npm run db:dev-accounts -w backend` **uma vez**.
+
+**Em cada computador** (Windows):
+
+1. Instale o **Node 22** e o **[ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)** — a API conecta por ODBC (`msnodesqlv8`, só Windows).
+2. Na raiz do projeto, `npm install`; copie `backend/.env.example` para `backend/.env` e troque a conexão (servidor, usuário e senha de vocês):
+
+   ```
+   DB_CONNECTION_STRING=Driver={ODBC Driver 18 for SQL Server};Server=tcp:inkflow.database.windows.net,1433;Database=Inkflow;Uid=USUARIO;Pwd=SENHA;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;
+   ```
+
+   Se a senha tiver `;` ou `}`, coloque-a entre chaves: `Pwd={minha;senha};`. O `.env` não vai para o git: mande a senha por mensagem privada.
+3. `npm run dev` sobe a API e o site. Para o celular: `cd mobile`, `npm install`, `npx expo start` e o QR code no Expo Go (celular no mesmo Wi-Fi do computador).
+
+Bancos da camada sem servidor ou gratuita "dormem" sem uso: a primeira requisição depois de um tempo parado pode demorar ou falhar uma vez — é só tentar de novo.
+
 ---
 
 ## Diagrama de relacionamentos

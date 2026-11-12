@@ -153,7 +153,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_MockExamAttempts_Mock
    ----------------------------------------------------------------------------- */
 
 -- Exibir o ranking de um período em ordem de posição.
+-- Replaced in 06 by IX_RankingSnapshots_Scope_Period_Position: skip once 06 has run.
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_RankingSnapshots_Period_Position' AND object_id = OBJECT_ID(N'dbo.RankingSnapshots'))
+   AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_RankingSnapshots_Scope_Period_Position' AND object_id = OBJECT_ID(N'dbo.RankingSnapshots'))
     CREATE NONCLUSTERED INDEX IX_RankingSnapshots_Period_Position
         ON dbo.RankingSnapshots (PeriodType, PeriodStart, Position)
         INCLUDE (UserId, Score);
