@@ -10,6 +10,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <!-- Logo do Inkflow (a mesma do site): ícone do .exe e da barra de tarefas. -->
+    <ApplicationIcon>Assets\inkflow.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Também como recurso, para o ícone da barra de título de cada janela (estilo AppWindow). -->
+    <Resource Include="Assets\inkflow.ico" />
+  </ItemGroup>
 
 </Project>
