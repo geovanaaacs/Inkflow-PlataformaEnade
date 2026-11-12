@@ -64,6 +64,8 @@
                 <Button x:Name="ExportButton" Content="Exportar para Excel/CSV…" Style="{StaticResource SecondaryButton}" Click="OnExport" IsEnabled="False"
                         ToolTip="Salva o que foi extraído numa planilha para revisar fora do programa; depois use “Abrir planilha”" />
                 <Button x:Name="ApproveAllButton" Content="Aprovar todas as prontas" Margin="10,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnApproveAll" IsEnabled="False" />
+                <Button x:Name="AiAllButton" Content="✨  Explicar todas com IA" Margin="10,0,0,0" Style="{StaticResource SecondaryButton}" Click="OnExplainAll" IsEnabled="False"
+                        ToolTip="Gera a explicação (e, sem gabarito, sugere a alternativa correta) de todas as questões ainda sem explicação. Uma de cada vez, por causa do limite gratuito." />
                 <TextBlock x:Name="Summary" VerticalAlignment="Center" Margin="14,0,0,0" FontWeight="SemiBold" />
             </StackPanel>
         </DockPanel>
@@ -150,9 +152,18 @@
                         <DockPanel Margin="0,0,0,6"><TextBlock Text="E)" Width="26" FontWeight="SemiBold" VerticalAlignment="Center" /><TextBox Text="{Binding OptionE, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" /></DockPanel>
 
                         <TextBlock Text="Alternativa correta" Style="{StaticResource FieldLabel}" />
-                        <ComboBox x:Name="EditorCorrect" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Correct}" HorizontalAlignment="Left" />
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox x:Name="EditorCorrect" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Correct}" HorizontalAlignment="Left" />
+                            <TextBlock Text="{Binding CorrectOrigin}" Foreground="{DynamicResource BrandText}" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" Margin="10,0,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
 
-                        <TextBlock Text="Explicação da IA (opcional)" Style="{StaticResource FieldLabel}" />
+                        <DockPanel Margin="0,10,0,4">
+                            <Button x:Name="EditorAiButton" DockPanel.Dock="Right" Content="✨  Gerar com IA" Style="{StaticResource SecondaryButton}"
+                                    Padding="12,4" Click="OnExplainSelected"
+                                    ToolTip="A IA (Google Gemini) escreve uma explicação curta da resposta. Sem gabarito, ela também sugere a alternativa correta." />
+                            <TextBlock Text="Explicação da IA (opcional)" Style="{StaticResource FieldLabel}" Margin="0" VerticalAlignment="Bottom" />
+                        </DockPanel>
                         <TextBox Text="{Binding Explanation, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap"
                                  MinHeight="70" VerticalContentAlignment="Top" />
                     </StackPanel>

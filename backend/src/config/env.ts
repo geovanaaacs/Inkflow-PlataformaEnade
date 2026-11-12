@@ -11,6 +11,9 @@ const schema = z
     DB_CONNECTION_STRING: z.string().min(1, "Defina DB_CONNECTION_STRING no .env"),
     JWT_SECRET: z.string().min(32, "JWT_SECRET precisa ter pelo menos 32 caracteres"),
     SESSION_DAYS: z.coerce.number().int().positive().default(30),
+    // Optional: explanation of questions by AI (Google Gemini, free key from aistudio.google.com).
+    GEMINI_API_KEY: z.string().trim().optional(),
+    GEMINI_MODEL: z.string().trim().min(1).default("gemini-3.5-flash-lite"),
   })
   // In development Vite owns FRONTEND_PORT and proxies /api to API_PORT: the same
   // port makes the proxy call itself (every request hangs ~15 s and fails).

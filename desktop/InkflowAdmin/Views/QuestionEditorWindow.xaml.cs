@@ -132,6 +132,59 @@ public partial class QuestionEditorWindow : Window
         }
     }
 
+    /// <summary>Asks the API (Google Gemini) for a short explanation; without a marked answer, also for the answer.</summary>
+    private async void OnGenerateExplanation(object sender, RoutedEventArgs e)
+    {
+        var statement = StatementBox.Text.Trim();
+        var options = _options.Select(o => o.Text.Text.Trim()).ToList();
+        if (statement.Length < 10 || options.Any(string.IsNullOrEmpty))
+        {
+            ShowAiStatus("Preencha o enunciado e as cinco alternativas antes de pedir a explicação.", isError: true);
+            return;
+        }
+        if (!string.IsNullOrWhiteSpace(ExplanationBox.Text) &&
+            MessageBox.Show(this, "Substituir a explicação atual pela da IA?", "Gerar com IA",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        var correctIndex = _options.FindIndex(o => o.Correct.IsChecked == true);
+        AiButton.IsEnabled = false;
+        ShowAiStatus("Gerando explicação com IA…", isError: false);
+        try
+        {
+            var result = await _api.ExplainQuestionAsync(statement, options, correctIndex >= 0 ? Letters[correctIndex] : null);
+            ExplanationBox.Text = result.Explanation;
+            if (result.SuggestedByAi)
+            {
+                var index = Array.IndexOf(Letters, result.CorrectOptionId);
+                if (index >= 0) _options[index].Correct.IsChecked = true;
+                ShowAiStatus($"A IA marcou a alternativa {result.CorrectOptionId.ToUpperInvariant()} como correta: confira antes de salvar.", isError: false);
+            }
+            else
+            {
+                ShowAiStatus("Explicação gerada pela IA: revise o texto antes de salvar.", isError: false);
+            }
+        }
+        catch (ApiException error)
+        {
+            ShowAiStatus(error.Message, isError: true);
+        }
+        finally
+        {
+            AiButton.IsEnabled = true;
+        }
+    }
+
+    private void ShowAiStatus(string message, bool isError)
+    {
+        AiStatus.Text = message;
+        // Resource reference (not the brush itself), so the color follows a theme switch.
+        AiStatus.SetResourceReference(TextBlock.ForegroundProperty, isError ? "Danger" : "BrandText");
+        AiStatus.Visibility = Visibility.Visible;
+    }
+
     private void ShowError(string message)
     {
         ErrorText.Text = message;

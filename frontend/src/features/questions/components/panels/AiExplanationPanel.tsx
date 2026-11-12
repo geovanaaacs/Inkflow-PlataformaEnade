@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Sparkles } from "lucide-react";
 import { Badge } from "@/design-system/components/Badge";
 import type { Question } from "../../data";
@@ -6,6 +7,10 @@ interface AiExplanationPanelProps {
   id: string;
   question: Question;
 }
+
+/** Section titles of the AI explanation format (backend/src/modules/ai), shown in bold. */
+const SECTION_TITLE =
+  /^(Gabarito: Alternativa [A-E]|Por que essa é a resposta\?|Onde está o erro das outras opções\?|Para lembrar na hora da prova:)$/;
 
 export function AiExplanationPanel({ id, question }: AiExplanationPanelProps) {
   const correctIndex = question.options.findIndex(
@@ -22,8 +27,15 @@ export function AiExplanationPanel({ id, question }: AiExplanationPanelProps) {
         </h3>
         <Badge tone="brand">Resposta: {correctLetter}</Badge>
       </div>
-      <p className="mt-4 whitespace-pre-line text-sm text-ink-strong">
-        {question.aiExplanation || "A explicação da IA para esta questão ainda está sendo preparada."}
+      <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-ink-strong">
+        {question.aiExplanation
+          ? question.aiExplanation.split("\n").map((line, index) => (
+              <Fragment key={index}>
+                {index > 0 && "\n"}
+                {SECTION_TITLE.test(line.trim()) ? <strong className="font-semibold text-brand-ink">{line}</strong> : line}
+              </Fragment>
+            ))
+          : "A explicação da IA para esta questão ainda está sendo preparada."}
       </p>
     </div>
   );

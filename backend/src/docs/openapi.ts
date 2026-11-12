@@ -885,6 +885,40 @@ const paths = {
       responses: { 200: ok(ref("QuestionCatalog")), 403: E403 },
     }),
   },
+  "/admin/questions/ai-explanation": {
+    post: op({
+      tag: "Admin",
+      summary: "Explicação da resposta gerada por IA (Google Gemini)",
+      description:
+        "Não grava nada: devolve a explicação para o formulário. Com `correctOptionId`, a IA explica esse gabarito; sem ele, sugere a alternativa correta (`suggestedByAi: true`, para conferir). Precisa de GEMINI_API_KEY no backend/.env.",
+      auth: ADMIN,
+      requestBody: body(
+        object(
+          {
+            statement: str("Enunciado"),
+            options: arrayOf(str("Texto da alternativa (A a E, nesta ordem)")),
+            correctOptionId: optionLetter,
+          },
+          ["correctOptionId"]
+        )
+      ),
+      responses: {
+        200: ok(
+          object({
+            correctOptionId: optionLetter,
+            suggestedByAi: bool("true quando a IA escolheu a alternativa (não havia gabarito)"),
+            explanation: str("Gabarito comentado: “Gabarito: Alternativa X”, “Por que essa é a resposta?”, “Onde está o erro das outras opções?” e “Para lembrar na hora da prova:”"),
+            model: str("Modelo usado, ex.: gemini-3.5-flash-lite"),
+          })
+        ),
+        400: E400,
+        403: E403,
+        429: error("Limite gratuito da IA atingido; tente em instantes"),
+        502: error("A IA não respondeu ou respondeu fora do formato"),
+        503: error("IA não configurada ou chave recusada"),
+      },
+    }),
+  },
   "/admin/questions/{id}": {
     put: op({
       tag: "Admin",

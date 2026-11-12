@@ -1,11 +1,12 @@
 import { useId, useState, type FormEvent } from "react";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/design-system/components/Button";
 import { Input, Textarea } from "@/design-system/components/Input";
 import { Modal } from "@/design-system/components/Modal";
 import { Select } from "@/design-system/components/Select";
 import type { Area, Difficulty, Question } from "@/features/questions/data";
 import { errorMessage } from "@/shared/api/api-error";
-import { OPTION_IDS, createQuestion, updateQuestion, type QuestionInput } from "../api";
+import { OPTION_IDS, createQuestion, explainQuestion, updateQuestion, type QuestionInput } from "../api";
 
 const DIFFICULTIES: Difficulty[] = ["fácil", "médio", "difícil"];
 
@@ -89,8 +90,44 @@ function QuestionForm({ question, areas, topicsByArea, onCancel, onSaved }: Ques
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [generating, setGenerating] = useState(false);
+  const [aiNote, setAiNote] = useState<{ text: string; error: boolean } | null>(null);
+
   function update<K extends keyof QuestionInput>(key: K, value: QuestionInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
+  }
+
+  /** Short explanation by AI (Google Gemini); without a marked answer, the AI also suggests it. */
+  async function handleGenerate() {
+    const statement = input.statement.trim();
+    const options = input.options.map((option) => option.trim());
+    if (statement.length < 10 || options.some((option) => option.length === 0)) {
+      setAiNote({ text: "Preencha o enunciado e as cinco alternativas antes de pedir a explicação.", error: true });
+      return;
+    }
+    if (input.aiExplanation.trim() && !window.confirm("Substituir a explicação atual pela da IA?")) return;
+
+    setGenerating(true);
+    setAiNote(null);
+    try {
+      const correct = OPTION_IDS.find((id) => id === input.correctOptionId);
+      const result = await explainQuestion({ statement, options, correctOptionId: correct });
+      setInput((current) => ({
+        ...current,
+        aiExplanation: result.explanation,
+        correctOptionId: result.suggestedByAi ? result.correctOptionId : current.correctOptionId,
+      }));
+      setAiNote({
+        text: result.suggestedByAi
+          ? `A IA marcou a alternativa ${result.correctOptionId.toUpperCase()} como correta: confira antes de salvar.`
+          : "Explicação gerada pela IA: revise o texto antes de salvar.",
+        error: false,
+      });
+    } catch (generateError) {
+      setAiNote({ text: errorMessage(generateError), error: true });
+    } finally {
+      setGenerating(false);
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -200,13 +237,32 @@ function QuestionForm({ question, areas, topicsByArea, onCancel, onSaved }: Ques
         ))}
       </fieldset>
 
-      <Textarea
-        label="Explicação da IA (opcional)"
-        hint="Aparece no painel “Gabarito IA” da questão."
-        rows={3}
-        value={input.aiExplanation}
-        onChange={(event) => update("aiExplanation", event.target.value)}
-      />
+      <div className="flex flex-col gap-2">
+        <Textarea
+          label="Explicação da IA (opcional)"
+          hint="Aparece no painel “Gabarito IA” da questão."
+          rows={4}
+          value={input.aiExplanation}
+          onChange={(event) => update("aiExplanation", event.target.value)}
+        />
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            variant="soft"
+            size="sm"
+            disabled={generating}
+            onClick={handleGenerate}
+            leadingIcon={<Sparkles aria-hidden="true" className="size-4" />}
+          >
+            {generating ? "Gerando..." : "Gerar com IA"}
+          </Button>
+          {aiNote && (
+            <p role="status" className={aiNote.error ? "text-sm text-danger-ink" : "text-sm text-brand-ink"}>
+              {aiNote.text}
+            </p>
+          )}
+        </div>
+      </div>
 
       {error && (
         <p role="alert" className="text-sm text-danger-ink">

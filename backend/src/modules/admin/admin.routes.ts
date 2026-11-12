@@ -12,6 +12,7 @@ import {
   updateUser,
 } from "./admin.repository.js";
 import { getAdminMetrics, listPayments } from "./metrics.repository.js";
+import { OPTION_LETTERS, explainQuestion } from "../ai/question-explainer.js";
 
 /*
  * Front: src/features/admin/api.ts (only the "admin" profile)
@@ -111,6 +112,19 @@ adminRouter.get("/admin/questions", async (req, res) => {
 
 adminRouter.get("/admin/questions/catalog", async (_req, res) => {
   res.json(await getQuestionCatalog());
+});
+
+const aiExplanationSchema = z.object({
+  statement: z.string().trim().min(10, "Escreva o enunciado antes de pedir a explicação."),
+  options: z
+    .array(z.string().trim().min(1, "Preencha as cinco alternativas antes de pedir a explicação."))
+    .length(5, "A questão precisa ter as cinco alternativas (A a E)."),
+  correctOptionId: z.enum(OPTION_LETTERS).optional(),
+});
+
+/** Explanation (and, without an answer key, the suggested answer) by AI — nothing is saved. */
+adminRouter.post("/admin/questions/ai-explanation", async (req, res) => {
+  res.json(await explainQuestion(aiExplanationSchema.parse(req.body)));
 });
 
 adminRouter.post("/admin/questions", async (req, res) => {

@@ -23,6 +23,12 @@ Configuração em `backend/.env` (copie de `.env.example`):
 | `JWT_SECRET` | Assina o cookie de sessão (mín. 32 caracteres, nunca versionado) |
 | `SESSION_DAYS` | Validade do login (padrão 30 dias) |
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Só para `npm run db:dev-accounts` criar a conta admin |
+| `GEMINI_API_KEY` | Opcional. Chave gratuita do Google Gemini ([aistudio.google.com/apikey](https://aistudio.google.com/apikey)) para o botão **Gerar com IA** das questões (`POST /api/admin/questions/ai-explanation`). Sem ela, o botão avisa que a IA não está configurada |
+| `GEMINI_MODEL` | Opcional. Modelo do Gemini (padrão `gemini-3.5-flash-lite`, estável e gratuito no AI Studio) |
+
+### Explicação das questões por IA
+
+O botão **Gerar com IA** (formulário de questão do site, editor e importação do app desktop) chama a API, que chama o Google Gemini com a chave do `.env` — a chave nunca vai para o navegador nem para o desktop. O texto segue o formato de gabarito comentado: **Gabarito: Alternativa X**, **Por que essa é a resposta?** (a pista do enunciado e o conceito, com o autor ou a norma de referência quando houver), **Onde está o erro das outras opções?** (uma linha por alternativa errada, com a principal pegadinha destacada) e **Para lembrar na hora da prova:** (1 ou 2 fórmulas como "Foco em resultado + autonomia = APO"). A IA devolve as partes em JSON e a API monta o texto, então o formato é sempre o mesmo; o site e o app mostram os títulos em negrito. Com gabarito, a IA explica esse gabarito; sem gabarito, ela sugere a alternativa (`suggestedByAi: true`) e a tela marca para conferir. Nada é gravado sem o administrador salvar. O plano gratuito tem limite por minuto e por dia, e o Google pode usar o texto enviado para melhorar os produtos: só vão o enunciado e as alternativas, nunca dados de usuários.
 
 ## Estrutura
 
