@@ -6,7 +6,7 @@ import { useAuth } from "@/features/auth/auth-context";
 import { ApiError, errorMessage } from "@/shared/api/api-error";
 import { LockedFeature } from "@/shared/components/LockedFeature";
 import { userHasFeature } from "@/shared/plans/plan-access";
-import { answerQuestion, type AnswerResult } from "../api";
+import { addCommunityComment, answerQuestion, type AnswerResult } from "../api";
 import type { CommunityComment, Question } from "../data";
 import { QuestionActionsBar } from "./QuestionActionsBar";
 import { QuestionNotesModal } from "./QuestionNotesModal";
@@ -49,8 +49,9 @@ export function QuestionCard({
     setActivePanel((current) => (current === panel ? null : panel));
   }
 
-  function handleAddComment(comment: string) {
-    setComments((current) => [...current, { author: "Você", comment }]);
+  async function handleAddComment(comment: string) {
+    const created = await addCommunityComment(question.id, comment);
+    setComments((current) => [...current, { ...created, author: "Você" }]);
   }
 
   async function handleAnswer() {

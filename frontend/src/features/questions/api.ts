@@ -1,6 +1,6 @@
 import { http, queryString } from "@/shared/api/http";
 import type { DailyUsage } from "@/shared/plans/plan-access";
-import type { Area, NoteRecord, Question } from "./data";
+import type { Area, CommunityComment, NoteRecord, Question } from "./data";
 
 /*
  * Questions API:
@@ -111,6 +111,11 @@ export function getMyNoteCounts(): Promise<Record<string, number>> {
 /** Notes of the student on one question, newest first. */
 export function listQuestionNotes(questionId: string): Promise<NoteRecord[]> {
   return http.get<NoteRecord[]>(`/questions/${questionId}/notes`);
+}
+
+/** POST /api/questions/:id/community → the saved comment. */
+export function addCommunityComment(questionId: string, comment: string): Promise<CommunityComment> {
+  return http.post<CommunityComment>(`/questions/${questionId}/community`, { comment });
 }
 
 export function addNote(questionId: string, content: string): Promise<NoteRecord> {

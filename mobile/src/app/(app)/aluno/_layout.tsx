@@ -18,6 +18,7 @@ export default function StudentLayout() {
         <Stack.Screen name="simulado/[id]" options={{ title: "Simulado" }} />
         <Stack.Screen name="simulado/resultado/[attemptId]" options={{ title: "Resultado do simulado" }} />
         <Stack.Screen name="mentoria" options={{ title: "Mentoria" }} />
+        <Stack.Screen name="perfil" options={{ title: "Editar perfil" }} />
       </Stack>
     </PracticeProvider>
   );

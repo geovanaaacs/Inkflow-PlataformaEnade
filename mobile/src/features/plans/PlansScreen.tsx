@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Badge, LoadState } from "../../components/feedback";
-import { Button, Card, Screen, Subtitle, Title } from "../../components/ui";
+import { Button, Card, IconText, Screen, Subtitle, Title } from "../../components/ui";
 import { formatPrice } from "../../lib/format";
 import { PLAN_RANK } from "../../lib/plan-access";
 import { useAsync } from "../../lib/useAsync";
@@ -55,9 +55,9 @@ export function PlansScreen() {
               <Text style={styles.price}>{formatPrice(plan.price)}</Text>
               <Text style={styles.description}>{plan.description}</Text>
               {plan.items.map((item) => (
-                <Text key={item} style={styles.item}>
-                  ✓ {item}
-                </Text>
+                <IconText key={item} icon="checkmark-circle" color={colors.success} style={styles.item}>
+                  {item}
+                </IconText>
               ))}
               {isStudent && (
                 <Button

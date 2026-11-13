@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { LoadState, LockedFeature } from "../../../../components/feedback";
@@ -94,7 +95,11 @@ function Row({ entry }: { entry: RankingEntry }) {
   return (
     <View style={[styles.row, entry.isCurrentUser && styles.rowMe]}>
       <View style={[styles.place, podium && styles.placePodium]}>
-        <Text style={[styles.placeText, podium && styles.placeTextPodium]}>{entry.position === 1 ? "👑" : entry.position}</Text>
+        {entry.position === 1 ? (
+          <Ionicons name="trophy" size={18} color={colors.onBrand} accessibilityLabel="1º lugar" />
+        ) : (
+          <Text style={[styles.placeText, podium && styles.placeTextPodium]}>{entry.position}</Text>
+        )}
       </View>
       <View style={styles.flex}>
         <Text style={[styles.name, entry.isCurrentUser && styles.bold]} numberOfLines={1}>

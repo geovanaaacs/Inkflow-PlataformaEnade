@@ -10,10 +10,12 @@ export interface AuthUser {
   /** Students only; null for teachers and admins. */
   plan: PlanId | null;
   course: string | null;
+  /** Profile photo as a data URL (data:image/jpeg;base64,...), or null. */
+  photoUrl: string | null;
 }
 
 /** Logged-in user as the API sees it: public data plus plan rules. */
-export interface SessionUser extends AuthUser {
+export interface SessionUser extends Omit<AuthUser, "photoUrl"> {
   featureCodes: string[];
   /** Daily first-attempt limit of the plan; null = unlimited. */
   dailyQuestionLimit: number | null;
@@ -55,9 +57,23 @@ function toSessionUser(row: UserRow): SessionUser {
   };
 }
 
-export function toPublicUser(user: SessionUser): AuthUser {
+/**
+ * The photo is not part of SessionUser (loaded on every request); routes that
+ * return the user to the client pass it from findPhoto().
+ */
+export function toPublicUser(user: SessionUser, photoUrl: string | null = null): AuthUser {
   const { id, name, email, role, plan, course } = user;
-  return { id, name, email, role, plan, course };
+  return { id, name, email, role, plan, course, photoUrl };
+}
+
+export async function findPhoto(id: string): Promise<string | null> {
+  const row = await queryOne<{ PhotoUrl: string | null }>(`SELECT PhotoUrl FROM dbo.Users WHERE Id = @id`, { id });
+  return row?.PhotoUrl ?? null;
+}
+
+/** null removes the photo. */
+export async function updatePhoto(id: string, photoUrl: string | null): Promise<void> {
+  await query(`UPDATE dbo.Users SET PhotoUrl = @photoUrl WHERE Id = @id`, { id, photoUrl });
 }
 
 /** Active (not deactivated, not deleted) account by id. */
@@ -83,12 +99,42 @@ export async function findCredentialsByEmail(email: string): Promise<Credentials
   return row ? { id: row.Id, passwordHash: row.PasswordHash, isActive: row.IsActive } : null;
 }
 
-export async function emailInUse(email: string): Promise<boolean> {
+/** `exceptUserId` lets a user keep their own e-mail when editing the profile. */
+export async function emailInUse(email: string, exceptUserId?: string): Promise<boolean> {
   const rows = await query<{ Id: string }>(
-    `SELECT Id FROM dbo.Users WHERE Email = @email AND DeletedAt IS NULL`,
-    { email }
+    `SELECT Id FROM dbo.Users
+      WHERE Email = @email AND DeletedAt IS NULL
+        AND (@exceptUserId IS NULL OR Id <> @exceptUserId)`,
+    { email, exceptUserId: exceptUserId ?? null }
   );
   return rows.length > 0;
+}
+
+export interface ProfileChanges {
+  name: string;
+  email: string;
+  course: string | null;
+}
+
+/** The user editing their own profile (name, e-mail, course). */
+export async function updateProfile(id: string, changes: ProfileChanges): Promise<void> {
+  await query(
+    `UPDATE dbo.Users SET Name = @name, Email = @email, Course = @course
+      WHERE Id = @id AND DeletedAt IS NULL`,
+    { id, ...changes }
+  );
+}
+
+export async function findPasswordHashById(id: string): Promise<string | null> {
+  const row = await queryOne<{ PasswordHash: string }>(
+    `SELECT PasswordHash FROM dbo.Users WHERE Id = @id AND DeletedAt IS NULL`,
+    { id }
+  );
+  return row?.PasswordHash ?? null;
+}
+
+export async function updatePasswordHash(id: string, passwordHash: string): Promise<void> {
+  await query(`UPDATE dbo.Users SET PasswordHash = @passwordHash WHERE Id = @id`, { id, passwordHash });
 }
 
 export interface NewUser {

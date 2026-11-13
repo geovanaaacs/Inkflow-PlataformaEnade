@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Badge, LoadState, ProgressBar, SectionTitle } from "../../../../components/feedback";
 import type { IconName } from "../../../../components/navigation";
-import { Button, Card, Screen, Subtitle, Title } from "../../../../components/ui";
+import { Button, Card, IconText, Screen, Subtitle, Title } from "../../../../components/ui";
 import { useAuth } from "../../../../features/auth/AuthProvider";
 import { ChipRow } from "../../../../features/questions/components";
 import { getTeacherOverview, type MissedQuestion, type StudentAnswerRow, type TeacherOverview } from "../../../../features/teacher/api";
@@ -27,9 +27,9 @@ export default function TeacherDashboardScreen() {
         <>
           {data.pendingRequests > 0 && (
             <Pressable accessibilityRole="link" onPress={() => router.navigate("/professor/agenda")} style={styles.pending}>
-              <Text style={styles.pendingText}>
-                📅 {plural(data.pendingRequests, "solicitação de mentoria aguardando", "solicitações de mentoria aguardando")} sua resposta
-              </Text>
+              <IconText icon="calendar-outline" style={styles.pendingText}>
+                {plural(data.pendingRequests, "solicitação de mentoria aguardando", "solicitações de mentoria aguardando")} sua resposta
+              </IconText>
               <Text style={styles.pendingLink}>Abrir agenda →</Text>
             </Pressable>
           )}

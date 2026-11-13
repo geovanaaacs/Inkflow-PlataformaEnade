@@ -24,6 +24,7 @@ Modelo relacional do Inkflow, a plataforma de prática para o ENADE. Ele foi der
 | 9 | `09_mais_areas_e_questoes.sql` | Teste de usabilidade: 5 áreas de TI novas (Segurança, Dev. Web, Ciência de Dados, Arquitetura, Nuvem), 20 questões novas com comentário de professor e simulados maiores (5 a 24 questões, mais um simulado das áreas novas) |
 | 10 | `10_pagamentos.sql` | Tabela de pagamentos (forma e 4 últimos dígitos do cartão) para o app desktop de administração; as assinaturas pagas anteriores viram registros "legado" |
 | 11 | `11_procedures_triggers.sql` | Procedures que a API chama (`sp_AssinarPlano`, `sp_RegistrarResposta`, `sp_MetricasAdmin`), a tabela `AuditLog` e as triggers (auditoria de perfil, só aluno com assinatura ativa, `UpdatedAt` automático). Ver [Procedures e triggers](#procedures-e-triggers-11) |
+| 12 | `12_foto_perfil.sql` | Amplia `Users.PhotoUrl` para `NVARCHAR(MAX)`: a foto de perfil fica no banco como data URL (imagem de 256 x 256 enviada pelo app). |
 
 Todos os scripts são **idempotentes**: verificam se cada objeto ou registro já existe antes de criar. Rodar tudo de novo não gera erro nem duplica dados.
 

@@ -5,7 +5,7 @@ import type { PlanId } from "../features/auth/api";
 import { errorMessage } from "../lib/format";
 import { FEATURE_MIN_PLAN, PLAN_LABEL, type DailyUsage, type FeatureKey } from "../lib/plan-access";
 import { colors, radius, spacing, themed } from "../theme";
-import { Button } from "./ui";
+import { Button, IconText } from "./ui";
 
 export type Tone = "brand" | "success" | "warning" | "danger";
 
@@ -130,7 +130,7 @@ export function LockedFeature({ feature, label, description }: { feature: Featur
   const plan = PLAN_LABEL[FEATURE_MIN_PLAN[feature]];
   return (
     <View style={styles.locked}>
-      <Text style={styles.lockedTitle}>🔒 {label}</Text>
+      <IconText icon="lock-closed-outline" style={styles.lockedTitle}>{label}</IconText>
       <Text style={styles.lockedText}>{description}</Text>
       <Text style={styles.lockedPlan}>Disponível a partir do plano {plan}.</Text>
       <Button label="Ver planos" onPress={() => router.push("/aluno/planos")} />

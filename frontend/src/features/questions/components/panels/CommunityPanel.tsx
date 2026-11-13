@@ -2,19 +2,22 @@ import { useState, type FormEvent } from "react";
 import { Users } from "lucide-react";
 import { Button } from "@/design-system/components/Button";
 import { Textarea } from "@/design-system/components/Input";
+import { errorMessage } from "@/shared/api/api-error";
 import type { CommunityComment } from "../../data";
 
 interface CommunityPanelProps {
   id: string;
   comments: CommunityComment[];
-  onAddComment: (comment: string) => void;
+  /** Saves the comment; rejects with the error to show. */
+  onAddComment: (comment: string) => Promise<void>;
 }
 
 export function CommunityPanel({ id, comments, onAddComment }: CommunityPanelProps) {
   const [draftComment, setDraftComment] = useState("");
   const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmed = draftComment.trim();
@@ -23,9 +26,16 @@ export function CommunityPanel({ id, comments, onAddComment }: CommunityPanelPro
       return;
     }
 
-    onAddComment(trimmed);
-    setDraftComment("");
-    setError("");
+    setSending(true);
+    try {
+      await onAddComment(trimmed);
+      setDraftComment("");
+      setError("");
+    } catch (addError) {
+      setError(errorMessage(addError, "Não foi possível publicar seu comentário."));
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -43,7 +53,7 @@ export function CommunityPanel({ id, comments, onAddComment }: CommunityPanelPro
       ) : (
         <ul className="mt-5 flex flex-col gap-5">
           {comments.map((comment) => (
-            <li key={`${comment.author}-${comment.comment.slice(0, 20)}`} className="flex gap-3">
+            <li key={comment.id ?? `${comment.author}-${comment.comment.slice(0, 20)}`} className="flex gap-3">
               <span
                 aria-hidden="true"
                 className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-500-a24 text-xs font-semibold text-brand-ink"
@@ -74,8 +84,8 @@ export function CommunityPanel({ id, comments, onAddComment }: CommunityPanelPro
           error={error || undefined}
         />
         <div className="flex justify-end">
-          <Button type="submit" size="sm">
-            Publicar comentário
+          <Button type="submit" size="sm" disabled={sending}>
+            {sending ? "Publicando..." : "Publicar comentário"}
           </Button>
         </div>
       </form>

@@ -1,15 +1,23 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Badge, EmptyState, LockedFeature, type Tone } from "../../components/feedback";
-import { Button, Card, ErrorMessage } from "../../components/ui";
-import { errorMessage, plural } from "../../lib/format";
+import { Avatar, Button, Card, ErrorMessage, IconText } from "../../components/ui";
+import { errorMessage, formatRelativeDay, plural } from "../../lib/format";
 import { ApiError } from "../../lib/http";
 import { userHasFeature } from "../../lib/plan-access";
 import { colors, radius, spacing, themed } from "../../theme";
 import { useAuth } from "../auth/AuthProvider";
-import { answerQuestion, type AnswerResult, type Difficulty, type Question } from "./api";
+import {
+  addCommunityComment,
+  answerQuestion,
+  deleteCommunityComment,
+  type AnswerResult,
+  type CommunityComment,
+  type Difficulty,
+  type Question,
+} from "./api";
 import { NotesSheet } from "./NotesSheet";
 import { usePractice } from "./practice";
 
@@ -46,7 +54,7 @@ export function QuestionListItem({ question }: { question: Question }) {
       <Text style={styles.preview} numberOfLines={3}>
         {question.statement}
       </Text>
-      {notes > 0 && <Text style={styles.small}>📝 {plural(notes, "anotação", "anotações")}</Text>}
+      {notes > 0 && <IconText icon="document-text-outline" style={styles.small}>{plural(notes, "anotação", "anotações")}</IconText>}
     </Pressable>
   );
 }
@@ -200,10 +208,14 @@ export function QuestionCard({ question }: { question: Question }) {
             accessibilityRole="alert"
             style={[styles.result, { backgroundColor: result.correct ? `${colors.success}22` : colors.dangerBg }]}
           >
-            <Text style={[styles.resultText, { color: result.correct ? colors.success : colors.danger }]}>
-              {result.correct ? "✓ Resposta correta!" : "✗ Resposta errada"}
+            <IconText
+              icon={result.correct ? "checkmark-circle" : "close-circle"}
+              size={18}
+              style={[styles.resultText, { color: result.correct ? colors.success : colors.danger }]}
+            >
+              {result.correct ? "Resposta correta!" : "Resposta errada"}
               {result.attemptNumber > 1 ? ` · ${result.attemptNumber}ª tentativa (não conta no limite diário)` : ""}
-            </Text>
+            </IconText>
           </View>
         )}
         <ErrorMessage message={error} />
@@ -235,10 +247,10 @@ export function QuestionCard({ question }: { question: Question }) {
                 onPress={() => setPanel(active ? null : item.key)}
                 style={[styles.action, active && styles.actionActive, locked && styles.actionLocked]}
               >
-                <Text style={[styles.actionText, active && styles.actionTextActive, locked && styles.actionTextLocked]}>
-                  {item.label}
-                  {locked ? " 🔒" : ""}
-                </Text>
+                <View style={styles.actionContent}>
+                  <Text style={[styles.actionText, active && styles.actionTextActive, locked && styles.actionTextLocked]}>{item.label}</Text>
+                  {locked ? <Ionicons name="lock-closed-outline" size={13} color={colors.muted} /> : null}
+                </View>
               </Pressable>
             );
           })}
@@ -248,17 +260,20 @@ export function QuestionCard({ question }: { question: Question }) {
             onPress={() => setNotesOpen(true)}
             style={[styles.action, noteCount > 0 && styles.actionActive]}
           >
-            <Text style={[styles.actionText, noteCount > 0 && styles.actionTextActive]}>
-              📝 Anotação{noteCount > 0 ? ` (${noteCount})` : ""}
-              {notesUnlocked ? "" : " 🔒"}
-            </Text>
+            <View style={styles.actionContent}>
+              <Ionicons name="create-outline" size={14} color={noteCount > 0 ? colors.brandText : colors.ink} />
+              <Text style={[styles.actionText, noteCount > 0 && styles.actionTextActive]}>
+                Anotação{noteCount > 0 ? ` (${noteCount})` : ""}
+              </Text>
+              {notesUnlocked ? null : <Ionicons name="lock-closed-outline" size={13} color={colors.muted} />}
+            </View>
           </Pressable>
         </View>
       </Card>
 
       {panel === "ai" && <AiPanel question={question} />}
       {panel === "teacher" && <TeacherPanel teacher={question.teacher} />}
-      {panel === "community" && <CommunityPanel comments={question.community} />}
+      {panel === "community" && <CommunityPanel questionId={question.id} initial={question.community} />}
 
       <NotesSheet
         visible={notesOpen}
@@ -275,7 +290,7 @@ function AiPanel({ question }: { question: Question }) {
   return (
     <Card>
       <View style={styles.panelHeader}>
-        <Text style={styles.panelTitle}>✨ Gabarito comentado por IA</Text>
+        <IconText icon="sparkles-outline" color={colors.brand600} style={styles.panelTitle}>Gabarito comentado por IA</IconText>
         <Badge>Resposta: {question.correctOptionId.toUpperCase()}</Badge>
       </View>
       <Text style={styles.body} selectable>
@@ -306,7 +321,7 @@ function TeacherPanel({ teacher }: { teacher: Question["teacher"] }) {
   }
   return (
     <Card>
-      <Text style={styles.panelTitle}>🎓 {teacher.name}</Text>
+      <IconText icon="school-outline" color={colors.brand600} style={styles.panelTitle}>{teacher.name}</IconText>
       <Text style={styles.small}>{teacher.credentials} · Professor verificado</Text>
       <Text style={styles.body} selectable>
         {teacher.comment}
@@ -315,30 +330,104 @@ function TeacherPanel({ teacher }: { teacher: Question["teacher"] }) {
   );
 }
 
-function CommunityPanel({ comments }: { comments: Question["community"] }) {
+const MAX_COMMENT = 2000;
+
+function CommunityPanel({ questionId, initial }: { questionId: string; initial: CommunityComment[] }) {
+  const { user } = useAuth();
+  const [comments, setComments] = useState(initial);
+  const [draft, setDraft] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function publish() {
+    const text = draft.trim();
+    if (!text) {
+      setError("Escreva sua resposta antes de publicar.");
+      return;
+    }
+    setError(null);
+    setSending(true);
+    try {
+      const created = await addCommunityComment(questionId, text);
+      setComments((current) => [...current, created]);
+      setDraft("");
+    } catch (caught) {
+      setError(errorMessage(caught, "Não foi possível publicar sua resposta."));
+    } finally {
+      setSending(false);
+    }
+  }
+
+  function confirmDelete(comment: CommunityComment) {
+    Alert.alert("Apagar resposta", "Sua resposta será removida da comunidade.", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Apagar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteCommunityComment(comment.id);
+            setComments((current) => current.filter((item) => item.id !== comment.id));
+          } catch (caught) {
+            setError(errorMessage(caught, "Não foi possível apagar a resposta."));
+          }
+        },
+      },
+    ]);
+  }
+
   return (
     <Card>
-      <Text style={styles.panelTitle}>👥 Comunidade</Text>
+      <IconText icon="people-outline" color={colors.brand600} style={styles.panelTitle}>
+        Comunidade{comments.length > 0 ? ` (${comments.length})` : ""}
+      </IconText>
       {comments.length === 0 ? (
-        <Text style={styles.muted}>Ainda não há comentários da comunidade para esta questão.</Text>
+        <Text style={styles.muted}>Ninguém respondeu ainda. Seja o primeiro a explicar como chegou à resposta.</Text>
       ) : (
-        comments.map((comment, index) => (
-          <View key={`${comment.author}-${index}`} style={styles.comment}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{comment.author.charAt(0)}</Text>
+        comments.map((comment) => {
+          const mine = comment.authorId === user?.id;
+          return (
+            <View key={comment.id} style={styles.comment}>
+              <Avatar name={comment.author} photoUrl={mine ? user?.photoUrl : null} size={32} />
+              <View style={styles.flex}>
+                <View style={styles.commentHeader}>
+                  <Text style={styles.commentAuthor}>{mine ? "Você" : comment.author}</Text>
+                  <Text style={styles.small}>{formatRelativeDay(comment.createdAt)}</Text>
+                </View>
+                <Text style={styles.body} selectable>
+                  {comment.comment}
+                </Text>
+                {mine && (
+                  <Pressable accessibilityRole="button" onPress={() => confirmDelete(comment)} hitSlop={8}>
+                    <Text style={styles.deleteLink}>Apagar</Text>
+                  </Pressable>
+                )}
+              </View>
             </View>
-            <View style={styles.flex}>
-              <Text style={styles.commentAuthor}>{comment.author}</Text>
-              <Text style={styles.body}>{comment.comment}</Text>
-            </View>
-          </View>
-        ))
+          );
+        })
       )}
+
+      <View style={styles.reply}>
+        <TextInput
+          value={draft}
+          onChangeText={setDraft}
+          placeholder="Escreva sua resposta ou explicação..."
+          placeholderTextColor={colors.muted}
+          multiline
+          maxLength={MAX_COMMENT}
+          accessibilityLabel="Sua resposta para a comunidade"
+          style={styles.replyInput}
+        />
+        <ErrorMessage message={error} />
+        <Button label="Publicar resposta" icon="send-outline" onPress={publish} loading={sending} />
+      </View>
     </Card>
   );
 }
 
 const styles = themed(() => StyleSheet.create({
+  actionContent: { flexDirection: "row", alignItems: "center", gap: spacing(1) },
   flex: { flex: 1 },
   pressed: { opacity: 0.7 },
   list: { gap: spacing(3) },
@@ -420,14 +509,20 @@ const styles = themed(() => StyleSheet.create({
   panelHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: spacing(2), flexWrap: "wrap" },
   panelTitle: { fontSize: 16, fontWeight: "700", color: colors.ink },
   comment: { flexDirection: "row", gap: spacing(3) },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.brandSoft,
-    alignItems: "center",
-    justifyContent: "center",
+  commentHeader: { flexDirection: "row", alignItems: "baseline", gap: spacing(2), flexWrap: "wrap" },
+  deleteLink: { marginTop: spacing(1), fontSize: 13, fontWeight: "600", color: colors.danger },
+  reply: { gap: spacing(3), paddingTop: spacing(3), borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
+  replyInput: {
+    minHeight: 88,
+    borderRadius: radius.input,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing(4),
+    paddingVertical: spacing(3),
+    fontSize: 15,
+    color: colors.ink,
+    textAlignVertical: "top",
   },
-  avatarText: { fontWeight: "700", color: colors.brandText },
   commentAuthor: { fontSize: 14, fontWeight: "700", color: colors.ink },
 }));

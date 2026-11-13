@@ -142,7 +142,7 @@ const schemas: Record<string, Schema> = {
   SessionType: sessionTypeEnum,
   RequestStatus: requestStatusEnum,
 
-  AuthUser: object(authUserProps),
+  AuthUser: object({ ...authUserProps, photoUrl: nullable(str("Foto de perfil como data URL")) }),
   AdminUser: object({ ...authUserProps, active: bool() }),
   LoginInput: object({ email: str(undefined, { format: "email" }), password: str() }),
   RegisterInput: object({
@@ -185,7 +185,7 @@ const schemas: Record<string, Schema> = {
     correctOptionId: str(),
     aiExplanation: str(),
     teacher: object({ name: str(), credentials: str(), comment: str() }),
-    community: arrayOf(object({ author: str(), comment: str() })),
+    community: arrayOf(ref("CommunityComment")),
   }),
   QuestionFilterOptions: object({ areas: arrayOf(ref("Area")), years: arrayOf(int()), types: arrayOf(str()) }),
   DailyUsage: object({
@@ -205,6 +205,7 @@ const schemas: Record<string, Schema> = {
     correct: bool(),
     answeredAt: dateTime(),
   }),
+  CommunityComment: object({ id: int(), authorId: str(), author: str(), comment: str(), createdAt: dateTime() }),
   NoteRecord: object({ id: str(), userId: str(), questionId: str(), content: str(), createdAt: dateTime() }),
   NoteWithQuestion: object({
     id: str(),
@@ -505,6 +506,25 @@ const paths = {
   },
   "/me": {
     get: op({ tag: "Autenticação", summary: "Usuário da sessão atual", auth: ANY, responses: { 200: ok(ref("AuthUser")) } }),
+    patch: op({
+      tag: "Autenticação",
+      summary: "Edita o próprio perfil (nome, e-mail e curso)",
+      auth: ANY,
+      responses: { 200: ok(ref("AuthUser")), 400: E400, 409: error("Já existe uma conta com este e-mail") },
+    }),
+  },
+  "/me/photo": {
+    put: op({
+      tag: "Autenticação",
+      summary: "Envia a foto de perfil (data URL JPEG/PNG/WebP, até 400 mil caracteres)",
+      auth: ANY,
+      requestBody: body(object({ photo: str("data:image/jpeg;base64,...") })),
+      responses: { 200: ok(ref("AuthUser")), 400: E400 },
+    }),
+    delete: op({ tag: "Autenticação", summary: "Remove a foto de perfil", auth: ANY, responses: { 200: ok(ref("AuthUser")) } }),
+  },
+  "/me/password": {
+    post: op({ tag: "Autenticação", summary: "Troca a própria senha (pede a senha atual)", auth: ANY, responses: { 204: noContent, 400: E400 } }),
   },
 
   /* ---------------------------------------------------------------- Plans */
@@ -584,6 +604,25 @@ const paths = {
       parameters: [idParam],
       requestBody: body(selectedOption),
       responses: { 201: created(ref("AnswerResult")), 400: E400, 403: error("Limite diário do plano atingido"), 404: E404 },
+    }),
+  },
+  "/questions/{id}/community": {
+    post: op({
+      tag: "Questões",
+      summary: "Publica uma resposta no painel Comunidade da questão",
+      auth: PRACTICE,
+      parameters: [idParam],
+      requestBody: body(object({ comment: str("1 a 2000 caracteres") })),
+      responses: { 201: created(ref("CommunityComment")), 400: E400, 404: E404 },
+    }),
+  },
+  "/community-comments/{id}": {
+    delete: op({
+      tag: "Questões",
+      summary: "Apaga um comentário da comunidade (o autor ou um administrador)",
+      auth: ANY,
+      parameters: [idParam],
+      responses: { 204: noContent, 403: E403, 404: E404 },
     }),
   },
   "/questions/{id}/notes": {

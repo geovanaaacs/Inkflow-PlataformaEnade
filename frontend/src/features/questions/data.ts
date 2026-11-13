@@ -4,8 +4,12 @@ export interface QuestionOption {
 }
 
 export interface CommunityComment {
+  /** Present for comments saved in the database (API). */
+  id?: number;
+  authorId?: string;
   author: string;
   comment: string;
+  createdAt?: string;
 }
 
 /** Área de TI (mesmas áreas da tabela Areas do banco). */
