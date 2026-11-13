@@ -1,8 +1,9 @@
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Brand, Button, Card, ErrorMessage, Screen, Subtitle, TextField, Title } from "../../components/ui";
+import { Brand, Button, Card, ErrorMessage, PasswordField, Screen, Subtitle, TextField, Title } from "../../components/ui";
 import { useAuth } from "../../features/auth/AuthProvider";
+import { emailError, passwordError } from "../../features/auth/validation";
 import { testAccounts } from "../../features/auth/test-accounts";
 import { colors, radius, spacing, themed } from "../../theme";
 
@@ -16,6 +17,12 @@ export default function LoginScreen() {
   async function handleSubmit() {
     if (!email.trim() || !password) {
       setError("Informe seu e-mail e sua senha.");
+      return;
+    }
+    // Same rules as the web login form.
+    const problem = emailError(email) ?? passwordError(password);
+    if (problem) {
+      setError(problem);
       return;
     }
     setError(null);
@@ -40,19 +47,18 @@ export default function LoginScreen() {
           label="E-mail"
           value={email}
           onChangeText={setEmail}
-          placeholder="voce@email.com"
+          placeholder="seu@email.com"
           autoCapitalize="none"
           autoComplete="email"
           keyboardType="email-address"
           textContentType="emailAddress"
           returnKeyType="next"
         />
-        <TextField
+        <PasswordField
           label="Senha"
           value={password}
           onChangeText={setPassword}
-          placeholder="Sua senha"
-          secureTextEntry
+          placeholder="••••••••••"
           autoComplete="password"
           textContentType="password"
           returnKeyType="go"

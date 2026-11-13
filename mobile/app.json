@@ -24,7 +24,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Inkflow usa suas fotos para você escolher a foto de perfil.",
+          "cameraPermission": "O Inkflow usa a câmera para você tirar a foto de perfil."
+        }
+      ]
     ]
   }
 }

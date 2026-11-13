@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { useEffect, type ComponentProps } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Badge, LoadState, PlanBanner, ProgressBar, SectionTitle, toneForPercent } from "../../../../components/feedback";
-import { Button, Card, Screen, Title } from "../../../../components/ui";
+import { Button, Card, IconText, Screen, Title } from "../../../../components/ui";
 import { useAuth } from "../../../../features/auth/AuthProvider";
 import { getDashboardOverview, type StudentStats } from "../../../../features/dashboard/api";
 import { usePractice } from "../../../../features/questions/practice";
@@ -75,7 +75,8 @@ export default function DashboardScreen() {
               ))
             )}
             <Button
-              label={hasFeature(plan, "notes") ? "Minhas anotações" : "Minhas anotações 🔒"}
+              label="Minhas anotações"
+              icon={hasFeature(plan, "notes") ? "document-text-outline" : "lock-closed-outline"}
               variant="secondary"
               onPress={() => router.push("/aluno/anotacoes")}
             />
@@ -141,7 +142,7 @@ export default function DashboardScreen() {
               <Button key={feature} label={label} variant="secondary" onPress={() => router.push(route)} />
             ) : (
               <View key={feature} style={styles.upsell}>
-                <Text style={styles.upsellText}>🔒 {label}</Text>
+                <IconText icon="lock-closed-outline" style={styles.upsellText}>{label}</IconText>
                 <Badge>Plano {PLAN_LABEL[FEATURE_MIN_PLAN[feature]]}</Badge>
               </View>
             )

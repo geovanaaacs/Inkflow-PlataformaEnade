@@ -2,7 +2,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View, type ScrollViewInstance } from "react-native";
 import { LoadState, LockedFeature } from "../../../../components/feedback";
-import { Button, Card, ErrorMessage, Screen, Subtitle, Title } from "../../../../components/ui";
+import { Button, Card, ErrorMessage, IconText, Screen, Subtitle, Title } from "../../../../components/ui";
 import { useAuth } from "../../../../features/auth/AuthProvider";
 import {
   finishAttempt,
@@ -70,9 +70,10 @@ function ExamLoader({ examId }: { examId: string }) {
         <Title>{exam.title}</Title>
         <Subtitle>{exam.description}</Subtitle>
         <Card>
-          <Text style={styles.meta}>
-            📋 {questions.length} questões · ⏱ {exam.timeLimitMinutes} minutos
-          </Text>
+          <View style={styles.metaRow}>
+            <IconText icon="list-outline" style={styles.meta}>{questions.length} questões</IconText>
+            <IconText icon="timer-outline" style={styles.meta}>{exam.timeLimitMinutes} minutos</IconText>
+          </View>
           {[
             "O cronômetro começa assim que você tocar em “Iniciar simulado”.",
             "Você pode navegar livremente e trocar respostas até finalizar.",
@@ -181,7 +182,7 @@ function ExamSession({ exam, questions, attempt }: { exam: MockExam; questions: 
           accessibilityRole="timer"
           accessibilityLabel={`Tempo restante: ${formatCountdown(remaining)}`}
         >
-          <Text style={[styles.timerText, timerTone && styles.timerTextAlert]}>⏱ {formatCountdown(remaining)}</Text>
+          <IconText icon="timer-outline" style={[styles.timerText, timerTone && styles.timerTextAlert]}>{formatCountdown(remaining)}</IconText>
         </View>
         <Text style={styles.progress}>
           {answeredCount}/{questions.length} respondidas
@@ -262,6 +263,7 @@ function ExamSession({ exam, questions, attempt }: { exam: MockExam; questions: 
 }
 
 const styles = themed(() => StyleSheet.create({
+  metaRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing(4) },
   flex: { flex: 1 },
   meta: { fontSize: 15, color: colors.ink },
   rule: { fontSize: 14, color: colors.muted, lineHeight: 20 },

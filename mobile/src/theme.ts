@@ -26,6 +26,7 @@ export interface Palette {
   /** Neutral track/fill (progress bars, ranking places). */
   track: string;
   success: string;
+  successBg: string;
   danger: string;
   dangerBg: string;
   warning: string;
@@ -46,6 +47,7 @@ export const palettes: Record<ThemeName, Palette> = {
     border: "rgba(0,0,0,0.1)",
     track: "rgba(0,0,0,0.07)",
     success: "#1d9e75",
+    successBg: "rgba(29,158,117,0.14)",
     danger: "#d43336",
     dangerBg: "rgba(212,51,54,0.15)",
     warning: "#f2994a",
@@ -64,6 +66,7 @@ export const palettes: Record<ThemeName, Palette> = {
     border: "rgba(255,255,255,0.12)",
     track: "rgba(255,255,255,0.1)",
     success: "#2bb98c",
+    successBg: "rgba(43,185,140,0.18)",
     danger: "#e5585b",
     dangerBg: "rgba(229,88,91,0.18)",
     warning: "#f2994a",

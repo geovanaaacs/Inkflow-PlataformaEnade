@@ -9,6 +9,7 @@ export default function AdminLayout() {
       <Stack.Screen name="questao-form" options={{ title: "Questão" }} />
       <Stack.Screen name="simulado-form" options={{ title: "Simulado" }} />
       <Stack.Screen name="planos" options={{ title: "Planos" }} />
+      <Stack.Screen name="perfil" options={{ title: "Editar perfil" }} />
     </Stack>
   );
 }

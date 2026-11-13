@@ -1,9 +1,10 @@
 import { Link } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Brand, Button, Card, ErrorMessage, Screen, Segmented, Subtitle, TextField, Title } from "../../components/ui";
+import { Brand, Button, Card, ErrorMessage, PasswordField, Screen, Segmented, Subtitle, TextField, Title } from "../../components/ui";
 import type { SignupInput } from "../../features/auth/api";
 import { useAuth } from "../../features/auth/AuthProvider";
+import { emailError, nameError, passwordError } from "../../features/auth/validation";
 import { colors, spacing, themed } from "../../theme";
 
 type Role = SignupInput["role"];
@@ -15,9 +16,8 @@ const ROLE_OPTIONS: { value: Role; label: string }[] = [
 
 /** Same rules as the API (registerSchema), checked here to answer faster. */
 function validate(input: SignupInput, confirmation: string): string | null {
-  if (input.name.trim().length < 2) return "Informe seu nome completo.";
-  if (!/^\S+@\S+\.\S+$/.test(input.email.trim())) return "Informe um e-mail válido.";
-  if (input.password.length < 6) return "Sua senha deve ter pelo menos 6 caracteres.";
+  const problem = nameError(input.name) ?? emailError(input.email) ?? passwordError(input.password);
+  if (problem) return problem;
   if (input.password !== confirmation) return "As senhas não conferem.";
   return null;
 }
@@ -61,7 +61,7 @@ export default function SignupScreen() {
           label="Nome completo"
           value={name}
           onChangeText={setName}
-          placeholder="Seu nome"
+          placeholder="Seu nome completo"
           autoComplete="name"
           textContentType="name"
         />
@@ -69,27 +69,25 @@ export default function SignupScreen() {
           label="E-mail"
           value={email}
           onChangeText={setEmail}
-          placeholder="voce@email.com"
+          placeholder="seu@email.com"
           autoCapitalize="none"
           autoComplete="email"
           keyboardType="email-address"
           textContentType="emailAddress"
         />
-        <TextField
+        <PasswordField
           label="Senha"
           value={password}
           onChangeText={setPassword}
           placeholder="Pelo menos 6 caracteres"
-          secureTextEntry
           autoComplete="new-password"
           textContentType="newPassword"
         />
-        <TextField
+        <PasswordField
           label="Confirmar senha"
           value={confirmation}
           onChangeText={setConfirmation}
           placeholder="Repita a senha"
-          secureTextEntry
           autoComplete="new-password"
           textContentType="newPassword"
           returnKeyType="go"

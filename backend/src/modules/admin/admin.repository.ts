@@ -7,7 +7,7 @@ import { findQuestionByCode, type Question } from "../questions/questions.reposi
 
 /* ------------------------------------------------------------------ Usuários */
 
-export interface AdminUser extends AuthUser {
+export interface AdminUser extends Omit<AuthUser, "photoUrl"> {
   active: boolean;
 }
 

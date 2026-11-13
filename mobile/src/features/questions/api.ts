@@ -30,7 +30,16 @@ export interface Question {
   correctOptionId: string;
   aiExplanation: string;
   teacher: { name: string; credentials: string; comment: string };
-  community: { author: string; comment: string }[];
+  community: CommunityComment[];
+}
+
+/** Answer/comment in the "Comunidade" panel. */
+export interface CommunityComment {
+  id: number;
+  authorId: string;
+  author: string;
+  comment: string;
+  createdAt: string;
 }
 
 export interface QuestionFilterOptions {
@@ -115,4 +124,14 @@ export function addNote(questionId: string, content: string): Promise<NoteRecord
 
 export function listMyNotes(): Promise<NoteWithQuestion[]> {
   return http.get<NoteWithQuestion[]>("/me/notes");
+}
+
+/** POST /api/questions/:id/community → the new comment. */
+export function addCommunityComment(questionId: string, comment: string): Promise<CommunityComment> {
+  return http.post<CommunityComment>(`/questions/${questionId}/community`, { comment });
+}
+
+/** DELETE /api/community-comments/:id (own comments only). */
+export function deleteCommunityComment(commentId: number): Promise<void> {
+  return http.delete(`/community-comments/${commentId}`);
 }

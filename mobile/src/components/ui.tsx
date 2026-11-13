@@ -1,6 +1,8 @@
-import type { ReactNode } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useState, type ComponentProps, type ReactNode } from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -10,7 +12,9 @@ import {
   Text,
   TextInput,
   View,
+  type StyleProp,
   type TextInputProps,
+  type TextStyle,
 } from "react-native";
 import { SafeAreaView, type Edge } from "react-native-safe-area-context";
 import { colors, radius, spacing, themed } from "../theme";
@@ -51,10 +55,27 @@ export function Screen({ children, edges = ["top", "bottom", "left", "right"], o
 export function Brand() {
   return (
     <View style={styles.brand}>
-      <View style={styles.brandMark}>
-        <Text style={styles.brandMarkText}>i</Text>
-      </View>
+      <Image source={require("../../assets/logo.png")} style={styles.brandMark} accessibilityIgnoresInvertColors />
       <Text style={styles.brandName}>Inkflow</Text>
+    </View>
+  );
+}
+
+/** Round profile picture; the initials when there is no photo. */
+export function Avatar({ name, photoUrl, size = 40 }: { name: string; photoUrl?: string | null; size?: number }) {
+  const box = { width: size, height: size, borderRadius: size / 2 };
+  if (photoUrl) {
+    return <Image source={{ uri: photoUrl }} style={[styles.avatar, box]} accessibilityLabel={`Foto de ${name}`} />;
+  }
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+  return (
+    <View style={[styles.avatar, box]} accessibilityLabel={`Sem foto: ${name}`}>
+      <Text style={[styles.avatarText, { fontSize: size * 0.38 }]}>{initials || "?"}</Text>
     </View>
   );
 }
@@ -71,15 +92,41 @@ export function Card({ children }: { children: ReactNode }) {
   return <View style={styles.card}>{children}</View>;
 }
 
+export type IconName = ComponentProps<typeof Ionicons>["name"];
+
+/** Icon + text on one line (meta info, panel titles). Icons in place of emojis. */
+export function IconText({
+  icon,
+  children,
+  style,
+  color,
+  size = 16,
+}: {
+  icon: IconName;
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+  color?: string;
+  size?: number;
+}) {
+  const flat = StyleSheet.flatten(style) ?? {};
+  return (
+    <View style={styles.iconText}>
+      <Ionicons name={icon} size={size} color={color ?? (flat.color as string | undefined) ?? colors.muted} />
+      <Text style={[styles.iconTextLabel, style]}>{children}</Text>
+    </View>
+  );
+}
+
 interface ButtonProps {
   label: string;
+  icon?: IconName;
   onPress: () => void;
   variant?: "primary" | "secondary";
   loading?: boolean;
   disabled?: boolean;
 }
 
-export function Button({ label, onPress, variant = "primary", loading = false, disabled = false }: ButtonProps) {
+export function Button({ label, icon, onPress, variant = "primary", loading = false, disabled = false }: ButtonProps) {
   const primary = variant === "primary";
   return (
     <Pressable
@@ -96,7 +143,10 @@ export function Button({ label, onPress, variant = "primary", loading = false, d
       {loading ? (
         <ActivityIndicator color={primary ? colors.onBrand : colors.brand600} />
       ) : (
-        <Text style={[styles.buttonLabel, !primary && styles.buttonLabelSecondary]}>{label}</Text>
+        <View style={styles.buttonContent}>
+          {icon ? <Ionicons name={icon} size={18} color={primary ? colors.onBrand : colors.brand600} /> : null}
+          <Text style={[styles.buttonLabel, !primary && styles.buttonLabelSecondary]}>{label}</Text>
+        </View>
       )}
     </Pressable>
   );
@@ -116,6 +166,46 @@ export function TextField({ label, style, ...props }: TextFieldProps) {
         style={[styles.input, style]}
         {...props}
       />
+    </View>
+  );
+}
+
+/** Password input with the show/hide eye button, like the web forms. */
+export function PasswordField({ label, ...props }: TextFieldProps) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <View style={styles.field}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <View style={styles.passwordRow}>
+        <TextInput
+          accessibilityLabel={label}
+          placeholderTextColor={colors.muted}
+          style={[styles.input, styles.passwordInput]}
+          secureTextEntry={!visible}
+          autoCapitalize="none"
+          autoCorrect={false}
+          {...props}
+        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={visible ? "Ocultar senha" : "Mostrar senha"}
+          onPress={() => setVisible((v) => !v)}
+          hitSlop={8}
+          style={styles.eye}
+        >
+          <Ionicons name={visible ? "eye-off-outline" : "eye-outline"} size={22} color={colors.muted} />
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+/** Green confirmation box (e.g. "Alterações salvas"). */
+export function SuccessMessage({ message }: { message: string | null }) {
+  if (!message) return null;
+  return (
+    <View style={styles.success} accessibilityRole="alert">
+      <Text style={styles.successText}>{message}</Text>
     </View>
   );
 }
@@ -173,15 +263,9 @@ const styles = themed(() => StyleSheet.create({
   center: { alignItems: "center", justifyContent: "center" },
   content: { flexGrow: 1, padding: spacing(6), gap: spacing(4) },
   brand: { flexDirection: "row", alignItems: "center", gap: spacing(2), marginBottom: spacing(2) },
-  brandMark: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.brand600,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  brandMarkText: { color: colors.onBrand, fontSize: 20, fontWeight: "700", fontStyle: "italic" },
+  brandMark: { width: 40, height: 40 },
+  avatar: { backgroundColor: colors.brandSoft, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  avatarText: { fontWeight: "700", color: colors.brandText },
   brandName: { fontSize: 22, fontWeight: "700", color: colors.brandText },
   title: { fontSize: 26, fontWeight: "700", color: colors.ink },
   subtitle: { fontSize: 15, color: colors.muted, lineHeight: 21 },
@@ -200,6 +284,9 @@ const styles = themed(() => StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing(4),
   },
+  buttonContent: { flexDirection: "row", alignItems: "center", gap: spacing(2) },
+  iconText: { flexDirection: "row", alignItems: "center", gap: spacing(1.5), flexShrink: 1 },
+  iconTextLabel: { flexShrink: 1 },
   buttonPrimary: { backgroundColor: colors.brand600 },
   buttonSecondary: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.brand600 },
   buttonDimmed: { opacity: 0.7 },
@@ -217,6 +304,11 @@ const styles = themed(() => StyleSheet.create({
     fontSize: 16,
     color: colors.ink,
   },
+  passwordRow: { justifyContent: "center" },
+  passwordInput: { paddingRight: spacing(12) },
+  eye: { position: "absolute", right: spacing(3), padding: spacing(1) },
+  success: { backgroundColor: colors.successBg, borderRadius: radius.badge, padding: spacing(3) },
+  successText: { color: colors.success, fontSize: 14 },
   error: { backgroundColor: colors.dangerBg, borderRadius: radius.badge, padding: spacing(3) },
   errorText: { color: colors.danger, fontSize: 14 },
   segmented: {

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { HttpError } from "../../http/errors.js";
 import { currentUser, requireUser } from "../../http/session.js";
 import { answerQuestion, getDailyUsage, listRecentAnswers } from "./answers.repository.js";
+import { addCommunityComment, deleteCommunityComment } from "./community.repository.js";
 import { addNote, countMyNotes, listMyNotes, listQuestionNotes } from "./notes.repository.js";
 import {
   countQuestionsByArea,
@@ -26,6 +27,8 @@ import {
  *   listQuestionNotes(id)       → GET  /api/questions/:id/notes
  *   addNote(id, content)        → POST /api/questions/:id/notes  { content }
  *   listMyNotes()               → GET  /api/me/notes
+ *   addCommunityComment(id, c)  → POST /api/questions/:id/community  { comment }
+ *   deleteCommunityComment(id)  → DELETE /api/community-comments/:id
  */
 
 /** The front sends "todas" for "no filter" (ALL_VALUE). */
@@ -57,6 +60,14 @@ const noteSchema = z.object({
     .trim()
     .min(1, "Escreva sua anotação antes de salvar.")
     .max(2000, "A anotação pode ter no máximo 2000 caracteres."),
+});
+
+const communitySchema = z.object({
+  comment: z
+    .string()
+    .trim()
+    .min(1, "Escreva sua resposta antes de publicar.")
+    .max(2000, "A resposta pode ter no máximo 2000 caracteres."),
 });
 
 const recentSchema = z.object({ limit: z.coerce.number().int().min(1).max(50).default(5) });
@@ -122,4 +133,16 @@ questionsRouter.get("/me/note-counts", practice, async (req, res) => {
 
 questionsRouter.get("/me/notes", practice, async (req, res) => {
   res.json(await listMyNotes(currentUser(req)));
+});
+
+questionsRouter.post("/questions/:id/community", practice, async (req, res) => {
+  const questionId = questionIdSchema.parse(req.params.id);
+  const { comment } = communitySchema.parse(req.body);
+  res.status(201).json(await addCommunityComment(currentUser(req), questionId, comment));
+});
+
+questionsRouter.delete("/community-comments/:id", requireUser(), async (req, res) => {
+  const commentId = z.coerce.number({ message: "Comentário inválido." }).int().positive("Comentário inválido.").parse(req.params.id);
+  await deleteCommunityComment(currentUser(req), commentId);
+  res.status(204).end();
 });

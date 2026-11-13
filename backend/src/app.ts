@@ -23,7 +23,7 @@ import { teacherRouter } from "./modules/teacher/teacher.routes.js";
 export function createApp() {
   const app = express();
   app.disable("x-powered-by");
-  app.use(express.json({ limit: "100kb" }));
+  app.use(express.json({ limit: "512kb" }));
   app.use(cookieParser());
 
   const api = express.Router();

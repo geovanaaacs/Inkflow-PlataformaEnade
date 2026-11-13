@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { Badge, LoadState, LockedFeature, type Tone } from "../../../../components/feedback";
-import { Button, Card, Screen, Subtitle, Title } from "../../../../components/ui";
+import { Button, Card, IconText, Screen, Subtitle, Title } from "../../../../components/ui";
 import { useAuth } from "../../../../features/auth/AuthProvider";
 import { listMockExams, type MockExamSummary } from "../../../../features/mock-exams/api";
 import type { Difficulty } from "../../../../features/questions/api";
@@ -47,9 +47,10 @@ function ExamCard({ exam, locked }: { exam: MockExamSummary; locked: boolean }) 
       </View>
       <Text style={styles.title}>{exam.title}</Text>
       <Text style={styles.description}>{exam.description}</Text>
-      <Text style={styles.meta}>
-        📋 {exam.questionCount} questões · ⏱ {exam.timeLimitMinutes} min
-      </Text>
+      <View style={styles.metaRow}>
+        <IconText icon="list-outline" style={styles.meta}>{exam.questionCount} questões</IconText>
+        <IconText icon="timer-outline" style={styles.meta}>{exam.timeLimitMinutes} min</IconText>
+      </View>
       {exam.lastResult && (
         <Text style={styles.description}>
           Última tentativa ({formatRelativeDay(exam.lastResult.finishedAt).toLowerCase()}):{" "}
@@ -60,7 +61,7 @@ function ExamCard({ exam, locked }: { exam: MockExamSummary; locked: boolean }) 
         </Text>
       )}
       {locked ? (
-        <Button label="🔒 Incluído no Premium" variant="secondary" disabled onPress={() => {}} />
+        <Button label="Incluído no Premium" icon="lock-closed-outline" variant="secondary" disabled onPress={() => {}} />
       ) : (
         <>
           <Button
@@ -81,6 +82,7 @@ function ExamCard({ exam, locked }: { exam: MockExamSummary; locked: boolean }) 
 }
 
 const styles = themed(() => StyleSheet.create({
+  metaRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing(4) },
   badges: { flexDirection: "row", gap: spacing(2), flexWrap: "wrap" },
   title: { fontSize: 18, fontWeight: "700", color: colors.ink },
   description: { fontSize: 14, color: colors.muted, lineHeight: 20 },

@@ -1,4 +1,5 @@
 import { query, queryOne } from "../../db/pool.js";
+import { toCommunityComment, type CommunityComment } from "./community.repository.js";
 
 /*
  * Question bank read model. Shapes match the front types in
@@ -26,7 +27,7 @@ export interface Question {
   correctOptionId: string;
   aiExplanation: string;
   teacher: { name: string; credentials: string; comment: string };
-  community: { author: string; comment: string }[];
+  community: CommunityComment[];
 }
 
 export interface QuestionFilters {
@@ -79,8 +80,8 @@ async function hydrate(rows: QuestionRow[]): Promise<Question[]> {
        ORDER BY tc.QuestionId, tc.CreatedAt`,
       { ids }
     ),
-    query<{ QuestionId: number; Author: string; Content: string }>(
-      `SELECT c.QuestionId,
+    query<{ QuestionId: number; Id: number; UserId: string; Author: string; Content: string; CreatedAt: Date }>(
+      `SELECT c.QuestionId, c.Id, c.UserId, c.CreatedAt,
               CASE WHEN u.DeletedAt IS NULL THEN u.Name ELSE N'Usuário removido' END AS Author,
               c.Content
        FROM dbo.CommunityComments c
@@ -115,7 +116,7 @@ async function hydrate(rows: QuestionRow[]): Promise<Question[]> {
         : { name: "", credentials: "", comment: "" },
       community: community
         .filter((comment) => comment.QuestionId === row.Id)
-        .map((comment) => ({ author: comment.Author, comment: comment.Content })),
+        .map(toCommunityComment),
     };
   });
 }

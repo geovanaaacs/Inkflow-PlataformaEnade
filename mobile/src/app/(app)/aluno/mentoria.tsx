@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Alert, Modal, StyleSheet, Text, View } from "react-native";
 import { Badge, LoadState, LockedFeature, SectionTitle } from "../../../components/feedback";
-import { Button, Card, ErrorMessage, Screen, Segmented, Subtitle, TextField, Title } from "../../../components/ui";
+import { Button, Card, ErrorMessage, IconText, Screen, Segmented, Subtitle, TextField, Title } from "../../../components/ui";
 import { useAuth } from "../../../features/auth/AuthProvider";
 import {
   cancelMyRequest,
@@ -89,11 +89,14 @@ function Scheduler() {
           </Text>
           {day.slots.map((slot) => (
             <Card key={slot.id}>
-              <Text style={styles.time}>🕒 {formatTimeRange(slot.startsAt, slot.durationMinutes)}</Text>
+              <IconText icon="time-outline" style={styles.time} color={colors.brand600}>{formatTimeRange(slot.startsAt, slot.durationMinutes)}</IconText>
               <Text style={styles.topic}>{slot.topic}</Text>
-              <Text style={styles.muted}>
-                🎓 {slot.teacherName} · 👥 {slot.spotsLeft > 0 ? `${slot.spotsLeft} de ${slot.capacity} vagas` : "Sem vagas"}
-              </Text>
+              <View style={styles.metaRow}>
+                <IconText icon="school-outline" style={styles.muted}>{slot.teacherName}</IconText>
+                <IconText icon="people-outline" style={styles.muted}>
+                  {slot.spotsLeft > 0 ? `${slot.spotsLeft} de ${slot.capacity} vagas` : "Sem vagas"}
+                </IconText>
+              </View>
               {slot.myRequest ? (
                 <Badge tone={REQUEST_STATUS_TONE[slot.myRequest.status]}>{REQUEST_STATUS_LABEL[slot.myRequest.status]}</Badge>
               ) : (
@@ -246,6 +249,7 @@ function RequestModal({ slot, onClose, onRequested }: { slot: OpenSlot | null; o
 }
 
 const styles = themed(() => StyleSheet.create({
+  metaRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing(4) },
   muted: { fontSize: 14, color: colors.muted, lineHeight: 20 },
   success: { fontSize: 15, color: colors.success, fontWeight: "700" },
   day: { gap: spacing(3) },
