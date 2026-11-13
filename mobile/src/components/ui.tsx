@@ -120,13 +120,15 @@ export function IconText({
 interface ButtonProps {
   label: string;
   icon?: IconName;
+  /** "large": taller, for the main actions outside the cards. */
+  size?: "normal" | "large";
   onPress: () => void;
   variant?: "primary" | "secondary";
   loading?: boolean;
   disabled?: boolean;
 }
 
-export function Button({ label, icon, onPress, variant = "primary", loading = false, disabled = false }: ButtonProps) {
+export function Button({ label, icon, size = "normal", onPress, variant = "primary", loading = false, disabled = false }: ButtonProps) {
   const primary = variant === "primary";
   return (
     <Pressable
@@ -137,6 +139,7 @@ export function Button({ label, icon, onPress, variant = "primary", loading = fa
       style={({ pressed }) => [
         styles.button,
         primary ? styles.buttonPrimary : styles.buttonSecondary,
+        size === "large" && styles.buttonLarge,
         (pressed || disabled) && styles.buttonDimmed,
       ]}
     >
@@ -144,8 +147,8 @@ export function Button({ label, icon, onPress, variant = "primary", loading = fa
         <ActivityIndicator color={primary ? colors.onBrand : colors.brand600} />
       ) : (
         <View style={styles.buttonContent}>
-          {icon ? <Ionicons name={icon} size={18} color={primary ? colors.onBrand : colors.brand600} /> : null}
-          <Text style={[styles.buttonLabel, !primary && styles.buttonLabelSecondary]}>{label}</Text>
+          {icon ? <Ionicons name={icon} size={size === "large" ? 22 : 18} color={primary ? colors.onBrand : colors.brandText} /> : null}
+          <Text style={[styles.buttonLabel, !primary && styles.buttonLabelSecondary, size === "large" && styles.buttonLabelLarge]}>{label}</Text>
         </View>
       )}
     </Pressable>
@@ -274,8 +277,13 @@ const styles = themed(() => StyleSheet.create({
     borderRadius: radius.card,
     padding: spacing(5),
     gap: spacing(4),
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: colors.border,
+    shadowColor: colors.brand800,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   button: {
     minHeight: 48,
@@ -287,11 +295,20 @@ const styles = themed(() => StyleSheet.create({
   buttonContent: { flexDirection: "row", alignItems: "center", gap: spacing(2) },
   iconText: { flexDirection: "row", alignItems: "center", gap: spacing(1.5), flexShrink: 1 },
   iconTextLabel: { flexShrink: 1 },
-  buttonPrimary: { backgroundColor: colors.brand600 },
-  buttonSecondary: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.brand600 },
+  buttonPrimary: {
+    backgroundColor: colors.brand600,
+    shadowColor: colors.brand800,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  buttonSecondary: { backgroundColor: colors.brandSoft, borderWidth: 1, borderColor: colors.brand600 },
+  buttonLarge: { minHeight: 58, borderRadius: radius.card },
+  buttonLabelLarge: { fontSize: 17, fontWeight: "700" },
   buttonDimmed: { opacity: 0.7 },
   buttonLabel: { color: colors.onBrand, fontSize: 16, fontWeight: "600" },
-  buttonLabelSecondary: { color: colors.brand600 },
+  buttonLabelSecondary: { color: colors.brandText },
   field: { gap: spacing(1.5) },
   fieldLabel: { fontSize: 14, fontWeight: "600", color: colors.ink },
   input: {

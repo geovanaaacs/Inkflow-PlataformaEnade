@@ -17,7 +17,8 @@ export const tabScreenOptions = themed(() => ({
   headerShown: false,
   tabBarActiveTintColor: colors.brand600,
   tabBarInactiveTintColor: colors.muted,
-  tabBarStyle: { backgroundColor: colors.surface },
+  tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+  tabBarActiveBackgroundColor: colors.brandSoft,
 }) as const);
 
 /** Header look of the screens opened on top of the tabs. */

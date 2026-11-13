@@ -144,7 +144,7 @@ const styles = themed(() => StyleSheet.create({
   badge: { alignSelf: "flex-start", borderRadius: radius.badge, paddingHorizontal: spacing(2.5), paddingVertical: spacing(1) },
   badgeText: { fontSize: 12, fontWeight: "700" },
   section: { gap: spacing(1) },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: colors.ink },
+  sectionTitle: { fontSize: 18, fontWeight: "700", color: colors.brandText },
   sectionSubtitle: { fontSize: 14, color: colors.muted },
   state: { alignItems: "center", justifyContent: "center", paddingVertical: spacing(10), gap: spacing(4) },
   stateText: { fontSize: 15, color: colors.muted, textAlign: "center" },
